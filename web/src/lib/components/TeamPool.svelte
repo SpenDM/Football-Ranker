@@ -82,10 +82,20 @@
 		overflow: hidden;
 	}
 
-	@container (min-width: 300px) {
+	/* Four across once four cards fit: 4 × 72px + 3 gaps + padding (60px cards on phones). */
+	@container (min-width: 330px) {
 		.division :global(.division-zone) {
 			grid-template-columns: repeat(4, var(--card-size));
 			height: calc(var(--card-size) + 16px);
+		}
+	}
+
+	@media (max-width: 560px) {
+		@container (min-width: 280px) {
+			.division :global(.division-zone) {
+				grid-template-columns: repeat(4, var(--card-size));
+				height: calc(var(--card-size) + 16px);
+			}
 		}
 	}
 

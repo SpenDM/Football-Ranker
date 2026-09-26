@@ -16,9 +16,9 @@
 </script>
 
 <dialog bind:this={dialog} aria-labelledby="overflow-title" oncancel={(e) => e.preventDefault()}>
-	<h2 id="overflow-title">Choose frameworks to keep</h2>
+	<h2 id="overflow-title">Choose formats to keep</h2>
 	<p>
-		Together, your account and this browser have more than {MAX_CUSTOM_FRAMEWORKS} saved frameworks.
+		Together, your account and this browser have more than {MAX_CUSTOM_FRAMEWORKS} saved formats.
 		Choose up to {MAX_CUSTOM_FRAMEWORKS} to keep. The rest will be deleted.
 	</p>
 	<ul>

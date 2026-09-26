@@ -30,7 +30,7 @@
 <style>
 	main {
 		padding: 20px;
-		max-width: 1440px;
+		max-width: 1760px;
 		margin: 0 auto;
 	}
 

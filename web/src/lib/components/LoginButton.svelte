@@ -8,9 +8,9 @@
 	const statusText: Record<SyncStatus, string> = {
 		off: '',
 		syncing: 'Syncing…',
-		synced: 'Frameworks synced',
+		synced: 'Formats synced',
 		error: 'Sync failed; changes are saved in this browser',
-		'needs-attention': 'Choose which frameworks to keep'
+		'needs-attention': 'Choose which formats to keep'
 	};
 
 	const initials = $derived(

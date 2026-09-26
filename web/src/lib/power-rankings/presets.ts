@@ -4,6 +4,7 @@ export const RANKED_PRESET_ID = 'preset-ranked';
 export const LETTER_PRESET_ID = 'preset-letter';
 export const DEFAULT_FRAMEWORK_ID = LETTER_PRESET_ID;
 export const MAX_SLOTS = 32;
+export const MAX_TIERS = 12;
 
 export const TIER_COLORS = [
 	'#ff7f7f',

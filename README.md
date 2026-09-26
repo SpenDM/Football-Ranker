@@ -3,7 +3,7 @@ Web App for Fantasy Football Tools
 
 | Tool | Status |
 | --- | --- |
-| **Power Rankings**: drag and drop all 32 teams into a 1–32 ranking, letter-grade tiers, or up to 5 saved custom frameworks | Live |
+| **Power Rankings**: drag and drop all 32 teams into a 1–32 ranking, letter-grade tiers, or up to 5 saved custom formats | Live |
 | **Fantasy Roster Manager**: weekly start/sit help (top/bottom offenses and defenses) | Placeholder |
 | **Fantasy Draft Manager**: build a draft big board from NFL rosters | Placeholder |
 
@@ -15,10 +15,10 @@ web/        SvelteKit (Svelte 5) static site → deployed as a Cloudflare Worker
 firestore.rules, firebase.json   Firebase Auth (Google) + Firestore for per-user data
 ```
 
-- **Every action is saved to localStorage** under `ffr:v1:*` keys: active framework, placements per framework, preset edits, custom frameworks, and editor state.
-- **Signed-in users** also get their custom frameworks synced to Firestore (`users/{uid}`, max 5, enforced by the security rules).
-  - Frameworks created while signed out are merged into the account on login.
-  - Signing out removes the account's frameworks from the browser.
+- **Every action is saved to localStorage** under `ffr:v1:*` keys: active format, placements per format, preset edits, and custom formats.
+- **Signed-in users** also get their custom formats synced to Firestore (`users/{uid}`, max 5, enforced by the security rules).
+  - Formats created while signed out are merged into the account on login.
+  - Signing out removes the account's formats from the browser.
 - **Firebase config** lives in `web/src/lib/firebase-config.ts`, which is committed; the values are public identifiers. While its `apiKey` is empty, login is disabled and everything else still works.
  
 ## Development

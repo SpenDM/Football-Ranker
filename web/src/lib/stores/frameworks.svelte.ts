@@ -8,6 +8,7 @@ import {
 	DEFAULT_FRAMEWORK_ID,
 	isPresetId,
 	MAX_SLOTS,
+	MAX_TIERS,
 	PRESETS,
 	presetById,
 	TIER_COLORS
@@ -70,6 +71,7 @@ class FrameworksStore {
 	}
 
 	addTier(): void {
+		if (this.active.kind !== 'tiered' || this.active.tiers.length >= MAX_TIERS) return;
 		this.#editActive((fw) => {
 			const used = new Set(fw.tiers.map((t) => t.color));
 			fw.tiers.push({
@@ -91,15 +93,6 @@ class FrameworksStore {
 		if (this.active.tiers.length <= 1) return;
 		this.#editActive((fw) => {
 			fw.tiers = fw.tiers.filter((t) => t.id !== tierId);
-		});
-	}
-
-	moveTier(tierId: string, delta: -1 | 1): void {
-		this.#editActive((fw) => {
-			const i = fw.tiers.findIndex((t) => t.id === tierId);
-			const j = i + delta;
-			if (i < 0 || j < 0 || j >= fw.tiers.length) return;
-			[fw.tiers[i], fw.tiers[j]] = [fw.tiers[j], fw.tiers[i]];
 		});
 	}
 

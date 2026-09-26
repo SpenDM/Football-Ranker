@@ -50,9 +50,9 @@ test('dragging a team into a tier persists across reload', async ({ page }) => {
 	await expect(card(page, 'Tier S', 'Kansas City Chiefs')).toBeVisible();
 
 	// Placements are kept per framework.
-	await page.locator('.picker select').selectOption('preset-ranked');
+	await page.getByLabel('Format', { exact: true }).selectOption('preset-ranked');
 	await expect(page.getByLabel('AFC West pool', { exact: true }).locator('.card')).toHaveCount(4);
-	await page.locator('.picker select').selectOption('preset-letter');
+	await page.getByLabel('Format', { exact: true }).selectOption('preset-letter');
 	await expect(card(page, 'Tier S', 'Kansas City Chiefs')).toBeVisible();
 
 	// Dragging back to the pool returns it to its division.
@@ -62,8 +62,7 @@ test('dragging a team into a tier persists across reload', async ({ page }) => {
 
 test('save a modified preset as a custom framework (max 5)', async ({ page }) => {
 	await page.goto('/power-rankings');
-	await page.getByRole('button', { name: 'Edit format' }).click();
-	await page.getByRole('button', { name: '+ Add tier' }).click();
+	await page.getByRole('button', { name: 'Add tier' }).click();
 	await expect(page.locator('.board .row')).toHaveCount(7);
 
 	for (let i = 1; i <= 5; i++) {
@@ -74,9 +73,38 @@ test('save a modified preset as a custom framework (max 5)', async ({ page }) =>
 	await expect(page.getByRole('button', { name: 'Save format' })).toBeDisabled();
 
 	await page.reload();
-	await expect(page.locator('.picker select')).toHaveValue(/custom-/);
+	await expect(page.getByLabel('Format', { exact: true })).toHaveValue(/custom-/);
 	await expect(page.locator('.board .row')).toHaveCount(7);
 	// The preset itself was reset to its defaults after saving.
-	await page.locator('.picker select').selectOption('preset-letter');
+	await page.getByLabel('Format', { exact: true }).selectOption('preset-letter');
 	await expect(page.locator('.board .row')).toHaveCount(6);
+});
+
+test('click a tier name to rename and recolor it; +/- add and remove the bottom tier', async ({ page }) => {
+	await page.goto('/power-rankings');
+	await page.getByRole('button', { name: 'Edit tier S' }).click();
+	const editor = page.getByRole('dialog', { name: 'Edit tier S' });
+	await editor.getByLabel('Name').fill('GOAT');
+	await page.getByRole('dialog', { name: 'Edit tier GOAT' }).getByRole('button', { name: 'Color #7fbfff' }).click();
+	await page.keyboard.press('Enter');
+	await expect(page.getByRole('dialog')).toHaveCount(0);
+
+	const label = page.getByRole('button', { name: 'Edit tier GOAT' });
+	await expect(label).toBeVisible();
+	await expect(label.locator('..')).toHaveCSS('background-color', 'rgb(127, 191, 255)');
+	await expect(page.getByText(/You've changed this preset/)).toBeVisible();
+
+	await page.getByRole('button', { name: 'Remove bottom tier' }).click();
+	await expect(page.locator('.board .row')).toHaveCount(5);
+	await expect(page.getByRole('button', { name: 'Edit tier F' })).toHaveCount(0);
+	await page.getByRole('button', { name: 'Add tier' }).click();
+	await expect(page.locator('.board .row')).toHaveCount(6);
+
+	await page.reload();
+	await expect(page.getByRole('button', { name: 'Edit tier GOAT' })).toBeVisible();
+	await expect(page.locator('.board .row')).toHaveCount(6);
+
+	await page.getByRole('button', { name: 'Reset to default' }).click();
+	await expect(page.getByRole('button', { name: 'Edit tier S' })).toBeVisible();
+	await expect(page.getByRole('button', { name: 'Edit tier F' })).toBeVisible();
 });

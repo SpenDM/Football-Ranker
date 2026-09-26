@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { MAX_CUSTOM_FRAMEWORKS } from '$lib/power-rankings/frameworks';
+	import { MAX_SLOTS } from '$lib/power-rankings/presets';
 	import { auth } from '$lib/stores/auth.svelte';
 	import { frameworks } from '$lib/stores/frameworks.svelte';
 	import { rankings } from '$lib/stores/rankings.svelte';
-
-	let { editing = $bindable() }: { editing: boolean } = $props();
 
 	let dialog: HTMLDialogElement;
 	let newName = $state('');
@@ -38,10 +37,11 @@
 	}
 </script>
 
-<div class="toolbar">
-	<label class="picker">
-		<span>Framework</span>
+<aside class="sidebar" aria-label="Format settings">
+	<div class="field">
+		<label for="format-select">Format</label>
 		<select
+			id="format-select"
 			value={active.id}
 			onchange={(e) => {
 				frameworks.select(e.currentTarget.value);
@@ -53,7 +53,7 @@
 					<option value={fw.id}>{fw.name}{frameworks.presetEdits.current[fw.id] ? ' (modified)' : ''}</option>
 				{/each}
 			</optgroup>
-			<optgroup label="My frameworks ({customCount}/{MAX_CUSTOM_FRAMEWORKS})">
+			<optgroup label="My formats ({customCount}/{MAX_CUSTOM_FRAMEWORKS})">
 				{#each frameworks.customs.current as fw (fw.id)}
 					<option value={fw.id}>{fw.name}</option>
 				{:else}
@@ -61,18 +61,49 @@
 				{/each}
 			</optgroup>
 		</select>
-	</label>
+	</div>
+
+	{#if !frameworks.activeIsPreset}
+		<div class="field">
+			<label for="format-name">Name</label>
+			<input
+				id="format-name"
+				type="text"
+				maxlength="40"
+				value={active.name}
+				oninput={(e) => frameworks.renameActive(e.currentTarget.value)}
+			/>
+		</div>
+	{/if}
+
+	{#if active.kind === 'ranked'}
+		<div class="field">
+			<label for="format-slots">Number of ranks</label>
+			<input
+				id="format-slots"
+				type="number"
+				min="1"
+				max={MAX_SLOTS}
+				value={active.slots}
+				onchange={(e) => frameworks.setSlots(e.currentTarget.valueAsNumber)}
+			/>
+		</div>
+	{/if}
+
+	{#if frameworks.activeIsModifiedPreset}
+		<p class="hint">
+			You've changed this preset. <strong>Save format</strong> keeps it as your own, or
+			<strong>Reset to default</strong> undoes the changes.
+		</p>
+	{/if}
 
 	<div class="actions">
-		<button class="btn" aria-pressed={editing} onclick={() => (editing = !editing)}>
-			{editing ? 'Done editing' : 'Edit format'}
-		</button>
 		<button
 			class="btn"
 			disabled={!frameworks.canSaveCustom}
 			title={frameworks.canSaveCustom
-				? 'Save this format as one of your frameworks'
-				: `You can save up to ${MAX_CUSTOM_FRAMEWORKS} frameworks. Delete one to save another.`}
+				? 'Save this format as one of your formats'
+				: `You can save up to ${MAX_CUSTOM_FRAMEWORKS} formats. Delete one to save another.`}
 			onclick={openSave}
 		>
 			Save format
@@ -90,7 +121,7 @@
 				class="btn ghost danger"
 				onclick={() => confirmOrRun('delete', () => frameworks.deleteCustom(active.id))}
 			>
-				{confirming === 'delete' ? 'Click to confirm delete' : 'Delete framework'}
+				{confirming === 'delete' ? 'Click to confirm delete' : 'Delete format'}
 			</button>
 		{/if}
 		<button
@@ -100,13 +131,13 @@
 			{confirming === 'clear' ? 'Click to confirm clear' : 'Clear rankings'}
 		</button>
 	</div>
-</div>
+</aside>
 
 <dialog bind:this={dialog} aria-labelledby="save-title">
 	<form onsubmit={save}>
 		<h2 id="save-title">Save format</h2>
 		<p>
-			Saves this format and its current rankings as a new framework ({customCount}/{MAX_CUSTOM_FRAMEWORKS}
+			Saves this format and its current rankings as one of your formats ({customCount}/{MAX_CUSTOM_FRAMEWORKS}
 			used).
 			{#if auth.user}
 				It will sync to your account.
@@ -126,31 +157,43 @@
 </dialog>
 
 <style>
-	.toolbar {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: end;
-		justify-content: space-between;
-		gap: 12px;
+	.sidebar {
+		display: grid;
+		gap: 14px;
+		padding: 16px;
+		background: var(--surface);
+		border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+		border-radius: var(--radius);
 	}
 
-	.picker {
+	.field {
 		display: grid;
 		gap: 4px;
+	}
+
+	.field label {
 		font-size: 0.8rem;
+		font-weight: 600;
 		color: var(--muted);
 	}
 
-	.picker select {
-		min-width: 240px;
-		font-size: 1rem;
+	.field select,
+	.field input {
+		width: 100%;
 		color: var(--text);
 	}
 
+	.hint {
+		margin: 0;
+		font-size: 0.82rem;
+		color: var(--muted);
+	}
+
 	.actions {
-		display: flex;
-		flex-wrap: wrap;
+		display: grid;
 		gap: 8px;
+		padding-top: 14px;
+		border-top: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
 	}
 
 	dialog {
