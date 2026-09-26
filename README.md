@@ -20,7 +20,7 @@ firestore.rules, firebase.json   Firebase Auth (Google) + Firestore for per-user
   - Frameworks created while signed out are merged into the account on login.
   - Signing out removes the account's frameworks from the browser.
 - **Firebase config** lives in `web/src/lib/firebase-config.ts`, which is committed; the values are public identifiers. While its `apiKey` is empty, login is disabled and everything else still works.
-
+ 
 ## Development
 
 ### Python pipeline
