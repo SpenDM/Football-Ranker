@@ -1,0 +1,12 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "football-tools",
+	"compatibility_date": "2026-09-25",
+	// Static-assets-only Worker: serves the adapter-static output, no Worker script needed.
+	"assets": {
+		"directory": "./build",
+		// /power-rankings → power-rankings.html
+		"html_handling": "drop-trailing-slash",
+		"not_found_handling": "404-page"
+	}
+}
