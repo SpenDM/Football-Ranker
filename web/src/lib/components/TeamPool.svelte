@@ -70,17 +70,22 @@
 		padding: 0 4px 4px;
 	}
 
+	/* Fixed height: while a team is dragged over a full division, the drop placeholder would
+	   otherwise wrap to a new row and shift the layout under the cursor, cancelling the drop.
+	   The extra row is clipped instead. */
 	.division :global(.division-zone) {
 		display: grid;
 		grid-template-columns: repeat(2, var(--card-size));
 		justify-content: center;
-		min-height: calc(2 * var(--card-size) + 24px);
+		height: calc(2 * var(--card-size) + 24px);
+		min-height: 0;
+		overflow: hidden;
 	}
 
 	@container (min-width: 300px) {
 		.division :global(.division-zone) {
 			grid-template-columns: repeat(4, var(--card-size));
-			min-height: calc(var(--card-size) + 16px);
+			height: calc(var(--card-size) + 16px);
 		}
 	}
 

@@ -1,9 +1,10 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 
 async function drag(page: Page, source: Locator, target: Locator) {
+	// hover() waits until the card is visible and not animating before the drag starts.
+	await source.hover();
 	const from = (await source.boundingBox())!;
 	const to = (await target.boundingBox())!;
-	await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
 	await page.mouse.down();
 	await page.mouse.move(from.x + from.width / 2 + 40, from.y + from.height / 2 + 40, { steps: 5 });
 	await page.mouse.move(to.x + 40, to.y + to.height / 2, { steps: 20 });
@@ -29,6 +30,8 @@ test('home links to each tool and banner navigates between tools', async ({ page
 
 test('pool is grouped by division in AFC then NFC N/E/S/W order', async ({ page }) => {
 	await page.goto('/power-rankings');
+	// The app renders client-side; wait for it before reading (allTextContents doesn't wait).
+	await expect(page.locator('.division h3')).toHaveCount(8);
 	const headings = await page.locator('.division h3').allTextContents();
 	expect(headings).toEqual([
 		'AFC North', 'AFC East', 'AFC South', 'AFC West',

@@ -55,11 +55,11 @@ Sign-in is optional and stays off until `web/src/lib/firebase-config.ts` is fill
 2. Turn on **Authentication → Sign-in method → Google**.
 3. Create a **Firestore** database (production mode). Then deploy the rules (the project id comes from `.firebaserc`):
    `cd web && npx firebase deploy --only firestore:rules --config ../firebase.json`
-4. Under **Authentication → Settings → Authorized domains**, add the site's domain (`football-tools.<account>.workers.dev` or a custom domain) and `localhost`.
+4. Under **Authentication → Settings → Authorized domains**, add `football.ranker.page` and `localhost`.
 5. **Sign-in on browsers that block third-party storage (Safari, Firefox, Chrome with those cookies blocked):**
-   - Set `authDomain` in `firebase-config.ts` to the site's own domain instead of `<projectId>.firebaseapp.com`.
+   - `authDomain` in `firebase-config.ts` is the site's own domain (`football.ranker.page`), not `<projectId>.firebaseapp.com`.
    - The Worker (`web/src/worker.ts`) forwards `/__/auth/*` to `<projectId>.firebaseapp.com`, so the Google popup is served from the site's own domain.
-   - In [Google Cloud console → Credentials](https://console.cloud.google.com/apis/credentials), open the project's *Web client (auto created by Google Service)* OAuth client and add `https://<site domain>/__/auth/handler` to **Authorized redirect URIs**.
+   - In [Google Cloud console → Credentials](https://console.cloud.google.com/apis/credentials), open the project's *Web client (auto created by Google Service)* OAuth client and add `https://football.ranker.page/__/auth/handler` to **Authorized redirect URIs**.
 
    This is option 3 in Firebase's [redirect best practices](https://firebase.google.com/docs/auth/web/redirect-best-practices).
 
@@ -74,7 +74,7 @@ Connect this GitHub repo under **Workers & Pages → Create → Import a reposit
 - Deploy command: `npx wrangler deploy`
 - Non-production branch deploy command: `npx wrangler versions upload` (gives PRs preview URLs)
 
-The Worker name, `football-tools`, comes from `wrangler.jsonc` and must match the Worker name in the dashboard. CI (`.github/workflows/ci.yml`) runs lint, unit, rules and e2e tests, with the e2e tests served through `wrangler dev`, and validates the Worker config with a deploy dry run.
+The Worker name, `football-tools`, comes from `wrangler.jsonc` and must match the Worker name in the dashboard. Attach the domain under the Worker's **Settings → Domains & Routes → Add → Custom domain**: `football.ranker.page`. CI (`.github/workflows/ci.yml`) runs lint, unit, rules and e2e tests, with the e2e tests served through `wrangler dev`, and validates the Worker config with a deploy dry run.
 
 ## Data and trademarks
 Team colors and logo URLs come from [nflverse](https://github.com/nflverse). NFL team names and logos are trademarks of their owners. Using them is fine for a personal, non-commercial project; revisit before monetizing.
