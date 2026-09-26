@@ -1,10 +1,14 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "football-tools",
+	"main": "src/worker.ts",
 	"compatibility_date": "2026-09-25",
-	// Static-assets-only Worker: serves the adapter-static output, no Worker script needed.
 	"assets": {
 		"directory": "./build",
+		"binding": "ASSETS",
+		// Only the Firebase sign-in helper reaches the Worker script; every other path is served
+		// straight from the adapter-static output.
+		"run_worker_first": ["/__/auth/*"],
 		// /power-rankings → power-rankings.html
 		"html_handling": "drop-trailing-slash",
 		"not_found_handling": "404-page"

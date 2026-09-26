@@ -11,7 +11,7 @@ Web App for Fantasy Football Tools
 
 ```
 pipeline/   Python data pipeline → generates static data/assets for the site
-web/        SvelteKit (Svelte 5) static site → deployed as a Cloudflare Worker (static assets)
+web/        SvelteKit (Svelte 5) static site → deployed as a Cloudflare Worker (static assets + Firebase sign-in proxy)
 firestore.rules, firebase.json   Firebase Auth (Google) + Firestore for per-user data
 ```
 
@@ -49,14 +49,24 @@ npm run deploy              # build and deploy with wrangler (needs `npx wrangle
 ## One-time setup
 
 ### Firebase
-1. Create a project at https://console.firebase.google.com and add a **Web app**. Copy its config values into `web/src/lib/firebase-config.ts` and commit it.
+Sign-in is optional and stays off until `web/src/lib/firebase-config.ts` is filled in. One-time setup:
+
+1. In the [Firebase console](https://console.firebase.google.com/), create a project and add a **Web app**. Copy its config into `web/src/lib/firebase-config.ts` and commit it; the values are public identifiers, not secrets.
 2. Turn on **Authentication → Sign-in method → Google**.
-3. Create a **Firestore** database (production mode).
-4. Put your project id in `.firebaserc`, then deploy the rules: `cd web && npx firebase deploy --only firestore:rules --config ../firebase.json`.
-5. Under **Authentication → Settings → Authorized domains**, add your `football-tools.<account>.workers.dev` domain and any custom domain.
+3. Create a **Firestore** database (production mode). Then deploy the rules (the project id comes from `.firebaserc`):
+   `cd web && npx firebase deploy --only firestore:rules --config ../firebase.json`
+4. Under **Authentication → Settings → Authorized domains**, add the site's domain (`football-tools.<account>.workers.dev` or a custom domain) and `localhost`.
+5. **Sign-in on browsers that block third-party storage (Safari, Firefox, Chrome with those cookies blocked):**
+   - Set `authDomain` in `firebase-config.ts` to the site's own domain instead of `<projectId>.firebaseapp.com`.
+   - The Worker (`web/src/worker.ts`) forwards `/__/auth/*` to `<projectId>.firebaseapp.com`, so the Google popup is served from the site's own domain.
+   - In [Google Cloud console → Credentials](https://console.cloud.google.com/apis/credentials), open the project's *Web client (auto created by Google Service)* OAuth client and add `https://<site domain>/__/auth/handler` to **Authorized redirect URIs**.
+
+   This is option 3 in Firebase's [redirect best practices](https://firebase.google.com/docs/auth/web/redirect-best-practices).
 
 ### Cloudflare Worker
-The site is deployed as an assets-only Worker, configured in `web/wrangler.jsonc`. It has no Worker script: Cloudflare serves `web/build` directly, with `/power-rankings` → `power-rankings.html`, `404.html` for unknown pages, and the cache rules in `static/_headers`.
+The site is deployed as a Worker, configured in `web/wrangler.jsonc`:
+- Cloudflare serves `web/build` as static assets, with `/power-rankings` → `power-rankings.html`, `404.html` for unknown pages, and the cache rules in `static/_headers`.
+- Only `/__/auth/*` runs the Worker script (`web/src/worker.ts`), which forwards Firebase's sign-in helper.
 
 Connect this GitHub repo under **Workers & Pages → Create → Import a repository** (Workers Builds), then set:
 - Root directory: `web`
