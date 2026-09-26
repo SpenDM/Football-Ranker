@@ -1,3 +1,5 @@
+import { firebaseConfig } from '$lib/firebase-config';
+
 export type AppUser = {
 	uid: string;
 	displayName: string | null;
@@ -8,10 +10,8 @@ export type AppUser = {
 type Listener = (user: AppUser | null) => void;
 
 class AuthState {
-	/** False when no Firebase config was provided at build time (login is hidden/disabled). */
-	readonly available = Boolean(
-		import.meta.env.VITE_FIREBASE_API_KEY && import.meta.env.VITE_FIREBASE_PROJECT_ID
-	);
+	/** False until firebase-config.ts is filled in (login is disabled). */
+	readonly available = Boolean(firebaseConfig.apiKey && firebaseConfig.projectId);
 	user = $state<AppUser | null>(null);
 	/** True once Firebase has reported the initial auth state. */
 	ready = $state(false);

@@ -19,7 +19,7 @@ firestore.rules, firebase.json   Firebase Auth (Google) + Firestore for per-user
 - **Signed-in users** also get their custom frameworks synced to Firestore (`users/{uid}`, max 5, enforced by the security rules).
   - Frameworks created while signed out are merged into the account on login.
   - Signing out removes the account's frameworks from the browser.
-- **Firebase is optional** at build time: without the `VITE_FIREBASE_*` env vars, login is disabled and everything else still works.
+- **Firebase config** lives in `web/src/lib/firebase-config.ts`, which is committed; the values are public identifiers. While its `apiKey` is empty, login is disabled and everything else still works.
 
 ## Development
 
@@ -34,7 +34,7 @@ uv run pytest && uv run ruff check .
 ### Web app
 ```sh
 cd web
-cp .env.example .env        # optional: fill in Firebase config
+cp .env.example .env        # optional: toggles the local Firebase emulators
 npm install
 npm run dev                 # http://localhost:5173
 npm run check               # svelte-check / TypeScript
@@ -49,7 +49,7 @@ npm run deploy              # build and deploy with wrangler (needs `npx wrangle
 ## One-time setup
 
 ### Firebase
-1. Create a project at https://console.firebase.google.com and add a **Web app**. Copy its config into `web/.env` and into the Worker's build variables.
+1. Create a project at https://console.firebase.google.com and add a **Web app**. Copy its config values into `web/src/lib/firebase-config.ts` and commit it.
 2. Turn on **Authentication → Sign-in method → Google**.
 3. Create a **Firestore** database (production mode).
 4. Put your project id in `.firebaserc`, then deploy the rules: `cd web && npx firebase deploy --only firestore:rules --config ../firebase.json`.
@@ -63,7 +63,6 @@ Connect this GitHub repo under **Workers & Pages → Create → Import a reposit
 - Build command: `npm run build`
 - Deploy command: `npx wrangler deploy`
 - Non-production branch deploy command: `npx wrangler versions upload` (gives PRs preview URLs)
-- **Build variables** (Settings → Build → Variables and secrets): `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID`. These are baked in at build time, so they must be build variables, not runtime variables.
 
 The Worker name, `football-tools`, comes from `wrangler.jsonc` and must match the Worker name in the dashboard. CI (`.github/workflows/ci.yml`) runs lint, unit, rules and e2e tests, with the e2e tests served through `wrangler dev`, and validates the Worker config with a deploy dry run.
 
