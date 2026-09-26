@@ -1,5 +1,6 @@
 import {
 	normalizePlacement,
+	placeInSlot,
 	setTierTeams,
 	unplaceTeams
 } from '$lib/power-rankings/placements';
@@ -21,8 +22,18 @@ class RankingsStore {
 		);
 	}
 
+	/** Ranked frameworks: put a team in rank slot `index` (swapping if it was already ranked). */
+	placeAt(fw: Framework, index: number, abbr: string): void {
+		const tierId = fw.tiers[0].id;
+		const current = this.for(fw);
+		this.placements.current[fw.id] = normalizePlacement(
+			{ ...current, [tierId]: placeInSlot(current[tierId], index, abbr) },
+			fw
+		);
+	}
+
 	unplace(fw: Framework, abbrs: string[]): void {
-		this.placements.current[fw.id] = unplaceTeams(this.for(fw), abbrs);
+		this.placements.current[fw.id] = unplaceTeams(this.for(fw), abbrs, fw);
 	}
 
 	clear(fw: Framework): void {

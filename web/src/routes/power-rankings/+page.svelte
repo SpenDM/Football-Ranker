@@ -18,63 +18,71 @@
 <div class="layout">
 	<div class="sidebar-slot"><FormatSidebar /></div>
 
-	<div class="content">
-		<section class="board" aria-label={active.name}>
-			{#if active.kind === 'ranked'}
-				<RankedList
-					slots={active.slots}
-					teams={placement[active.tiers[0].id]}
-					onCommit={(abbrs) => rankings.setTier(active, active.tiers[0].id, abbrs)}
+	<section class="board" aria-label={active.name}>
+		{#if active.kind === 'ranked'}
+			<RankedList
+				slots={active.slots}
+				teams={placement[active.tiers[0].id]}
+				onDrop={(index, abbr) => rankings.placeAt(active, index, abbr)}
+			/>
+		{:else}
+			{#each active.tiers as tier (tier.id)}
+				<TierRow
+					{tier}
+					teams={placement[tier.id]}
+					onCommit={(abbrs) => rankings.setTier(active, tier.id, abbrs)}
+					onEdit={(patch) => frameworks.updateTier(tier.id, patch)}
 				/>
-			{:else}
-				{#each active.tiers as tier (tier.id)}
-					<TierRow
-						{tier}
-						teams={placement[tier.id]}
-						onCommit={(abbrs) => rankings.setTier(active, tier.id, abbrs)}
-						onEdit={(patch) => frameworks.updateTier(tier.id, patch)}
-					/>
-				{/each}
-				<div class="tier-controls">
-					<button
-						class="btn ghost small"
-						aria-label="Add tier"
-						title="Add a tier at the bottom"
-						disabled={active.tiers.length >= MAX_TIERS}
-						onclick={() => frameworks.addTier()}>+</button
-					>
-					<button
-						class="btn ghost small"
-						aria-label="Remove bottom tier"
-						title="Remove the bottom tier (its teams go back to the pool)"
-						disabled={active.tiers.length <= 1}
-						onclick={() => frameworks.removeTier(active.tiers[active.tiers.length - 1].id)}
-						>−</button
-					>
-				</div>
-			{/if}
-		</section>
+			{/each}
+			<div class="tier-controls">
+				<button
+					class="btn ghost small"
+					aria-label="Add tier"
+					title="Add a tier at the bottom"
+					disabled={active.tiers.length >= MAX_TIERS}
+					onclick={() => frameworks.addTier()}>+</button
+				>
+				<button
+					class="btn ghost small"
+					aria-label="Remove bottom tier"
+					title="Remove the bottom tier (its teams go back to the pool)"
+					disabled={active.tiers.length <= 1}
+					onclick={() => frameworks.removeTier(active.tiers[active.tiers.length - 1].id)}
+					>−</button
+				>
+			</div>
+		{/if}
+	</section>
 
+	<div class="pool-slot">
 		<TeamPool {placed} onReturn={(abbrs) => rankings.unplace(active, abbrs)} />
 	</div>
 </div>
 
 <style>
+	/* Sidebar | board | teams. The teams column fits two divisions of 2×2 cards. */
 	.layout {
 		display: grid;
-		grid-template-columns: 240px minmax(0, 1fr);
+		grid-template-columns: 216px minmax(0, 1fr) 356px;
+		grid-template-areas: 'side board pool';
 		gap: 20px;
 		align-items: start;
 	}
 
 	.sidebar-slot {
+		grid-area: side;
 		position: sticky;
 		top: calc(var(--banner-height) + 16px);
 	}
 
 	.board {
+		grid-area: board;
 		display: grid;
 		gap: 8px;
+	}
+
+	.pool-slot {
+		grid-area: pool;
 	}
 
 	.tier-controls {
@@ -90,9 +98,19 @@
 		line-height: 1;
 	}
 
+	/* Too narrow for three columns (the 1–32 board needs ~680px for rows of 8):
+	   teams move under the board. */
+	@media (max-width: 1339px) {
+		.layout {
+			grid-template-columns: 216px minmax(0, 1fr);
+			grid-template-areas: 'side board' 'side pool';
+		}
+	}
+
 	@media (max-width: 900px) {
 		.layout {
 			grid-template-columns: minmax(0, 1fr);
+			grid-template-areas: 'side' 'board' 'pool';
 		}
 		.sidebar-slot {
 			position: static;

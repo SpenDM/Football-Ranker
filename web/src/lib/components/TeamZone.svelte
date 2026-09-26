@@ -10,8 +10,6 @@
 		teams,
 		onCommit,
 		label,
-		showRank = false,
-		dropDisabled = false,
 		class: className = ''
 	}: {
 		/** Team abbreviations currently in this zone. */
@@ -19,8 +17,6 @@
 		/** Called with the zone's teams after a drop. */
 		onCommit: (abbrs: string[]) => void;
 		label: string;
-		showRank?: boolean;
-		dropDisabled?: boolean;
 		class?: string;
 	} = $props();
 
@@ -50,17 +46,16 @@
 		items,
 		type: 'team',
 		flipDurationMs,
-		dropFromOthersDisabled: dropDisabled,
 		dropTargetStyle: { outline: '2px dashed var(--accent-strong)', outlineOffset: '2px' },
 		delayTouchStart: true
 	}}
 	onconsider={consider}
 	onfinalize={finalize}
 >
-	{#each items as item, i (item.id)}
+	{#each items as item (item.id)}
 		{@const team = teamsByAbbr.get(item.id)}
 		<div class="item" animate:flip={{ duration: flipDurationMs }}>
-			{#if team}<TeamCard {team} rank={showRank ? i + 1 : undefined} />{/if}
+			{#if team}<TeamCard {team} />{/if}
 		</div>
 	{/each}
 </div>

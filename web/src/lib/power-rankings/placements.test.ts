@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { normalizePlacement, placedTeams, setTierTeams, unplaceTeams } from './placements';
+import {
+	normalizePlacement,
+	placedTeams,
+	placeInSlot,
+	setTierTeams,
+	unplaceTeams
+} from './placements';
 import { PRESETS } from './presets';
 import type { Framework } from './types';
 
@@ -26,9 +32,43 @@ describe('placements', () => {
 		});
 	});
 
+	it('ranked lists keep empty slots in place and drop duplicates positionally', () => {
+		expect(normalizePlacement({ rank: ['', 'KC', 'KC', ''] }, ranked)).toEqual({
+			rank: ['', 'KC']
+		});
+	});
+
 	it('unplace returns teams to the pool', () => {
-		const p = unplaceTeams({ s: ['KC', 'BUF'], a: ['DET'] }, ['KC', 'DET']);
+		const p = unplaceTeams({ s: ['KC', 'BUF'], a: ['DET'] }, ['KC', 'DET'], letter);
 		expect(p).toEqual({ s: ['BUF'], a: [] });
 		expect(placedTeams(p)).toEqual(new Set(['BUF']));
+	});
+
+	it('unplacing a ranked team leaves its slot empty instead of shifting ranks', () => {
+		const p = unplaceTeams({ rank: ['KC', 'DET', 'BAL'] }, ['DET'], ranked);
+		expect(p).toEqual({ rank: ['KC', '', 'BAL'] });
+		expect(placedTeams(p)).toEqual(new Set(['KC', 'BAL']));
+	});
+});
+
+describe('placeInSlot', () => {
+	it('drops a team into any empty slot', () => {
+		expect(placeInSlot([], 4, 'KC')).toEqual(['', '', '', '', 'KC']);
+	});
+
+	it('swaps when a ranked team is dropped on another ranked team', () => {
+		expect(placeInSlot(['KC', '', 'DET'], 2, 'KC')).toEqual(['DET', '', 'KC']);
+	});
+
+	it('moves a ranked team to an empty slot, emptying its old one', () => {
+		expect(placeInSlot(['KC', 'DET'], 3, 'KC')).toEqual(['', 'DET', '', 'KC']);
+	});
+
+	it('a team from the pool replaces the occupant, which returns to the pool', () => {
+		expect(placeInSlot(['KC', 'DET'], 1, 'BAL')).toEqual(['KC', 'BAL']);
+	});
+
+	it('dropping a team back on its own slot changes nothing', () => {
+		expect(placeInSlot(['KC', 'DET'], 1, 'DET')).toEqual(['KC', 'DET']);
 	});
 });

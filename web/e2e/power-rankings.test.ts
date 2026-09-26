@@ -7,7 +7,7 @@ async function drag(page: Page, source: Locator, target: Locator) {
 	const to = (await target.boundingBox())!;
 	await page.mouse.down();
 	await page.mouse.move(from.x + from.width / 2 + 40, from.y + from.height / 2 + 40, { steps: 5 });
-	await page.mouse.move(to.x + 40, to.y + to.height / 2, { steps: 20 });
+	await page.mouse.move(to.x + Math.min(40, to.width / 2), to.y + to.height / 2, { steps: 20 });
 	// svelte-dnd-action samples the hovered zone periodically; hover briefly like a real user.
 	await page.waitForTimeout(250);
 	await page.mouse.up();
@@ -107,4 +107,37 @@ test('click a tier name to rename and recolor it; +/- add and remove the bottom 
 	await page.getByRole('button', { name: 'Reset to default' }).click();
 	await expect(page.getByRole('button', { name: 'Edit tier S' })).toBeVisible();
 	await expect(page.getByRole('button', { name: 'Edit tier F' })).toBeVisible();
+});
+
+test('1–32: drop into any slot, swap ranked teams, and send a replaced team back to the pool', async ({ page }) => {
+	await page.goto('/power-rankings');
+	await page.getByLabel('Format', { exact: true }).selectOption('preset-ranked');
+	const slot = (n: number) => page.getByLabel(`Rank ${n}`, { exact: true });
+	const inSlot = (n: number, name: string) => slot(n).locator(`[title$="${name}"]`);
+
+	await drag(page, card(page, 'AFC West pool', 'Kansas City Chiefs'), slot(5));
+	await expect(inSlot(5, 'Kansas City Chiefs')).toBeVisible();
+	await expect(slot(1).locator('.card')).toHaveCount(0);
+
+	await drag(page, card(page, 'NFC North pool', 'Detroit Lions'), slot(12));
+	await expect(inSlot(12, 'Detroit Lions')).toBeVisible();
+
+	// Ranked team onto ranked team: they swap.
+	await drag(page, inSlot(12, 'Detroit Lions'), slot(5));
+	await expect(inSlot(5, 'Detroit Lions')).toBeVisible();
+	await expect(inSlot(12, 'Kansas City Chiefs')).toBeVisible();
+
+	// Pool team onto a ranked team: the ranked team goes back to the pool.
+	await drag(page, card(page, 'AFC North pool', 'Baltimore Ravens'), slot(5));
+	await expect(inSlot(5, 'Baltimore Ravens')).toBeVisible();
+	await expect(card(page, 'NFC North pool', 'Detroit Lions')).toBeVisible();
+
+	// Ranked team back to the pool leaves its slot empty; other ranks don't shift.
+	await drag(page, inSlot(5, 'Baltimore Ravens'), page.getByLabel('NFC West pool', { exact: true }));
+	await expect(slot(5).locator('.card')).toHaveCount(0);
+	await expect(inSlot(12, 'Kansas City Chiefs')).toBeVisible();
+
+	await page.reload();
+	await expect(inSlot(12, 'Kansas City Chiefs')).toBeVisible();
+	await expect(page.locator('.slots .card')).toHaveCount(1);
 });

@@ -158,6 +158,8 @@
 
 <style>
 	.sidebar {
+		/* Whole panel at 90% scale. */
+		zoom: 0.9;
 		display: grid;
 		gap: 14px;
 		padding: 16px;
