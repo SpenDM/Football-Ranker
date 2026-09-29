@@ -92,6 +92,13 @@ def test_team_rankings_are_per_game_and_map_rams():
     assert teams["LAR"]["defense"]["rush"] == 14
     assert teams["LAR"]["defense"]["pointsAllowedPerGame"] == 24
 
+    assert kc["gameLog"] == [{
+        "week": 1, "opponent": "LAR", "home": True,
+        "offense": {"total": 590, "rush": 160, "pass": 390},
+        "defense": {"total": 14.5, "rush": 11, "pass": 12},
+    }]
+    assert teams["LAR"]["gameLog"][0]["home"] is False
+
 
 def test_week_status_flags_unplayed_games():
     assert week_status([KC_ROW, LA_ROW], SCHEDULE, 2026) == (1, True)
@@ -128,6 +135,12 @@ def test_generated_teams_cover_the_league(generated):
         assert 1 <= team["games"] <= generated["throughWeek"], team
         assert set(team["offense"]) >= {"total", "rush", "pass"}, team
         assert set(team["defense"]) >= {"total", "rush", "pass"}, team
+        # Each season score is the average of the game log's scores.
+        assert len(team["gameLog"]) == team["games"], team
+        for unit in ("offense", "defense"):
+            for split in ("total", "rush", "pass"):
+                scores = [g[unit][split] for g in team["gameLog"]]
+                assert sum(scores) / len(scores) == pytest.approx(team[unit][split], abs=0.051)
 
 
 def test_generated_players_match_season():

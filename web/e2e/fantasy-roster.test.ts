@@ -23,3 +23,30 @@ test('fantasy roster: team mode lists top/bottom 10s; mode choice persists', asy
 	await page.getByRole('button', { name: 'Team' }).click();
 	await expect(page.getByLabel('Top 10 defense passing').locator('li')).toHaveCount(10);
 });
+
+test('fantasy roster: clicking a team shows its games; clicking off closes it', async ({ page }) => {
+	await page.goto('/fantasy-roster');
+	const list = page.getByLabel('Top 10 offense rushing');
+	const first = list.getByRole('button').first();
+	await first.click();
+	await expect(first).toHaveAttribute('aria-expanded', 'true');
+
+	const games = list.getByRole('group');
+	await expect(games).toBeVisible();
+	await expect(games.locator('li').first()).toContainText(/Wk \d+/);
+	await expect(games.locator('li').first()).toContainText(/rushing defense rank \d+/);
+	// The average line matches the row's season score.
+	const score = await first.locator('.score').textContent();
+	await expect(games.locator('.average')).toContainText(score!);
+
+	await page.getByRole('heading', { name: 'Offense' }).click();
+	await expect(games).toHaveCount(0);
+
+	// Opening one team's games closes another's.
+	await first.click();
+	await page.getByLabel('Bottom 10 defense passing').getByRole('button').first().click();
+	await expect(list.getByRole('group')).toHaveCount(0);
+	await expect(page.getByLabel('Bottom 10 defense passing').getByRole('group')).toContainText(
+		'passing offense rank'
+	);
+});

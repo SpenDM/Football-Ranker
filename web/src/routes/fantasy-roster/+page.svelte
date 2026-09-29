@@ -1,16 +1,28 @@
 <script lang="ts">
 	import RosterSidebar from '$lib/components/RosterSidebar.svelte';
 	import TeamRankList from '$lib/components/TeamRankList.svelte';
-	import { fantasyTeams } from '$lib/data/fantasy';
-	import { rankTeams, topAndBottom, UNITS } from '$lib/fantasy-roster/team-rankings';
+	import { fantasyTeams, type TeamFantasyStats } from '$lib/data/fantasy';
+	import {
+		gameBreakdown,
+		otherUnit,
+		rankIndex,
+		rankTeams,
+		topAndBottom,
+		UNITS
+	} from '$lib/fantasy-roster/team-rankings';
 	import { rosterMode } from '$lib/stores/rosterMode.svelte';
 
 	// The data is fixed at build time, so the rankings only need computing once.
+	const ranks = rankIndex(fantasyTeams.teams);
 	const views = UNITS.map((view) => ({
 		...view,
 		categories: view.categories.map((category) => ({
 			...category,
-			...topAndBottom(rankTeams(fantasyTeams.teams, view.unit, category))
+			...topAndBottom(rankTeams(fantasyTeams.teams, view.unit, category)),
+			breakdown: (team: TeamFantasyStats) =>
+				gameBreakdown(team, view.unit, category.split, ranks),
+			// e.g. "rushing defense rank" for the rushing offense lists.
+			opponentRankLabel: `${category.split === 'total' ? 'overall' : category.title.toLowerCase()} ${otherUnit(view.unit)} rank`
 		}))
 	}));
 </script>
@@ -36,12 +48,16 @@
 									heading="Top 10"
 									entries={category.top}
 									detail={category.detail}
+									breakdown={category.breakdown}
+									opponentRankLabel={category.opponentRankLabel}
 								/>
 								<TeamRankList
 									label="Bottom 10 {name}"
 									heading="Bottom 10"
 									entries={category.bottom}
 									detail={category.detail}
+									breakdown={category.breakdown}
+									opponentRankLabel={category.opponentRankLabel}
 								/>
 							</div>
 						{/each}

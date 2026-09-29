@@ -94,6 +94,50 @@ export function rankTeams(
 		.map((entry, i) => ({ ...entry, rank: i + 1 }));
 }
 
+/** Rank of every team (by abbreviation) in each unit and split. */
+export type RankIndex = Record<Unit, Record<Split, Map<string, number>>>;
+
+export function rankIndex(teams: TeamFantasyStats[]): RankIndex {
+	const index = {} as RankIndex;
+	for (const { unit, categories } of UNITS) {
+		index[unit] = {} as Record<Split, Map<string, number>>;
+		for (const category of categories) {
+			index[unit][category.split] = new Map(
+				rankTeams(teams, unit, category).map((r) => [r.abbr, r.rank])
+			);
+		}
+	}
+	return index;
+}
+
+export const otherUnit = (unit: Unit): Unit => (unit === 'offense' ? 'defense' : 'offense');
+
+export type GameBreakdown = {
+	week: number;
+	opponent: string;
+	home: boolean;
+	score: number;
+	/** The opponent's rank in the complementary category (e.g. rushing defense for rushing offense). */
+	opponentRank: number | undefined;
+};
+
+/** A team's game-by-game scores in one category, with each opponent's complementary rank. */
+export function gameBreakdown(
+	team: TeamFantasyStats,
+	unit: Unit,
+	split: Split,
+	ranks: RankIndex
+): GameBreakdown[] {
+	const opposing = ranks[otherUnit(unit)][split];
+	return team.gameLog.map((g) => ({
+		week: g.week,
+		opponent: g.opponent,
+		home: g.home,
+		score: g[unit][split],
+		opponentRank: opposing.get(g.opponent)
+	}));
+}
+
 /** The best `count` teams (best first) and the worst `count` teams (worst first). */
 export function topAndBottom(ranked: RankedTeam[], count = 10) {
 	return {

@@ -1,38 +1,94 @@
 <script lang="ts">
 	import { teamsByAbbr } from '$lib/data/teams';
-	import type { RankedTeam } from '$lib/fantasy-roster/team-rankings';
+	import type { GameBreakdown, RankedTeam } from '$lib/fantasy-roster/team-rankings';
 	import type { TeamFantasyStats } from '$lib/data/fantasy';
 
 	let {
 		label,
 		heading,
 		entries,
-		detail
+		detail,
+		breakdown,
+		opponentRankLabel
 	}: {
 		/** Accessible name, e.g. "Top 10 offense rushing". */
 		label: string;
 		heading: string;
 		entries: RankedTeam[];
 		detail: (team: TeamFantasyStats) => string;
+		/** A team's game-by-game scores in this category, shown when its row is clicked. */
+		breakdown: (team: TeamFantasyStats) => GameBreakdown[];
+		/** What the opponent's rank is in, e.g. "rushing defense rank". */
+		opponentRankLabel: string;
 	} = $props();
+
+	/** The team whose game breakdown is open. */
+	let open = $state<string | null>(null);
+	let listEl: HTMLElement;
+
+	// Clicking anywhere outside the open row and its breakdown closes it.
+	function onPointerDown(e: PointerEvent) {
+		const openItem = listEl.querySelector('.item.open');
+		if (openItem && !openItem.contains(e.target as Node)) open = null;
+	}
 </script>
 
-<div class="list" aria-label={label} role="region">
+<svelte:window
+	onpointerdown={onPointerDown}
+	onkeydown={(e) => {
+		if (e.key === 'Escape') open = null;
+	}}
+/>
+
+<div class="list" class:has-open={open} aria-label={label} role="region" bind:this={listEl}>
 	<h4>{heading}</h4>
 	<ol>
 		{#each entries as entry (entry.abbr)}
 			{@const team = teamsByAbbr.get(entry.abbr)}
 			{@const info = detail(entry.team)}
-			<li
-				style:--primary={team?.primaryColor}
-				style:--secondary={team?.secondaryColor}
-				title="#{entry.rank} {team?.name ?? entry.abbr}: {entry.score}{info ? ` (${info} per game)` : ''}"
-			>
-				<span class="rank">{entry.rank}</span>
-				<span class="logo">{#if team}<img src={team.logo} alt="" />{/if}</span>
-				<span class="name">{team?.nickname ?? entry.abbr}</span>
-				<span class="detail">{info}</span>
-				<span class="score">{entry.score.toFixed(1)}</span>
+			{@const name = team?.nickname ?? entry.abbr}
+			<li class="item" class:open={open === entry.abbr}>
+				<button
+					class="row"
+					style:--primary={team?.primaryColor}
+					style:--secondary={team?.secondaryColor}
+					aria-expanded={open === entry.abbr}
+					title="#{entry.rank} {team?.name ?? entry.abbr}: {entry.score}{info
+						? ` (${info} per game)`
+						: ''}. Click for each game."
+					onclick={() => (open = open === entry.abbr ? null : entry.abbr)}
+				>
+					<span class="rank">{entry.rank}</span>
+					<span class="logo">{#if team}<img src={team.logo} alt="" />{/if}</span>
+					<span class="name">{name}</span>
+					<span class="detail">{info}</span>
+					<span class="score">{entry.score.toFixed(1)}</span>
+				</button>
+				{#if open === entry.abbr}
+					{@const games = breakdown(entry.team)}
+					<div class="breakdown" role="group" aria-label="{name} by game">
+						<ol>
+							{#each games as game (game.week)}
+								{@const opp = teamsByAbbr.get(game.opponent)}
+								<li>
+									<span class="week">Wk {game.week}</span>
+									<span class="opponent">
+										<span class="matchup"
+											>{game.home ? 'vs' : '@'}
+											{#if opp}<img src={opp.logo} alt="" />{/if}{opp?.nickname ?? game.opponent}</span
+										>
+										<span class="opp-rank">{opponentRankLabel} {game.opponentRank ?? '–'}</span>
+									</span>
+									<span class="game-score">{game.score.toFixed(1)}</span>
+								</li>
+							{/each}
+						</ol>
+						<div class="average">
+							<span>Average of {games.length} {games.length === 1 ? 'game' : 'games'}</span>
+							<span class="game-score">{entry.score.toFixed(1)}</span>
+						</div>
+					</div>
+				{/if}
 			</li>
 		{/each}
 	</ol>
@@ -65,8 +121,22 @@
 		list-style: none;
 	}
 
-	li {
+	/* Above the lists that follow it, so an open breakdown isn't covered. */
+	.list.has-open {
+		position: relative;
+		z-index: 5;
+	}
+
+	.item {
+		position: relative;
+	}
+
+	.row {
 		display: grid;
+		width: 100%;
+		border: 0;
+		text-align: left;
+		cursor: pointer;
 		grid-template-columns: 22px 26px auto minmax(0, 1fr) auto;
 		align-items: center;
 		gap: 8px;
@@ -76,6 +146,83 @@
 		border-radius: 6px;
 		background: color-mix(in srgb, var(--primary) 14%, var(--surface));
 		font-size: 0.88rem;
+	}
+
+	.row:hover,
+	.item.open .row {
+		background: color-mix(in srgb, var(--primary) 30%, var(--surface));
+	}
+
+	.breakdown {
+		position: absolute;
+		top: calc(100% + 4px);
+		left: 0;
+		right: 0;
+		z-index: 1;
+		padding: 8px 10px;
+		background: var(--surface-2);
+		border: 1px solid var(--accent-strong);
+		border-radius: 8px;
+		box-shadow: 0 10px 24px rgb(0 0 0 / 0.5);
+		font-size: 0.85rem;
+	}
+
+	.breakdown ol {
+		gap: 6px;
+	}
+
+	.breakdown li,
+	.average {
+		display: grid;
+		grid-template-columns: 40px minmax(0, 1fr) auto;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.week {
+		font-weight: 700;
+		color: var(--muted);
+	}
+
+	.opponent {
+		display: grid;
+		min-width: 0;
+	}
+
+	.matchup {
+		display: flex;
+		align-items: center;
+		gap: 5px;
+		font-weight: 600;
+	}
+
+	.matchup img {
+		width: 18px;
+		height: 18px;
+		object-fit: contain;
+	}
+
+	.opp-rank {
+		font-size: 0.75rem;
+		color: var(--muted);
+	}
+
+	.game-score {
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		text-align: right;
+	}
+
+	.average {
+		grid-template-columns: minmax(0, 1fr) auto;
+		margin-top: 8px;
+		padding-top: 6px;
+		border-top: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+		color: var(--muted);
+	}
+
+	.average .game-score {
+		color: var(--text);
 	}
 
 	.rank {

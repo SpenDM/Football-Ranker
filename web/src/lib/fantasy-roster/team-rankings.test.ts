@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { fantasyTeams, type TeamFantasyStats } from '$lib/data/fantasy';
 import { teamsByAbbr } from '$lib/data/teams';
-import { rankTeams, topAndBottom, UNITS } from './team-rankings';
+import { gameBreakdown, rankIndex, rankTeams, topAndBottom, UNITS } from './team-rankings';
 
 function team(abbr: string, offenseTotal: number, defenseRush: number): TeamFantasyStats {
 	return {
@@ -25,7 +25,8 @@ function team(abbr: string, offenseTotal: number, defenseRush: number): TeamFant
 			sacksPerGame: 0,
 			takeawaysPerGame: 0,
 			pointsAllowedPerGame: 0
-		}
+		},
+		gameLog: []
 	};
 }
 
@@ -57,6 +58,38 @@ describe('topAndBottom', () => {
 		expect(bottom.map((r) => [r.rank, r.abbr])).toEqual([
 			[4, 'NYJ'],
 			[3, 'KC']
+		]);
+	});
+});
+
+describe('gameBreakdown', () => {
+	it("lists each game's score with the opponent's rank in the complementary category", () => {
+		const teams = sample.map((t) => ({ ...t }));
+		teams[0].gameLog = [
+			{
+				week: 1,
+				opponent: 'NYJ',
+				home: true,
+				offense: { total: 450, rush: 0, pass: 0 },
+				defense: { total: 0, rush: 25, pass: 0 }
+			},
+			{
+				week: 3,
+				opponent: 'BUF',
+				home: false,
+				offense: { total: 550, rush: 0, pass: 0 },
+				defense: { total: 0, rush: 15, pass: 0 }
+			}
+		];
+		const ranks = rankIndex(teams);
+		// KC's defense vs the run: BUF's rushing offense and NYJ's are tied at 0, so alphabetical.
+		expect(gameBreakdown(teams[0], 'defense', 'rush', ranks)).toEqual([
+			{ week: 1, opponent: 'NYJ', home: true, score: 25, opponentRank: 4 },
+			{ week: 3, opponent: 'BUF', home: false, score: 15, opponentRank: 1 }
+		]);
+		// KC's overall offense vs overall defenses (all 0: alphabetical BUF, DAL, KC, NYJ).
+		expect(gameBreakdown(teams[0], 'offense', 'total', ranks).map((g) => g.opponentRank)).toEqual([
+			4, 1
 		]);
 	});
 });

@@ -137,8 +137,26 @@ def dst_fantasy_points(row: dict, points_allowed: int) -> float:
 
 
 def build_team_rankings(team_rows: list[dict], scores: dict[str, dict]) -> list[dict]:
-    """Per-team offense and defense scores, per game played, sorted by team abbreviation."""
+    """Per-team offense and defense scores, per game played, sorted by team abbreviation.
+
+    Each team also gets a game log with that game's score in every category; a category's
+    season score is the average of its game scores.
+    """
     totals: dict[str, defaultdict[str, float]] = defaultdict(lambda: defaultdict(float))
+    logs: dict[str, dict[str, dict]] = defaultdict(dict)
+
+    def log_entry(team: str, opponent: str, game: dict) -> dict:
+        return logs[team].setdefault(
+            game["game_id"],
+            {
+                "week": int(game["week"]),
+                "opponent": opponent,
+                "home": team_abbr(game["home_team"]) == team,
+                "offense": {},
+                "defense": {},
+            },
+        )
+
     for row in team_rows:
         game = scores.get(row["game_id"])
         if row["season_type"] != "REG" or game is None:
@@ -160,9 +178,23 @@ def build_team_rankings(team_rows: list[dict], scores: dict[str, dict]) -> list[
         t["sacks"] += num(row, "def_sacks")
         t["takeaways"] += num(row, "def_interceptions") + num(row, "fumble_recovery_opp")
 
+        rush_points = 6 * num(row, "rushing_tds") + 2 * num(row, "rushing_2pt_conversions")
+        pass_points = 6 * num(row, "passing_tds") + 2 * num(row, "passing_2pt_conversions")
+        entry = log_entry(team, opponent, game)
+        entry["offense"] = {
+            "total": num(row, "passing_yards") + num(row, "rushing_yards") + POINT_WEIGHT * points,
+            "rush": num(row, "rushing_yards") + POINT_WEIGHT * rush_points,
+            "pass": num(row, "passing_yards") + POINT_WEIGHT * pass_points,
+        }
+        entry["defense"]["total"] = round(dst_fantasy_points(row, allowed), 2)
+
         # This offense's fantasy output is what the opponent's defense allowed.
-        totals[opponent]["rush_fp_allowed"] += rushing_fantasy_points(row)
-        totals[opponent]["pass_fp_allowed"] += passing_fantasy_points(row)
+        rush_fp, pass_fp = rushing_fantasy_points(row), passing_fantasy_points(row)
+        totals[opponent]["rush_fp_allowed"] += rush_fp
+        totals[opponent]["pass_fp_allowed"] += pass_fp
+        allowed_by = log_entry(opponent, team, game)["defense"]
+        allowed_by["rush"] = round(rush_fp, 2)
+        allowed_by["pass"] = round(pass_fp, 2)
 
     teams = []
     for abbr in sorted(totals):
@@ -199,6 +231,7 @@ def build_team_rankings(team_rows: list[dict], scores: dict[str, dict]) -> list[
                     "takeawaysPerGame": per_game(t["takeaways"]),
                     "pointsAllowedPerGame": per_game(t["points_allowed"]),
                 },
+                "gameLog": sorted(logs[abbr].values(), key=lambda g: g["week"]),
             }
         )
     return teams

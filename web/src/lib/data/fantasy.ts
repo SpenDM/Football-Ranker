@@ -29,11 +29,24 @@ export type DefenseStats = {
 	pointsAllowedPerGame: number;
 };
 
+type SplitScores = { total: number; rush: number; pass: number };
+
+/** One game's score in every category (a season score is the average of these). */
+export type GameLogEntry = {
+	week: number;
+	opponent: string;
+	home: boolean;
+	offense: SplitScores;
+	defense: SplitScores;
+};
+
 export type TeamFantasyStats = {
 	abbr: string;
 	games: number;
 	offense: OffenseStats;
 	defense: DefenseStats;
+	/** Games counted so far, in week order. */
+	gameLog: GameLogEntry[];
 };
 
 export type FantasyTeamData = {
