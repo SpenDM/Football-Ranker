@@ -4,7 +4,7 @@ Web App for Fantasy Football Tools
 | Tool | Status |
 | --- | --- |
 | **Power Rankings**: drag and drop all 32 teams into a 1–32 ranking, letter-grade tiers, or up to 5 saved custom formats | Live |
-| **Fantasy Roster Manager**: weekly start/sit help (top/bottom offenses and defenses) | Placeholder |
+| **Fantasy Roster Manager**: Team mode ranks the top and bottom 10 offenses and defenses (overall, rushing, passing), refreshed weekly. Player mode is next | Live (Team mode) |
 | **Fantasy Draft Manager**: build a draft big board from NFL rosters | Placeholder |
 
 ## Architecture
@@ -28,6 +28,7 @@ firestore.rules, firebase.json   Firebase Auth (Google) + Firestore for per-user
 cd pipeline
 uv sync
 uv run python -m football_pipeline.teams   # regenerates web/src/lib/data/teams.json + web/static/logos
+uv run python -m football_pipeline.fantasy # regenerates the fantasy data (see below)
 uv run pytest && uv run ruff check .
 ```
 
@@ -45,6 +46,26 @@ npm run emulators           # Auth + Firestore emulators; set VITE_FIREBASE_USE_
 npm run preview:worker      # build and serve through the Worker locally (wrangler dev)
 npm run deploy              # build and deploy with wrangler (needs `npx wrangler login`)
 ```
+
+### Fantasy data
+`football_pipeline.fantasy` pulls nflverse's weekly [team](https://github.com/nflverse/nflverse-data/releases/tag/stats_team) and [player](https://github.com/nflverse/nflverse-data/releases/tag/stats_player) stats, plus final scores from the [schedule](https://github.com/nflverse/nfldata/blob/master/data/games.csv). It writes two files:
+- `web/src/lib/data/fantasy-teams.json`: Team mode scores, bundled into the app.
+- `web/static/data/fantasy-players.json`: weekly PPR points for every QB/RB/WR/TE, for Player mode.
+
+Only regular-season games with a final score count, and every score is per game played, so byes don't count against a team:
+
+| Ranking | Score |
+| --- | --- |
+| Offense overall | (passing + rushing yards + 10 × points scored) / games |
+| Offense rushing / passing | (rushing or passing yards + 10 × that phase's TD and 2-pt points) / games |
+| Defense overall | Standard DST fantasy points / games: sack 1; INT, fumble recovery, safety and blocked kick 2; TD 6; points allowed 10/7/4/1/0/−1/−4 |
+| Defense rushing / passing | PPR points allowed to opposing rushers, or to passers plus receivers / games (fewer is better) |
+
+`.github/workflows/fantasy-data.yml` runs the pipeline on Tuesdays from September through January and commits any changes to `main`, which redeploys the site:
+- **00:00 ET** (04:00 UTC): the midnight run.
+- **~07:00 ET** (11:00 UTC): a catch-up run, because nflverse doesn't publish Monday night stats until after midnight.
+
+The sidebar notes when the latest week is still missing games. To refresh by hand, run the workflow from the Actions tab.
 
 ## One-time setup
 
@@ -77,4 +98,4 @@ Connect this GitHub repo under **Workers & Pages → Create → Import a reposit
 The Worker name, `football-tools`, comes from `wrangler.jsonc` and must match the Worker name in the dashboard. Attach the domain under the Worker's **Settings → Domains & Routes → Add → Custom domain**: `football.ranker.page`. CI (`.github/workflows/ci.yml`) runs lint, unit, rules and e2e tests, with the e2e tests served through `wrangler dev`, and validates the Worker config with a deploy dry run.
 
 ## Data and trademarks
-Team colors and logo URLs come from [nflverse](https://github.com/nflverse). NFL team names and logos are trademarks of their owners. Using them is fine for a personal, non-commercial project; revisit before monetizing.
+Team colors, logo URLs and game stats come from [nflverse](https://github.com/nflverse). NFL team names and logos are trademarks of their owners. Using them is fine for a personal, non-commercial project; revisit before monetizing.

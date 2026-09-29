@@ -1,0 +1,137 @@
+import datetime as dt
+import json
+
+import pytest
+
+from football_pipeline.fantasy import (
+    PLAYERS_JSON,
+    TEAMS_JSON,
+    build_players,
+    build_team_rankings,
+    default_season,
+    dst_fantasy_points,
+    final_scores,
+    passing_fantasy_points,
+    points_allowed_score,
+    rushing_fantasy_points,
+    week_status,
+)
+from football_pipeline.teams import TEAMS_JSON as APP_TEAMS_JSON
+
+SCHEDULE = [
+    {"game_id": "2026_01_LA_KC", "season": "2026", "game_type": "REG", "week": "1",
+     "home_team": "KC", "home_score": "24", "away_team": "LA", "away_score": "17"},
+    {"game_id": "2026_02_KC_BUF", "season": "2026", "game_type": "REG", "week": "2",
+     "home_team": "BUF", "home_score": "", "away_team": "KC", "away_score": ""},
+    {"game_id": "2025_22_KC_PHI", "season": "2025", "game_type": "SB", "week": "22",
+     "home_team": "PHI", "home_score": "40", "away_team": "KC", "away_score": "22"},
+]
+
+
+def team_row(team, opponent, game_id="2026_01_LA_KC", **stats):
+    return {"game_id": game_id, "season_type": "REG", "team": team, "opponent_team": opponent, **stats}
+
+
+KC_ROW = team_row(
+    "KC", "LA",
+    passing_yards="250", passing_tds="2", passing_interceptions="1", passing_2pt_conversions="1",
+    receptions="20", receiving_yards="250", receiving_tds="2", receiving_2pt_conversions="1",
+    rushing_yards="100", rushing_tds="1", rushing_fumbles_lost="1",
+    def_sacks="3.5", def_interceptions="1", fumble_recovery_opp="1", def_tds="1",
+)
+LA_ROW = team_row("LA", "KC", passing_yards="300", rushing_yards="50", rushing_tds="1")
+
+
+def test_default_season_rolls_over_in_september():
+    assert default_season(dt.date(2026, 9, 1)) == 2026
+    assert default_season(dt.date(2027, 1, 12)) == 2026
+    assert default_season(dt.date(2027, 8, 31)) == 2026
+
+
+def test_final_scores_keeps_only_finished_regular_season_games():
+    assert list(final_scores(SCHEDULE, 2026)) == ["2026_01_LA_KC"]
+
+
+def test_offense_fantasy_points_match_ppr():
+    assert rushing_fantasy_points(KC_ROW) == pytest.approx(10 + 6 - 2)
+    # Passer: 10 yds + 8 TD - 2 INT + 2 2pt. Receivers: 20 rec + 25 yds + 12 TD + 2 2pt.
+    assert passing_fantasy_points(KC_ROW) == pytest.approx(18 + 59)
+
+
+@pytest.mark.parametrize(
+    ("allowed", "score"),
+    [(0, 10), (1, 7), (6, 7), (7, 4), (13, 4), (14, 1), (20, 1), (21, 0), (27, 0), (28, -1),
+     (34, -1), (35, -4), (60, -4)],
+)
+def test_points_allowed_tiers(allowed, score):
+    assert points_allowed_score(allowed) == score
+
+
+def test_dst_fantasy_points():
+    # 3.5 sacks + 2 INT + 2 fumble recovery + 6 TD + 1 for allowing 17.
+    assert dst_fantasy_points(KC_ROW, 17) == pytest.approx(14.5)
+
+
+def test_team_rankings_are_per_game_and_map_rams():
+    unfinished = team_row("KC", "BUF", game_id="2026_02_KC_BUF", passing_yards="999")
+    teams = {t["abbr"]: t for t in build_team_rankings(
+        [KC_ROW, LA_ROW, unfinished], final_scores(SCHEDULE, 2026)
+    )}
+    assert set(teams) == {"KC", "LAR"}
+
+    kc = teams["KC"]
+    assert kc["games"] == 1
+    # (350 yards + 10 × 24 points), rushing (100 + 10 × 6), passing (250 + 10 × (12 + 2)).
+    assert kc["offense"]["total"] == 590
+    assert kc["offense"]["rush"] == 160
+    assert kc["offense"]["pass"] == 390
+    assert kc["defense"]["total"] == 14.5
+    # KC's defense allowed the Rams' output: 5 + 6 rushing, 12 passing.
+    assert kc["defense"]["rush"] == 11
+    assert kc["defense"]["pass"] == 12
+    assert teams["LAR"]["defense"]["rush"] == 14
+    assert teams["LAR"]["defense"]["pointsAllowedPerGame"] == 24
+
+
+def test_week_status_flags_unplayed_games():
+    assert week_status([KC_ROW, LA_ROW], SCHEDULE, 2026) == (1, True)
+    schedule = [*SCHEDULE, {**SCHEDULE[0], "game_id": "2026_01_NYG_DAL", "home_score": ""}]
+    assert week_status([KC_ROW, LA_ROW], schedule, 2026) == (1, False)
+
+
+def test_players_keep_fantasy_positions_and_latest_team():
+    def row(week, team, points, position="WR", player_id="p1"):
+        game_id = {"1": "2026_01_LA_KC", "2": "2026_02_KC_BUF"}[week]
+        return {"player_id": player_id, "player_display_name": "Player", "position": position,
+                "season_type": "REG", "week": week, "game_id": game_id, "team": team,
+                "fantasy_points_ppr": points}
+
+    scores = {**final_scores(SCHEDULE, 2026), "2026_02_KC_BUF": SCHEDULE[1]}
+    players = build_players(
+        [row("2", "KC", "5.5"), row("1", "LA", "10.25"), row("1", "LA", "8", position="LB", player_id="p2")],
+        scores,
+    )
+    assert players == [{"id": "p1", "name": "Player", "position": "WR", "team": "KC",
+                        "total": 15.75, "weeks": {"1": 10.25, "2": 5.5}}]
+
+
+@pytest.fixture(scope="module")
+def generated():
+    return json.loads(TEAMS_JSON.read_text())
+
+
+def test_generated_teams_cover_the_league(generated):
+    app_abbrs = {t["abbr"] for t in json.loads(APP_TEAMS_JSON.read_text())}
+    assert {t["abbr"] for t in generated["teams"]} == app_abbrs
+    assert generated["throughWeek"] >= 1
+    for team in generated["teams"]:
+        assert 1 <= team["games"] <= generated["throughWeek"], team
+        assert set(team["offense"]) >= {"total", "rush", "pass"}, team
+        assert set(team["defense"]) >= {"total", "rush", "pass"}, team
+
+
+def test_generated_players_match_season():
+    players = json.loads(PLAYERS_JSON.read_text())
+    assert players["season"] == json.loads(TEAMS_JSON.read_text())["season"]
+    assert players["players"], "no players"
+    assert all(p["position"] in {"QB", "RB", "WR", "TE"} for p in players["players"])

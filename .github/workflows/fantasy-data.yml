@@ -1,0 +1,44 @@
+name: Fantasy data
+
+# Weekly refresh of the Fantasy Roster Manager data during the regular season (Sep–early Jan).
+# Pushing the regenerated JSON to main triggers the Cloudflare Workers Build deploy.
+on:
+  schedule:
+    # Midnight ET going into Tuesday (04:00 UTC during daylight time; 11 PM Monday in EST).
+    - cron: '0 4 * 1,9-12 2'
+    # Catch-up: nflverse publishes Monday Night Football stats around 05:30 UTC and backfills at
+    # 09:00 UTC, after the midnight run. This picks up MNF; it's a no-op if nothing changed.
+    - cron: '0 11 * 1,9-12 2'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fantasy-data
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: pipeline
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync
+      - run: uv run python -m football_pipeline.fantasy
+      - run: uv run pytest
+      - name: Commit changes
+        run: |
+          git add ../web/src/lib/data/fantasy-teams.json ../web/static/data/fantasy-players.json
+          if git diff --cached --quiet; then
+            echo "No new fantasy data."
+            exit 0
+          fi
+          week=$(python3 -c "import json; d=json.load(open('../web/src/lib/data/fantasy-teams.json')); print(f\"{d['season']} week {d['throughWeek']}\" + ('' if d['weekComplete'] else ' (partial)'))")
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Fantasy data: $week"
+          git push

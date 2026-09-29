@@ -20,7 +20,7 @@ export const tools: Tool[] = [
 		path: '/fantasy-roster',
 		description:
 			'Week-by-week start/sit help: top and bottom offenses and defenses, matchups, and more.',
-		status: 'coming-soon'
+		status: 'live'
 	},
 	{
 		slug: 'fantasy-draft',
