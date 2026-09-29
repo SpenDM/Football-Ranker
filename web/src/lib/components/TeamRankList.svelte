@@ -79,7 +79,7 @@
 										></span
 									>
 									<span class="opp-rank" title="{opponentRankLabel} {game.opponentRank ?? '–'}"
-										>Rank {game.opponentRank ?? '–'}</span
+										>#{game.opponentRank ?? '–'}</span
 									>
 									<span class="game-score">{game.score.toFixed(1)}</span>
 								</li>
@@ -165,15 +165,18 @@
 		font-size: 0.85rem;
 	}
 
+	/* Week | opponent | opponent's rank | score. Rows share the list's columns (subgrid) so the
+	   ranks line up right after the longest opponent name. */
 	.breakdown ol {
-		gap: 6px;
+		grid-template-columns: 40px minmax(0, auto) auto 1fr;
+		gap: 6px 10px;
 	}
 
 	.breakdown li {
 		display: grid;
-		grid-template-columns: 40px minmax(0, 1fr) auto auto;
+		grid-column: 1 / -1;
+		grid-template-columns: subgrid;
 		align-items: center;
-		gap: 10px;
 		min-height: 26px;
 	}
 

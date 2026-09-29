@@ -34,7 +34,7 @@ test('fantasy roster: clicking a team shows its games; clicking off closes it', 
 	const games = list.getByRole('group');
 	await expect(games).toBeVisible();
 	await expect(games.locator('li').first()).toContainText(/Wk \d+/);
-	await expect(games.locator('.opp-rank').first()).toHaveText(/^Rank \d+$/);
+	await expect(games.locator('.opp-rank').first()).toHaveText(/^#\d+$/);
 	await expect(games.locator('.opp-rank').first()).toHaveAttribute('title', /^rushing defense rank \d+$/);
 
 	await page.getByRole('heading', { name: 'Offense' }).click();
