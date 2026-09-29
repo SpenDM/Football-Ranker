@@ -40,6 +40,9 @@ export type GameLogEntry = {
 	defense: SplitScores;
 };
 
+/** A scheduled game that hasn't been played (or finished) yet. */
+export type UpcomingGame = { week: number; opponent: string; home: boolean };
+
 export type TeamFantasyStats = {
 	abbr: string;
 	games: number;
@@ -47,6 +50,8 @@ export type TeamFantasyStats = {
 	defense: DefenseStats;
 	/** Games counted so far, in week order. */
 	gameLog: GameLogEntry[];
+	/** The team's next game, or null once its season is over. */
+	nextGame: UpcomingGame | null;
 };
 
 export type FantasyTeamData = {

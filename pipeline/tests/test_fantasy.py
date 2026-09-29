@@ -11,6 +11,7 @@ from football_pipeline.fantasy import (
     default_season,
     dst_fantasy_points,
     final_scores,
+    next_games,
     passing_fantasy_points,
     points_allowed_score,
     rushing_fantasy_points,
@@ -100,6 +101,23 @@ def test_team_rankings_are_per_game_and_map_rams():
     assert teams["LAR"]["gameLog"][0]["home"] is False
 
 
+def test_next_games_are_the_earliest_unplayed_games():
+    schedule = [
+        *SCHEDULE,
+        {**SCHEDULE[1], "game_id": "2026_03_LA_KC", "week": "3", "home_team": "KC", "away_team": "LA"},
+    ]
+    assert next_games(schedule, 2026) == {
+        "KC": {"week": 2, "opponent": "BUF", "home": False},
+        "BUF": {"week": 2, "opponent": "KC", "home": True},
+        "LAR": {"week": 3, "opponent": "KC", "home": False},
+    }
+    teams = build_team_rankings([KC_ROW, LA_ROW], final_scores(schedule, 2026), next_games(schedule, 2026))
+    assert [t["nextGame"] for t in teams] == [
+        {"week": 2, "opponent": "BUF", "home": False},
+        {"week": 3, "opponent": "KC", "home": False},
+    ]
+
+
 def test_week_status_flags_unplayed_games():
     assert week_status([KC_ROW, LA_ROW], SCHEDULE, 2026) == (1, True)
     schedule = [*SCHEDULE, {**SCHEDULE[0], "game_id": "2026_01_NYG_DAL", "home_score": ""}]
@@ -137,6 +155,8 @@ def test_generated_teams_cover_the_league(generated):
         assert set(team["defense"]) >= {"total", "rush", "pass"}, team
         # Each season score is the average of the game log's scores.
         assert len(team["gameLog"]) == team["games"], team
+        if team["nextGame"]:
+            assert team["nextGame"]["week"] >= team["gameLog"][-1]["week"], team
         for unit in ("offense", "defense"):
             for split in ("total", "rush", "pass"):
                 scores = [g[unit][split] for g in team["gameLog"]]

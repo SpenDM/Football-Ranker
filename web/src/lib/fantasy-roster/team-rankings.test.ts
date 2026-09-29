@@ -26,7 +26,8 @@ function team(abbr: string, offenseTotal: number, defenseRush: number): TeamFant
 			takeawaysPerGame: 0,
 			pointsAllowedPerGame: 0
 		},
-		gameLog: []
+		gameLog: [],
+		nextGame: null
 	};
 }
 
@@ -81,15 +82,17 @@ describe('gameBreakdown', () => {
 				defense: { total: 0, rush: 15, pass: 0 }
 			}
 		];
+		teams[0].nextGame = { week: 4, opponent: 'DAL', home: true };
 		const ranks = rankIndex(teams);
 		// KC's defense vs the run: BUF's rushing offense and NYJ's are tied at 0, so alphabetical.
 		expect(gameBreakdown(teams[0], 'defense', 'rush', ranks)).toEqual([
 			{ week: 1, opponent: 'NYJ', home: true, score: 25, opponentRank: 4 },
-			{ week: 3, opponent: 'BUF', home: false, score: 15, opponentRank: 1 }
+			{ week: 3, opponent: 'BUF', home: false, score: 15, opponentRank: 1 },
+			{ week: 4, opponent: 'DAL', home: true, score: null, opponentRank: 2 }
 		]);
 		// KC's overall offense vs overall defenses (all 0: alphabetical BUF, DAL, KC, NYJ).
 		expect(gameBreakdown(teams[0], 'offense', 'total', ranks).map((g) => g.opponentRank)).toEqual([
-			4, 1
+			4, 1, 2
 		]);
 	});
 });

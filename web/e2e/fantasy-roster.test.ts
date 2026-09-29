@@ -65,6 +65,9 @@ test('fantasy roster: Team Lookup finds a team by city or name and shows its gam
 	await expect(result.getByRole('group', { name: 'New York Jets by game' }).locator('li').first()).toContainText(
 		/Wk \d+/
 	);
+	await expect(result.getByRole('group', { name: 'New York Jets by game' }).locator('li').last()).toContainText(
+		'UPCOMING'
+	);
 
 	// Esc dismisses back to the button.
 	await page.keyboard.press('Escape');

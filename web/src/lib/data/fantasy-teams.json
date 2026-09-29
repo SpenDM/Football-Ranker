@@ -71,7 +71,12 @@
             "pass": 96.58
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "NYG",
+        "home": false
+      }
     },
     {
       "abbr": "ATL",
@@ -141,7 +146,12 @@
             "pass": 89.68
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "NO",
+        "home": false
+      }
     },
     {
       "abbr": "BAL",
@@ -211,7 +221,12 @@
             "pass": 75.64
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "TEN",
+        "home": true
+      }
     },
     {
       "abbr": "BUF",
@@ -281,7 +296,12 @@
             "pass": 59.64
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "NE",
+        "home": true
+      }
     },
     {
       "abbr": "CAR",
@@ -351,7 +371,12 @@
             "pass": 61.16
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "DET",
+        "home": true
+      }
     },
     {
       "abbr": "CHI",
@@ -421,7 +446,12 @@
             "pass": 31.42
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "NYJ",
+        "home": true
+      }
     },
     {
       "abbr": "CIN",
@@ -491,7 +521,12 @@
             "pass": 87.88
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "JAX",
+        "home": true
+      }
     },
     {
       "abbr": "CLE",
@@ -561,7 +596,12 @@
             "total": 6.0
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "PIT",
+        "home": true
+      }
     },
     {
       "abbr": "DAL",
@@ -631,7 +671,12 @@
             "total": -1.0
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "HOU",
+        "home": false
+      }
     },
     {
       "abbr": "DEN",
@@ -701,7 +746,12 @@
             "pass": 100.6
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "SF",
+        "home": false
+      }
     },
     {
       "abbr": "DET",
@@ -771,7 +821,12 @@
             "pass": 107.94
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "CAR",
+        "home": false
+      }
     },
     {
       "abbr": "GB",
@@ -841,7 +896,12 @@
             "total": -2.0
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "TB",
+        "home": false
+      }
     },
     {
       "abbr": "HOU",
@@ -911,7 +971,12 @@
             "pass": 60.9
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "DAL",
+        "home": true
+      }
     },
     {
       "abbr": "IND",
@@ -981,7 +1046,12 @@
             "total": 4.0
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "WAS",
+        "home": false
+      }
     },
     {
       "abbr": "JAX",
@@ -1051,7 +1121,12 @@
             "pass": 46.3
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "CIN",
+        "home": false
+      }
     },
     {
       "abbr": "KC",
@@ -1121,7 +1196,12 @@
             "pass": 47.4
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "LV",
+        "home": false
+      }
     },
     {
       "abbr": "LAC",
@@ -1191,7 +1271,12 @@
             "total": 14.0
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "SEA",
+        "home": false
+      }
     },
     {
       "abbr": "LAR",
@@ -1261,7 +1346,12 @@
             "total": 2.0
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "PHI",
+        "home": false
+      }
     },
     {
       "abbr": "LV",
@@ -1331,7 +1421,12 @@
             "pass": 96.7
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "KC",
+        "home": true
+      }
     },
     {
       "abbr": "MIA",
@@ -1401,7 +1496,12 @@
             "total": 2.0
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "MIN",
+        "home": false
+      }
     },
     {
       "abbr": "MIN",
@@ -1471,7 +1571,12 @@
             "pass": 53.38
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "MIA",
+        "home": true
+      }
     },
     {
       "abbr": "NE",
@@ -1541,7 +1646,12 @@
             "total": -1.0
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "BUF",
+        "home": false
+      }
     },
     {
       "abbr": "NO",
@@ -1611,7 +1721,12 @@
             "total": 1.0
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "ATL",
+        "home": true
+      }
     },
     {
       "abbr": "NYG",
@@ -1681,7 +1796,12 @@
             "pass": 56.34
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "ARI",
+        "home": true
+      }
     },
     {
       "abbr": "NYJ",
@@ -1751,7 +1871,12 @@
             "total": 1.0
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "CHI",
+        "home": false
+      }
     },
     {
       "abbr": "PHI",
@@ -1821,7 +1946,12 @@
             "total": 0.0
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "LAR",
+        "home": true
+      }
     },
     {
       "abbr": "PIT",
@@ -1891,7 +2021,12 @@
             "total": 5.0
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "CLE",
+        "home": false
+      }
     },
     {
       "abbr": "SEA",
@@ -1961,7 +2096,12 @@
             "pass": 74.62
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "LAC",
+        "home": true
+      }
     },
     {
       "abbr": "SF",
@@ -2031,7 +2171,12 @@
             "total": 1.0
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "DEN",
+        "home": true
+      }
     },
     {
       "abbr": "TB",
@@ -2101,7 +2246,12 @@
             "total": 5.0
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "GB",
+        "home": true
+      }
     },
     {
       "abbr": "TEN",
@@ -2171,7 +2321,12 @@
             "total": 7.0
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "BAL",
+        "home": false
+      }
     },
     {
       "abbr": "WAS",
@@ -2241,7 +2396,12 @@
             "total": 11.0
           }
         }
-      ]
+      ],
+      "nextGame": {
+        "week": 4,
+        "opponent": "IND",
+        "home": true
+      }
     }
   ]
 }

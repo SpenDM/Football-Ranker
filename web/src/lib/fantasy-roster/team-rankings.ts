@@ -116,12 +116,14 @@ export type GameBreakdown = {
 	week: number;
 	opponent: string;
 	home: boolean;
-	score: number;
+	/** Null for the team's upcoming game. */
+	score: number | null;
 	/** The opponent's rank in the complementary category (e.g. rushing defense for rushing offense). */
 	opponentRank: number | undefined;
 };
 
-/** A team's game-by-game scores in one category, with each opponent's complementary rank. */
+/** A team's game-by-game scores in one category, with each opponent's complementary rank,
+ *  followed by its upcoming game (without a score). */
 export function gameBreakdown(
 	team: TeamFantasyStats,
 	unit: Unit,
@@ -129,13 +131,17 @@ export function gameBreakdown(
 	ranks: RankIndex
 ): GameBreakdown[] {
 	const opposing = ranks[otherUnit(unit)][split];
-	return team.gameLog.map((g) => ({
+	const played = team.gameLog.map((g) => ({
 		week: g.week,
 		opponent: g.opponent,
 		home: g.home,
 		score: g[unit][split],
 		opponentRank: opposing.get(g.opponent)
 	}));
+	const next = team.nextGame;
+	return next
+		? [...played, { ...next, score: null, opponentRank: opposing.get(next.opponent) }]
+		: played;
 }
 
 /** The best `count` teams (best first) and the worst `count` teams (worst first). */

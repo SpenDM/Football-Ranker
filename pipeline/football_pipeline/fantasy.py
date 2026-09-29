@@ -76,6 +76,25 @@ def final_scores(schedule: list[dict], season: int) -> dict[str, dict]:
     }
 
 
+def next_games(schedule: list[dict], season: int) -> dict[str, dict]:
+    """Each team's next regular-season game without a final score, keyed by team abbreviation."""
+    upcoming = sorted(
+        (
+            g
+            for g in schedule
+            if g["season"] == str(season) and g["game_type"] == "REG" and g["home_score"] == ""
+        ),
+        key=lambda g: int(g["week"]),
+    )
+    games: dict[str, dict] = {}
+    for g in upcoming:
+        home, away = team_abbr(g["home_team"]), team_abbr(g["away_team"])
+        week = int(g["week"])
+        games.setdefault(home, {"week": week, "opponent": away, "home": True})
+        games.setdefault(away, {"week": week, "opponent": home, "home": False})
+    return games
+
+
 def points_for_and_against(game: dict, team: str) -> tuple[int, int]:
     home, away = int(game["home_score"]), int(game["away_score"])
     return (home, away) if team_abbr(game["home_team"]) == team else (away, home)
@@ -136,12 +155,15 @@ def dst_fantasy_points(row: dict, points_allowed: int) -> float:
     )
 
 
-def build_team_rankings(team_rows: list[dict], scores: dict[str, dict]) -> list[dict]:
+def build_team_rankings(
+    team_rows: list[dict], scores: dict[str, dict], upcoming: dict[str, dict] | None = None
+) -> list[dict]:
     """Per-team offense and defense scores, per game played, sorted by team abbreviation.
 
-    Each team also gets a game log with that game's score in every category; a category's
-    season score is the average of its game scores.
+    Each team also gets a game log with that game's score in every category (a category's
+    season score is the average of its game scores) and its next game from `upcoming`, if any.
     """
+    upcoming = upcoming or {}
     totals: dict[str, defaultdict[str, float]] = defaultdict(lambda: defaultdict(float))
     logs: dict[str, dict[str, dict]] = defaultdict(dict)
 
@@ -232,6 +254,7 @@ def build_team_rankings(team_rows: list[dict], scores: dict[str, dict]) -> list[
                     "pointsAllowedPerGame": per_game(t["points_allowed"]),
                 },
                 "gameLog": sorted(logs[abbr].values(), key=lambda g: g["week"]),
+                "nextGame": upcoming.get(abbr),
             }
         )
     return teams
@@ -312,7 +335,7 @@ def main() -> None:
     season, team_rows, player_rows, schedule = load_season(args.season)
     scores = final_scores(schedule, season)
     through_week, week_complete = week_status(team_rows, schedule, season)
-    teams = build_team_rankings(team_rows, scores)
+    teams = build_team_rankings(team_rows, scores, next_games(schedule, season))
     if len(teams) != 32:
         raise SystemExit(f"Expected 32 teams, got {len(teams)}")
     players = build_players(player_rows, scores)
