@@ -34,10 +34,8 @@ test('fantasy roster: clicking a team shows its games; clicking off closes it', 
 	const games = list.getByRole('group');
 	await expect(games).toBeVisible();
 	await expect(games.locator('li').first()).toContainText(/Wk \d+/);
-	await expect(games.locator('li').first()).toContainText(/rushing defense rank \d+/);
-	// The average line matches the row's season score.
-	const score = await first.locator('.score').textContent();
-	await expect(games.locator('.average')).toContainText(score!);
+	await expect(games.locator('.opp-rank').first()).toHaveText(/^Rank \d+$/);
+	await expect(games.locator('.opp-rank').first()).toHaveAttribute('title', /^rushing defense rank \d+$/);
 
 	await page.getByRole('heading', { name: 'Offense' }).click();
 	await expect(games).toHaveCount(0);
@@ -46,7 +44,7 @@ test('fantasy roster: clicking a team shows its games; clicking off closes it', 
 	await first.click();
 	await page.getByLabel('Bottom 10 defense passing').getByRole('button').first().click();
 	await expect(list.getByRole('group')).toHaveCount(0);
-	await expect(page.getByLabel('Bottom 10 defense passing').getByRole('group')).toContainText(
-		'passing offense rank'
-	);
+	await expect(
+		page.getByLabel('Bottom 10 defense passing').getByRole('group').locator('.opp-rank').first()
+	).toHaveAttribute('title', /^passing offense rank \d+$/);
 });

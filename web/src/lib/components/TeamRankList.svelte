@@ -18,7 +18,7 @@
 		detail: (team: TeamFantasyStats) => string;
 		/** A team's game-by-game scores in this category, shown when its row is clicked. */
 		breakdown: (team: TeamFantasyStats) => GameBreakdown[];
-		/** What the opponent's rank is in, e.g. "rushing defense rank". */
+		/** What the opponent's rank is in, e.g. "rushing defense rank" (shown on hover). */
 		opponentRankLabel: string;
 	} = $props();
 
@@ -72,21 +72,19 @@
 								{@const opp = teamsByAbbr.get(game.opponent)}
 								<li>
 									<span class="week">Wk {game.week}</span>
-									<span class="opponent">
-										<span class="matchup"
-											>{game.home ? 'vs' : '@'}
-											{#if opp}<img src={opp.logo} alt="" />{/if}{opp?.nickname ?? game.opponent}</span
-										>
-										<span class="opp-rank">{opponentRankLabel} {game.opponentRank ?? '–'}</span>
-									</span>
+									<span class="matchup"
+										>{game.home ? 'vs' : '@'}
+										{#if opp}<img src={opp.logo} alt="" />{/if}<span class="opp-name"
+											>{opp?.nickname ?? game.opponent}</span
+										></span
+									>
+									<span class="opp-rank" title="{opponentRankLabel} {game.opponentRank ?? '–'}"
+										>Rank {game.opponentRank ?? '–'}</span
+									>
 									<span class="game-score">{game.score.toFixed(1)}</span>
 								</li>
 							{/each}
 						</ol>
-						<div class="average">
-							<span>Average of {games.length} {games.length === 1 ? 'game' : 'games'}</span>
-							<span class="game-score">{entry.score.toFixed(1)}</span>
-						</div>
 					</div>
 				{/if}
 			</li>
@@ -171,12 +169,12 @@
 		gap: 6px;
 	}
 
-	.breakdown li,
-	.average {
+	.breakdown li {
 		display: grid;
-		grid-template-columns: 40px minmax(0, 1fr) auto;
+		grid-template-columns: 40px minmax(0, 1fr) auto auto;
 		align-items: center;
-		gap: 8px;
+		gap: 10px;
+		min-height: 26px;
 	}
 
 	.week {
@@ -184,16 +182,18 @@
 		color: var(--muted);
 	}
 
-	.opponent {
-		display: grid;
-		min-width: 0;
-	}
-
 	.matchup {
 		display: flex;
 		align-items: center;
 		gap: 5px;
+		min-width: 0;
 		font-weight: 600;
+	}
+
+	.opp-name {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.matchup img {
@@ -203,8 +203,9 @@
 	}
 
 	.opp-rank {
-		font-size: 0.75rem;
 		color: var(--muted);
+		white-space: nowrap;
+		font-variant-numeric: tabular-nums;
 	}
 
 	.game-score {
@@ -213,17 +214,6 @@
 		text-align: right;
 	}
 
-	.average {
-		grid-template-columns: minmax(0, 1fr) auto;
-		margin-top: 8px;
-		padding-top: 6px;
-		border-top: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
-		color: var(--muted);
-	}
-
-	.average .game-score {
-		color: var(--text);
-	}
 
 	.rank {
 		text-align: right;
