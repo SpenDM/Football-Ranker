@@ -1,27 +1,51 @@
 <script lang="ts">
 	import { MAX_CUSTOM_FRAMEWORKS } from '$lib/power-rankings/frameworks';
-	import { MAX_SLOTS } from '$lib/power-rankings/presets';
+	import { MAX_SLOTS, RANKED_PRESET_ID } from '$lib/power-rankings/presets';
 	import { auth } from '$lib/stores/auth.svelte';
 	import { frameworks } from '$lib/stores/frameworks.svelte';
 	import { rankings } from '$lib/stores/rankings.svelte';
 
-	let dialog: HTMLDialogElement;
-	let newName = $state('');
+	/** Shorter button labels for the presets. */
+	const PRESET_LABELS: Record<string, string> = { [RANKED_PRESET_ID]: '1–32' };
+
 	let confirming = $state<'clear' | 'delete' | null>(null);
+	/** The custom format whose button is currently a name input. */
+	let editingId = $state<string | null>(null);
+	let draft = $state('');
+	let fallbackName = '';
 
 	const active = $derived(frameworks.active);
-	const customCount = $derived(frameworks.customs.current.length);
 
-	function openSave() {
-		newName = frameworks.activeIsPreset ? `My ${active.name}` : `${active.name} copy`;
-		dialog.showModal();
+	function select(id: string) {
+		confirming = null;
+		if (id === active.id && !frameworks.activeIsPreset) startRename();
+		else frameworks.select(id);
 	}
 
-	function save(e: SubmitEvent) {
-		e.preventDefault();
-		if (!newName.trim()) return;
-		frameworks.saveAsCustom(newName, auth.user?.uid ?? null);
-		dialog.close();
+	function startRename() {
+		editingId = active.id;
+		draft = fallbackName = active.name;
+	}
+
+	function saveNew() {
+		const name = frameworks.activeIsPreset ? `My ${active.name}` : `${active.name} copy`;
+		if (frameworks.saveAsCustom(name, auth.user?.uid ?? null)) startRename();
+	}
+
+	function commitRename() {
+		if (editingId === null) return;
+		editingId = null;
+		frameworks.renameActive(draft.trim() || fallbackName);
+	}
+
+	function onRenameKey(e: KeyboardEvent) {
+		if (e.key === 'Enter') commitRename();
+		if (e.key === 'Escape') editingId = null;
+	}
+
+	function focusAndSelect(node: HTMLInputElement) {
+		node.focus();
+		node.select();
 	}
 
 	function confirmOrRun(kind: 'clear' | 'delete', run: () => void) {
@@ -39,46 +63,66 @@
 
 <aside class="sidebar" aria-label="Format settings">
 	<div class="field">
-		<label for="format-select">Format</label>
-		<select
-			id="format-select"
-			value={active.id}
-			onchange={(e) => {
-				frameworks.select(e.currentTarget.value);
-				confirming = null;
-			}}
-		>
-			<optgroup label="Presets">
-				{#each frameworks.presets as fw (fw.id)}
-					<option value={fw.id}>{fw.name}{frameworks.presetEdits.current[fw.id] ? ' (modified)' : ''}</option>
-				{/each}
-			</optgroup>
-			<optgroup label="My formats ({customCount}/{MAX_CUSTOM_FRAMEWORKS})">
-				{#each frameworks.customs.current as fw (fw.id)}
-					<option value={fw.id}>{fw.name}</option>
+		<span class="label" id="formats-label">Format</span>
+		<div class="formats" role="group" aria-labelledby="formats-label">
+			{#each frameworks.presets as fw (fw.id)}
+				<button
+					class="btn ghost format"
+					aria-pressed={fw.id === active.id}
+					title={frameworks.presetEdits.current[fw.id] ? 'Modified' : undefined}
+					onclick={() => select(fw.id)}
+				>
+					{PRESET_LABELS[fw.id] ?? fw.name}{#if frameworks.presetEdits.current[fw.id]}<span
+							class="modified"
+							aria-label="(modified)">*</span
+						>{/if}
+				</button>
+			{/each}
+			{#each frameworks.customs.current as fw (fw.id)}
+				{#if fw.id === editingId}
+					<input
+						class="rename"
+						type="text"
+						maxlength="40"
+						aria-label="Format name"
+						bind:value={draft}
+						onkeydown={onRenameKey}
+						onblur={commitRename}
+						{@attach focusAndSelect}
+					/>
 				{:else}
-					<option disabled>None saved yet</option>
-				{/each}
-			</optgroup>
-		</select>
-	</div>
-
-	{#if !frameworks.activeIsPreset}
-		<div class="field">
-			<label for="format-name">Name</label>
-			<input
-				id="format-name"
-				type="text"
-				maxlength="40"
-				value={active.name}
-				oninput={(e) => frameworks.renameActive(e.currentTarget.value)}
-			/>
+					<button
+						class="btn ghost format"
+						aria-pressed={fw.id === active.id}
+						title={fw.id === active.id ? 'Click to rename' : undefined}
+						onclick={() => select(fw.id)}><span class="name">{fw.name}</span></button
+					>
+				{/if}
+			{/each}
+			{#if frameworks.canSaveCustom}
+				<button
+					class="btn save"
+					title="Save this format and its rankings as one of your formats ({frameworks.customs
+						.current.length}/{MAX_CUSTOM_FRAMEWORKS}){auth.user ? '. Syncs to your account.' : ''}"
+					onclick={saveNew}>Save Format</button
+				>
+			{:else}
+				<p class="hint">You've saved {MAX_CUSTOM_FRAMEWORKS} formats. Delete one to save another.</p>
+			{/if}
+			{#if !frameworks.activeIsPreset}
+				<button
+					class="btn ghost danger"
+					onclick={() => confirmOrRun('delete', () => frameworks.deleteCustom(active.id))}
+				>
+					{confirming === 'delete' ? 'Click to confirm delete' : 'Delete Format'}
+				</button>
+			{/if}
 		</div>
-	{/if}
+	</div>
 
 	{#if active.kind === 'ranked'}
 		<div class="field">
-			<label for="format-slots">Number of ranks</label>
+			<label class="label" for="format-slots">Number of ranks</label>
 			<input
 				id="format-slots"
 				type="number"
@@ -92,22 +136,12 @@
 
 	{#if frameworks.activeIsModifiedPreset}
 		<p class="hint">
-			You've changed this preset. <strong>Save format</strong> keeps it as your own, or
+			You've changed this preset. <strong>Save Format</strong> keeps it as your own, or
 			<strong>Reset to default</strong> undoes the changes.
 		</p>
 	{/if}
 
 	<div class="actions">
-		<button
-			class="btn"
-			disabled={!frameworks.canSaveCustom}
-			title={frameworks.canSaveCustom
-				? 'Save this format as one of your formats'
-				: `You can save up to ${MAX_CUSTOM_FRAMEWORKS} formats. Delete one to save another.`}
-			onclick={openSave}
-		>
-			Save format
-		</button>
 		{#if frameworks.activeIsPreset}
 			<button
 				class="btn ghost"
@@ -115,13 +149,6 @@
 				onclick={() => frameworks.resetPreset()}
 			>
 				Reset to default
-			</button>
-		{:else}
-			<button
-				class="btn ghost danger"
-				onclick={() => confirmOrRun('delete', () => frameworks.deleteCustom(active.id))}
-			>
-				{confirming === 'delete' ? 'Click to confirm delete' : 'Delete format'}
 			</button>
 		{/if}
 		<button
@@ -132,29 +159,6 @@
 		</button>
 	</div>
 </aside>
-
-<dialog bind:this={dialog} aria-labelledby="save-title">
-	<form onsubmit={save}>
-		<h2 id="save-title">Save format</h2>
-		<p>
-			Saves this format and its current rankings as one of your formats ({customCount}/{MAX_CUSTOM_FRAMEWORKS}
-			used).
-			{#if auth.user}
-				It will sync to your account.
-			{:else}
-				It's stored in this browser. Sign in to sync it to your account.
-			{/if}
-		</p>
-		<label>
-			<span>Name</span>
-			<input type="text" bind:value={newName} maxlength="40" required />
-		</label>
-		<div class="dialog-actions">
-			<button type="button" class="btn ghost" onclick={() => dialog.close()}>Cancel</button>
-			<button type="submit" class="btn">Save</button>
-		</div>
-	</form>
-</dialog>
 
 <style>
 	.sidebar {
@@ -170,19 +174,53 @@
 
 	.field {
 		display: grid;
-		gap: 4px;
+		gap: 6px;
 	}
 
-	.field label {
+	.label {
 		font-size: 0.8rem;
 		font-weight: 600;
 		color: var(--muted);
 	}
 
-	.field select,
 	.field input {
 		width: 100%;
 		color: var(--text);
+	}
+
+	.formats {
+		display: grid;
+		gap: 6px;
+	}
+
+	.format {
+		justify-content: flex-start;
+	}
+
+	.name {
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.format[aria-pressed='true'] {
+		background: var(--accent);
+		border-color: var(--accent);
+		color: var(--bg-deep);
+	}
+
+	.modified {
+		margin-left: 2px;
+		font-weight: 800;
+	}
+
+	.rename {
+		min-height: 36px;
+		border-color: var(--accent-strong);
+	}
+
+	.save {
+		border-style: dashed;
 	}
 
 	.hint {
@@ -196,36 +234,5 @@
 		gap: 8px;
 		padding-top: 14px;
 		border-top: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
-	}
-
-	dialog {
-		width: min(420px, calc(100vw - 32px));
-		padding: 20px;
-		border: 1px solid var(--accent);
-		border-radius: var(--radius);
-		background: var(--surface);
-		color: var(--text);
-	}
-
-	dialog::backdrop {
-		background: rgb(0 0 0 / 0.6);
-	}
-
-	dialog p {
-		color: var(--muted);
-		font-size: 0.9rem;
-	}
-
-	dialog label {
-		display: grid;
-		gap: 4px;
-		font-size: 0.85rem;
-	}
-
-	.dialog-actions {
-		display: flex;
-		justify-content: flex-end;
-		gap: 8px;
-		margin-top: 16px;
 	}
 </style>

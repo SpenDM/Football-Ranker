@@ -14,6 +14,9 @@ async function drag(page: Page, source: Locator, target: Locator) {
 	await page.waitForTimeout(300);
 }
 
+const formatButton = (page: Page, name: string) =>
+	page.getByRole('group', { name: 'Format' }).getByRole('button', { name, exact: true });
+
 const card = (page: Page, zone: string, abbr: string) =>
 	page.getByLabel(zone, { exact: true }).locator(`[title$="${abbr}"]`).first();
 
@@ -50,9 +53,9 @@ test('dragging a team into a tier persists across reload', async ({ page }) => {
 	await expect(card(page, 'Tier S', 'Kansas City Chiefs')).toBeVisible();
 
 	// Placements are kept per framework.
-	await page.getByLabel('Format', { exact: true }).selectOption('preset-ranked');
+	await formatButton(page, '1–32').click();
 	await expect(page.getByLabel('AFC West pool', { exact: true }).locator('.card')).toHaveCount(4);
-	await page.getByLabel('Format', { exact: true }).selectOption('preset-letter');
+	await formatButton(page, 'Letter Grades').click();
 	await expect(card(page, 'Tier S', 'Kansas City Chiefs')).toBeVisible();
 
 	// Dragging back to the pool returns it to its division.
@@ -60,23 +63,42 @@ test('dragging a team into a tier persists across reload', async ({ page }) => {
 	await expect(page.getByLabel('AFC West pool', { exact: true }).locator('.card')).toHaveCount(4);
 });
 
-test('save a modified preset as a custom framework (max 5)', async ({ page }) => {
+test('save formats inline as buttons (max 5), rename, and delete', async ({ page }) => {
 	await page.goto('/power-rankings');
 	await page.getByRole('button', { name: 'Add tier' }).click();
 	await expect(page.locator('.board .row')).toHaveCount(7);
 
+	// Save Format turns into a name input for the new format; another Save Format appears under it.
 	for (let i = 1; i <= 5; i++) {
-		await page.getByRole('button', { name: 'Save format' }).click();
-		await page.getByRole('dialog').getByLabel('Name').fill(`Mine ${i}`);
-		await page.getByRole('button', { name: 'Save', exact: true }).click();
+		await page.getByRole('button', { name: 'Save Format' }).click();
+		const name = page.getByRole('textbox', { name: 'Format name' });
+		await expect(name).toBeFocused();
+		await name.fill(`Mine ${i}`);
+		await name.press('Enter');
+		await expect(formatButton(page, `Mine ${i}`)).toHaveAttribute('aria-pressed', 'true');
 	}
-	await expect(page.getByRole('button', { name: 'Save format' })).toBeDisabled();
+	await expect(page.getByRole('button', { name: 'Save Format' })).toHaveCount(0);
+	await expect(page.getByText(/You've saved 5 formats/)).toBeVisible();
 
 	await page.reload();
-	await expect(page.getByLabel('Format', { exact: true })).toHaveValue(/custom-/);
+	await expect(formatButton(page, 'Mine 5')).toHaveAttribute('aria-pressed', 'true');
 	await expect(page.locator('.board .row')).toHaveCount(7);
+
+	// Clicking the active custom format renames it.
+	await formatButton(page, 'Mine 5').click();
+	await page.getByRole('textbox', { name: 'Format name' }).fill('Renamed');
+	await page.getByRole('textbox', { name: 'Format name' }).press('Enter');
+	await expect(formatButton(page, 'Renamed')).toBeVisible();
+
+	// Delete Format only shows for custom formats, and asks for a second click.
+	await page.getByRole('button', { name: 'Delete Format' }).click();
+	await page.getByRole('button', { name: 'Click to confirm delete' }).click();
+	await expect(formatButton(page, 'Renamed')).toHaveCount(0);
+	await expect(page.getByRole('button', { name: 'Save Format' })).toBeVisible();
+
 	// The preset itself was reset to its defaults after saving.
-	await page.getByLabel('Format', { exact: true }).selectOption('preset-letter');
+	await formatButton(page, 'Letter Grades').click();
+	await expect(page.getByRole('button', { name: 'Delete Format' })).toHaveCount(0);
 	await expect(page.locator('.board .row')).toHaveCount(6);
 });
 
@@ -111,7 +133,7 @@ test('click a tier name to rename and recolor it; +/- add and remove the bottom 
 
 test('1–32: drop into any slot, swap ranked teams, and send a replaced team back to the pool', async ({ page }) => {
 	await page.goto('/power-rankings');
-	await page.getByLabel('Format', { exact: true }).selectOption('preset-ranked');
+	await formatButton(page, '1–32').click();
 	const slot = (n: number) => page.getByLabel(`Rank ${n}`, { exact: true });
 	const inSlot = (n: number, name: string) => slot(n).locator(`[title$="${name}"]`);
 
