@@ -1,5 +1,6 @@
 <script lang="ts">
 	import RosterSidebar from '$lib/components/RosterSidebar.svelte';
+	import TeamLookup from '$lib/components/TeamLookup.svelte';
 	import TeamRankList from '$lib/components/TeamRankList.svelte';
 	import { fantasyTeams, type TeamFantasyStats } from '$lib/data/fantasy';
 	import {
@@ -16,14 +17,18 @@
 	const ranks = rankIndex(fantasyTeams.teams);
 	const views = UNITS.map((view) => ({
 		...view,
-		categories: view.categories.map((category) => ({
-			...category,
-			...topAndBottom(rankTeams(fantasyTeams.teams, view.unit, category)),
-			breakdown: (team: TeamFantasyStats) =>
-				gameBreakdown(team, view.unit, category.split, ranks),
-			// e.g. "rushing defense rank" for the rushing offense lists.
-			opponentRankLabel: `${category.split === 'total' ? 'overall' : category.title.toLowerCase()} ${otherUnit(view.unit)} rank`
-		}))
+		categories: view.categories.map((category) => {
+			const ranked = rankTeams(fantasyTeams.teams, view.unit, category);
+			return {
+				...category,
+				ranked,
+				...topAndBottom(ranked),
+				breakdown: (team: TeamFantasyStats) =>
+					gameBreakdown(team, view.unit, category.split, ranks),
+				// e.g. "rushing defense rank" for the rushing offense lists.
+				opponentRankLabel: `${category.split === 'total' ? 'overall' : category.title.toLowerCase()} ${otherUnit(view.unit)} rank`
+			};
+		})
 	}));
 </script>
 
@@ -41,7 +46,16 @@
 						{#each view.categories as category (category.split)}
 							{@const name = `${view.unit} ${category.title.toLowerCase()}`}
 							<div class="category">
-								<h3>{category.title}</h3>
+								<div class="category-head">
+									<h3>{category.title}</h3>
+									<TeamLookup
+										label={name}
+										ranked={category.ranked}
+										detail={category.detail}
+										breakdown={category.breakdown}
+										opponentRankLabel={category.opponentRankLabel}
+									/>
+								</div>
 								<p class="formula">{category.formula}</p>
 								<TeamRankList
 									label="Top 10 {name}"
@@ -122,6 +136,21 @@
 		display: grid;
 		gap: 8px;
 		align-content: start;
+	}
+
+	/* Title on the left, Team Lookup on the right edge of the lists below. The lookup's results
+	   drop down from here across the whole category, above the lists. */
+	.category-head {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px;
+		min-height: 28px;
+	}
+
+	.category-head:has(:global(.lookup.active)) {
+		z-index: 6;
 	}
 
 	h3 {
