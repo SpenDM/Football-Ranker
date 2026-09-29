@@ -34,7 +34,7 @@
 	const slot = $derived(SLOTS.find((s) => s.id === rosterSlot.current) ?? SLOTS[0]);
 	const entries = $derived(data ? slotEntries(slot, data.players, fantasyTeams.teams, ranks) : []);
 	const performers = $derived(topPerformers(entries, slot.id === 'FLEX'));
-	const matchups = $derived(bestMatchups(entries, slot.id === 'DST'));
+	const matchups = $derived(bestMatchups(entries));
 	const available = $derived(
 		renumber(matchups.filter((r) => !unavailable.current.includes(r.entry.id)))
 	);

@@ -19,7 +19,7 @@
 	<ol>
 		{#each games as game (game.week)}
 			{@const opp = teamsByAbbr.get(game.opponent)}
-			<li class:upcoming={game.score === null}>
+			<li class:upcoming={game.score === null && !game.didNotPlay} class:dnp={game.didNotPlay}>
 				<span class="week">Wk {game.week}</span>
 				<span class="matchup"
 					>{game.home ? 'vs' : '@'}
@@ -30,7 +30,9 @@
 				<span class="opp-rank" title="{opponentRankLabel} {game.opponentRank ?? '–'}"
 					>#{game.opponentRank ?? '–'}</span
 				>
-				<span class="game-score">{game.score === null ? 'UPCOMING' : game.score.toFixed(1)}</span>
+				<span class="game-score"
+					>{game.didNotPlay ? 'DNP' : game.score === null ? 'UPCOMING' : game.score.toFixed(1)}</span
+				>
 			</li>
 		{/each}
 	</ol>
@@ -100,6 +102,12 @@
 		font-weight: 700;
 		font-variant-numeric: tabular-nums;
 		text-align: right;
+	}
+
+	.dnp .game-score {
+		font-size: 0.7rem;
+		letter-spacing: 0.04em;
+		color: var(--muted);
 	}
 
 	.upcoming .game-score {

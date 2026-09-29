@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { FantasyPlayer, TeamFantasyStats } from '$lib/data/fantasy';
 import {
 	bestMatchups,
+	matchupFactor,
 	renumber,
 	searchEntries,
 	slotEntries,
@@ -92,39 +93,64 @@ describe('slotEntries', () => {
 		expect(ids).toEqual(['rb1', 'rb2', 'rb3', 'wr1']);
 	});
 
-	it("adds the upcoming game to a player's breakdown, ranked by the matchup split", () => {
-		const [rb1] = slotEntries(slot('RB'), players, teams, ranks);
+	it("adds missed games and the upcoming game to a player's breakdown", () => {
+		const zero = { total: 0, rush: 0, pass: 0 };
+		const game = (week: number, opponent: string, home: boolean) => ({
+			week,
+			opponent,
+			home,
+			offense: zero,
+			defense: zero
+		});
+		// KC played NYJ in week 1 (with rb1) and BUF in week 2 (without), then plays DAL.
+		const kc = {
+			...teams[0],
+			gameLog: [game(1, 'NYJ', true), game(2, 'BUF', false)],
+			nextGame: { week: 3, opponent: 'DAL', home: true }
+		};
+		const [rb1] = slotEntries(slot('RB'), players, [kc, ...teams.slice(1)], ranks);
 		// Rushing PPR allowed: BUF 10, KC 20, DAL 25, NYJ 30.
 		expect(rb1.breakdown).toEqual([
 			{ week: 1, opponent: 'NYJ', home: true, score: 12, opponentRank: 4 },
-			{ week: 2, opponent: 'NYJ', home: false, score: null, opponentRank: 4 }
+			{ week: 2, opponent: 'BUF', home: false, score: null, didNotPlay: true, opponentRank: 1 },
+			{ week: 3, opponent: 'DAL', home: true, score: null, opponentRank: 3 }
 		]);
 		expect(rb1.opponentRankLabel).toBe('rushing defense rank');
 	});
 });
 
+describe('matchupFactor', () => {
+	it('scales rank 1 to 0.6 and the last rank to 1.4', () => {
+		expect(matchupFactor(1)).toBeCloseTo(0.6);
+		expect(matchupFactor(32)).toBeCloseTo(1.4);
+		expect(matchupFactor(16.5)).toBeCloseTo(1);
+	});
+});
+
 describe('bestMatchups', () => {
-	it("adds the opponent's PPR allowed in the position's split to the player's average", () => {
+	// With 4 teams, ranks 1-4 scale to ×0.6, ×0.867, ×1.133, ×1.4.
+	it("multiplies the player's average by the opponent's scaled rank in the position's split", () => {
 		const rows = bestMatchups(slotEntries(slot('FLEX'), players, teams, ranks));
-		// rb1: NYJ rush 30 + 12; rb2: DAL rush 25 + 20; wr1: NYJ pass 45 + 15. rb3 has no game left.
-		expect(rows.map((r) => [r.rank, r.entry.id, r.score])).toEqual([
-			[1, 'wr1', 60],
-			[2, 'rb2', 45],
-			[3, 'rb1', 42]
+		// rb2: 20 × DAL rush #3; wr1: 15 × NYJ pass #4; rb1: 12 × NYJ rush #4. rb3 has no game left.
+		expect(rows.map((r) => [r.rank, r.entry.id, r.score.toFixed(2)])).toEqual([
+			[1, 'rb2', '22.67'],
+			[2, 'wr1', '21.00'],
+			[3, 'rb1', '16.80']
 		]);
-		expect(rows[0].detail).toBe('@ NYJ · 45.0 PA');
+		expect(rows[1].detail).toBe('@ NYJ · #4 · ×1.40');
 	});
 
-	it('uses rushing + passing allowed for QBs', () => {
+	it('ranks QB matchups by rushing + passing allowed', () => {
+		// Total allowed: BUF 40, DAL 60, KC 60, NYJ 75, so DAL is #2 (ties go alphabetically).
 		const [qb] = bestMatchups(slotEntries(slot('QB'), players, teams, ranks));
-		expect(qb.score).toBe(25 + 35 + 22);
+		expect(qb.score).toBeCloseTo(22 * (0.6 + 0.8 / 3));
 	});
 
-	it("ranks D/STs by defense rank minus the opponent's offense rank, lowest first", () => {
-		const rows = bestMatchups(slotEntries(slot('DST'), players, teams, ranks), true);
+	it("ranks D/STs by the opponent's offense rank minus the defense rank, highest first", () => {
+		const rows = bestMatchups(slotEntries(slot('DST'), players, teams, ranks));
 		// DST ranks: KC 1, DAL 2, BUF 3, NYJ 4. Offense ranks: BUF 1, KC 2, DAL 3, NYJ 4.
 		expect(rows.map((r) => [r.entry.id, r.score, r.scoreText])).toEqual([
-			['DST-KC', -3, '−3'],
+			['DST-KC', 3, '3'],
 			['DST-BUF', 0, '0']
 		]);
 		expect(rows[0].entry.name).toBe('Chiefs D/ST');

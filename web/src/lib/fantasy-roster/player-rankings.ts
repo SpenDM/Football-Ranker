@@ -14,14 +14,18 @@ export type Slot = {
 };
 
 const playerFormula = (allowed: string) =>
-	`Matchup score: the opponent's ${allowed} PPR points allowed per game (PA) plus the player's points per game.`;
+	`Matchup score: the player's points per game × the opponent's ${allowed} defense rank (by PPR points allowed) scaled from ×${MIN_FACTOR} (#1, toughest) to ×${MAX_FACTOR} (#32).`;
+
+/** Matchup multipliers for the toughest and the softest defense. */
+export const MIN_FACTOR = 0.6;
+export const MAX_FACTOR = 1.4;
 
 export const SLOTS: Slot[] = [
 	{
 		id: 'QB',
 		label: 'QB',
 		positions: ['QB'],
-		formula: playerFormula('rushing + passing')
+		formula: playerFormula('overall (rushing + passing)')
 	},
 	{
 		id: 'RB',
@@ -52,13 +56,13 @@ export const SLOTS: Slot[] = [
 		label: 'D/ST',
 		positions: [],
 		formula:
-			"Matchup score: this defense's overall rank minus the opponent's overall offense rank (#D v #O; lower is better)."
+			"Matchup score: the opponent's overall offense rank minus this defense's overall rank (#D v #O)."
 	},
 	{
 		id: 'K',
 		label: 'K',
 		positions: ['K'],
-		formula: playerFormula('rushing + passing')
+		formula: playerFormula('overall (rushing + passing)')
 	}
 ];
 
@@ -83,7 +87,7 @@ export type PlayerEntry = {
 	games: number;
 	/** Fantasy points per game played. */
 	average: number;
-	/** Game-by-game points, then the upcoming game (without a score). */
+	/** Game-by-game points (including team games the player missed), then the upcoming game. */
 	breakdown: GameBreakdown[];
 	/** What each breakdown row's opponent rank is in, e.g. "rushing defense rank". */
 	opponentRankLabel: string;
@@ -91,7 +95,7 @@ export type PlayerEntry = {
 	matchup: Matchup | null;
 };
 
-/** Higher is better for players; for a D/ST, lower is better. */
+/** Higher is better. */
 export type Matchup = {
 	opponent: string;
 	home: boolean;
@@ -135,6 +139,11 @@ const SPLIT_NAMES: Record<Split, string> = {
 
 const vsOrAt = (home: boolean) => (home ? 'vs' : '@');
 
+/** A defense's matchup multiplier: rank 1 (fewest allowed) → MIN_FACTOR, last → MAX_FACTOR. */
+export function matchupFactor(rank: number, teamCount = 32): number {
+	return MIN_FACTOR + ((MAX_FACTOR - MIN_FACTOR) * (rank - 1)) / (teamCount - 1);
+}
+
 export function playerEntry(
 	player: FantasyPlayer,
 	teams: Map<string, TeamFantasyStats>,
@@ -142,29 +151,40 @@ export function playerEntry(
 ): PlayerEntry {
 	const split = MATCHUP_SPLIT[player.position];
 	const opponentRank = allowed[split];
-	const breakdown: GameBreakdown[] = player.gameLog.map((g) => ({
-		week: g.week,
-		opponent: g.opponent,
-		home: g.home,
-		score: g.points,
-		opponentRank: opponentRank.get(g.opponent)
-	}));
+	const team = teams.get(player.team);
+	const played = new Set(player.gameLog.map((g) => g.week));
+	const breakdown: GameBreakdown[] = [
+		...player.gameLog.map((g) => ({
+			week: g.week,
+			opponent: g.opponent,
+			home: g.home,
+			score: g.points as number | null,
+			opponentRank: opponentRank.get(g.opponent)
+		})),
+		// The current team's games the player sat out.
+		...(team?.gameLog ?? [])
+			.filter((g) => !played.has(g.week))
+			.map((g) => ({
+				week: g.week,
+				opponent: g.opponent,
+				home: g.home,
+				score: null,
+				didNotPlay: true,
+				opponentRank: opponentRank.get(g.opponent)
+			}))
+	].sort((a, b) => a.week - b.week);
 
-	const next = teams.get(player.team)?.nextGame;
-	const opponent = next && teams.get(next.opponent);
+	const next = team?.nextGame;
 	let matchup: Matchup | null = null;
-	if (next && opponent) {
-		breakdown.push({
-			...next,
-			score: null,
-			opponentRank: opponentRank.get(next.opponent)
-		});
-		const oppAllowed = pointsAllowed(opponent, split);
+	if (next && teams.has(next.opponent)) {
+		const rank = opponentRank.get(next.opponent) ?? teams.size;
+		const factor = matchupFactor(rank, teams.size);
+		breakdown.push({ ...next, score: null, opponentRank: rank });
 		matchup = {
 			opponent: next.opponent,
 			home: next.home,
-			score: oppAllowed + player.average,
-			detail: `${vsOrAt(next.home)} ${next.opponent} · ${oppAllowed.toFixed(1)} PA`
+			score: player.average * factor,
+			detail: `${vsOrAt(next.home)} ${next.opponent} · #${rank} · ×${factor.toFixed(2)}`
 		};
 	}
 
@@ -181,7 +201,7 @@ export function playerEntry(
 	};
 }
 
-/** A team's D/ST: its overall defense rank minus its next opponent's overall offense rank. */
+/** A team's D/ST: its next opponent's overall offense rank minus its overall defense rank. */
 export function dstEntry(
 	team: TeamFantasyStats,
 	teams: Map<string, TeamFantasyStats>,
@@ -195,7 +215,7 @@ export function dstEntry(
 		matchup = {
 			opponent: next.opponent,
 			home: next.home,
-			score: defenseRank - offenseRank,
+			score: offenseRank - defenseRank,
 			detail: `${vsOrAt(next.home)} ${next.opponent} · #${defenseRank} v #${offenseRank}`
 		};
 	}
@@ -242,14 +262,13 @@ export function topPerformers(entries: PlayerEntry[], showPosition = false): Ran
 		}));
 }
 
-/** Players with an upcoming game, best matchup first (highest score; lowest for a D/ST). */
-export function bestMatchups(entries: PlayerEntry[], lowerIsBetter = false): RankedPlayer[] {
-	const direction = lowerIsBetter ? 1 : -1;
+/** Players with an upcoming game, best (highest) matchup score first. */
+export function bestMatchups(entries: PlayerEntry[]): RankedPlayer[] {
 	return entries
 		.filter((e): e is PlayerEntry & { matchup: Matchup } => e.matchup !== null)
 		.sort(
 			(a, b) =>
-				direction * (a.matchup.score - b.matchup.score) ||
+				b.matchup.score - a.matchup.score ||
 				b.average - a.average ||
 				a.name.localeCompare(b.name)
 		)
@@ -257,9 +276,11 @@ export function bestMatchups(entries: PlayerEntry[], lowerIsBetter = false): Ran
 			entry,
 			rank: i + 1,
 			score: entry.matchup.score,
-			scoreText: lowerIsBetter
-				? String(entry.matchup.score).replace('-', '−')
-				: entry.matchup.score.toFixed(1),
+			// D/ST scores are whole rank differences.
+			scoreText:
+				entry.position === 'D/ST'
+					? String(entry.matchup.score).replace('-', '−')
+					: entry.matchup.score.toFixed(1),
 			detail: entry.matchup.detail
 		}));
 }

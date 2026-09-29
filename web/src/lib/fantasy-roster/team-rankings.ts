@@ -116,8 +116,10 @@ export type GameBreakdown = {
 	week: number;
 	opponent: string;
 	home: boolean;
-	/** Null for the team's upcoming game. */
+	/** Null for the upcoming game, or a game the player didn't play in. */
 	score: number | null;
+	/** The team played this game without the player (Player mode). */
+	didNotPlay?: boolean;
 	/** The opponent's rank in the complementary category (e.g. rushing defense for rushing offense). */
 	opponentRank: number | undefined;
 };
