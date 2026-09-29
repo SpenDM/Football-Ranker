@@ -1,7 +1,7 @@
 {
   "season": 2026,
   "throughWeek": 3,
-  "weekComplete": false,
+  "weekComplete": true,
   "teams": [
     {
       "abbr": "ARI",
@@ -355,25 +355,25 @@
     },
     {
       "abbr": "CHI",
-      "games": 2,
+      "games": 3,
       "offense": {
-        "total": 753.0,
-        "rush": 392.5,
-        "pass": 290.5,
-        "yardsPerGame": 443.0,
-        "pointsPerGame": 31.0,
-        "rushYardsPerGame": 212.5,
-        "rushTdsPerGame": 3.0,
-        "passYardsPerGame": 230.5,
-        "passTdsPerGame": 1.0
+        "total": 717.0,
+        "rush": 324.3,
+        "pass": 316.0,
+        "yardsPerGame": 420.3,
+        "pointsPerGame": 29.7,
+        "rushYardsPerGame": 184.3,
+        "rushTdsPerGame": 2.3,
+        "passYardsPerGame": 236.0,
+        "passTdsPerGame": 1.3
       },
       "defense": {
-        "total": 6.5,
-        "rush": 18.2,
-        "pass": 65.3,
-        "sacksPerGame": 2.5,
-        "takeawaysPerGame": 1.5,
-        "pointsAllowedPerGame": 23.0
+        "total": 8.3,
+        "rush": 17.7,
+        "pass": 54.0,
+        "sacksPerGame": 2.3,
+        "takeawaysPerGame": 2.0,
+        "pointsAllowedPerGame": 17.7
       },
       "gameLog": [
         {
@@ -404,6 +404,21 @@
             "total": 7.0,
             "rush": 11.9,
             "pass": 31.02
+          }
+        },
+        {
+          "week": 3,
+          "opponent": "PHI",
+          "home": true,
+          "offense": {
+            "total": 645.0,
+            "rush": 188.0,
+            "pass": 367.0
+          },
+          "defense": {
+            "total": 12.0,
+            "rush": 16.7,
+            "pass": 31.42
           }
         }
       ]
@@ -1740,25 +1755,25 @@
     },
     {
       "abbr": "PHI",
-      "games": 2,
+      "games": 3,
       "offense": {
-        "total": 586.0,
-        "rush": 142.5,
-        "pass": 383.5,
-        "yardsPerGame": 346.0,
-        "pointsPerGame": 24.0,
-        "rushYardsPerGame": 112.5,
-        "rushTdsPerGame": 0.5,
-        "passYardsPerGame": 233.5,
-        "passTdsPerGame": 2.5
+        "total": 500.7,
+        "rush": 150.7,
+        "pass": 306.7,
+        "yardsPerGame": 317.3,
+        "pointsPerGame": 18.3,
+        "rushYardsPerGame": 110.7,
+        "rushTdsPerGame": 0.7,
+        "passYardsPerGame": 206.7,
+        "passTdsPerGame": 1.7
       },
       "defense": {
-        "total": 3.0,
-        "rush": 21.7,
-        "pass": 49.8,
-        "sacksPerGame": 1.5,
+        "total": 2.0,
+        "rush": 20.7,
+        "pass": 59.4,
+        "sacksPerGame": 1.0,
         "takeawaysPerGame": 0.0,
-        "pointsAllowedPerGame": 21.0
+        "pointsAllowedPerGame": 23.0
       },
       "gameLog": [
         {
@@ -1789,6 +1804,21 @@
             "total": 3.0,
             "rush": 24.2,
             "pass": 38.62
+          }
+        },
+        {
+          "week": 3,
+          "opponent": "CHI",
+          "home": false,
+          "offense": {
+            "total": 330.0,
+            "rush": 167.0,
+            "pass": 153.0
+          },
+          "defense": {
+            "rush": 18.8,
+            "pass": 78.58,
+            "total": 0.0
           }
         }
       ]
