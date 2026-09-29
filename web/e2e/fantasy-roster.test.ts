@@ -102,10 +102,13 @@ test('fantasy roster: player mode ranks each position in three columns', async (
 		(await page.getByRole('region', { name }).locator('.score').allTextContents()).map((t) =>
 			Number(t.replace('−', '-'))
 		);
+	await positions.getByRole('button', { name: 'D/ST', exact: true }).click();
+	await expect(page.getByRole('region', { name: 'Best Matchup D/ST' }).locator('li')).toHaveCount(20);
 	const dst = await scores('Best Matchup D/ST');
 	expect(dst).toEqual([...dst].sort((a, b) => b - a));
 	expect(dst[0]).toBeGreaterThan(0);
 	await positions.getByRole('button', { name: 'RB', exact: true }).click();
+	await expect(page.getByRole('region', { name: 'Best Matchup RB' }).locator('li')).toHaveCount(20);
 	const rb = await scores('Best Matchup RB');
 	expect(rb).toEqual([...rb].sort((a, b) => b - a));
 	const top = await scores('Top Performers RB');

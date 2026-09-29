@@ -116,6 +116,14 @@ describe('slotEntries', () => {
 			{ week: 3, opponent: 'DAL', home: true, score: null, opponentRank: 3 }
 		]);
 		expect(rb1.opponentRankLabel).toBe('rushing defense rank');
+		// The week 2 DNP is recent, so rb1 averages (12 + 0) / 2 for the matchup (× DAL rush #3).
+		expect(rb1.matchup?.score).toBeCloseTo(6 * (0.6 + 1.6 / 3));
+		expect(rb1.average).toBe(12);
+
+		// Once week 2 is more than 3 weeks back, the DNP no longer counts.
+		const nyj = { ...teams[3], gameLog: [game(5, 'BUF', true)] };
+		const [later] = slotEntries(slot('RB'), players, [kc, ...teams.slice(1, 3), nyj], ranks);
+		expect(later.matchup?.score).toBeCloseTo(12 * (0.6 + 1.6 / 3));
 	});
 });
 

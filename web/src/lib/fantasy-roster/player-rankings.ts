@@ -14,7 +14,10 @@ export type Slot = {
 };
 
 const playerFormula = (allowed: string) =>
-	`Matchup score: the player's points per game × the opponent's ${allowed} defense rank (by PPR points allowed) scaled from ×${MIN_FACTOR} (#1, toughest) to ×${MAX_FACTOR} (#32).`;
+	`Matchup score: the player's points per game (missed games in the last ${RECENT_DNP_WEEKS} weeks count as 0) × the opponent's ${allowed} defense rank (by PPR points allowed) scaled from ×${MIN_FACTOR} (#1, toughest) to ×${MAX_FACTOR} (#32).`;
+
+/** Games a player missed within this many latest weeks count as 0 points in matchup scores. */
+export const RECENT_DNP_WEEKS = 3;
 
 /** Matchup multipliers for the toughest and the softest defense. */
 export const MIN_FACTOR = 0.6;
@@ -144,10 +147,15 @@ export function matchupFactor(rank: number, teamCount = 32): number {
 	return MIN_FACTOR + ((MAX_FACTOR - MIN_FACTOR) * (rank - 1)) / (teamCount - 1);
 }
 
+/**
+ * @param latestWeek The latest week with games counted; DNPs from the last RECENT_DNP_WEEKS
+ *   weeks count as 0-point games in the matchup score.
+ */
 export function playerEntry(
 	player: FantasyPlayer,
 	teams: Map<string, TeamFantasyStats>,
-	allowed: Record<Split, Map<string, number>>
+	allowed: Record<Split, Map<string, number>>,
+	latestWeek: number
 ): PlayerEntry {
 	const split = MATCHUP_SPLIT[player.position];
 	const opponentRank = allowed[split];
@@ -174,6 +182,11 @@ export function playerEntry(
 			}))
 	].sort((a, b) => a.week - b.week);
 
+	const recentDnps = breakdown.filter(
+		(g) => g.didNotPlay && g.week > latestWeek - RECENT_DNP_WEEKS
+	).length;
+	const matchupAverage = player.total / (player.games + recentDnps);
+
 	const next = team?.nextGame;
 	let matchup: Matchup | null = null;
 	if (next && teams.has(next.opponent)) {
@@ -183,7 +196,7 @@ export function playerEntry(
 		matchup = {
 			opponent: next.opponent,
 			home: next.home,
-			score: player.average * factor,
+			score: matchupAverage * factor,
 			detail: `${vsOrAt(next.home)} ${next.opponent} · #${rank} · ×${factor.toFixed(2)}`
 		};
 	}
@@ -242,9 +255,10 @@ export function slotEntries(
 	const teams = new Map(teamStats.map((t) => [t.abbr, t]));
 	if (slot.id === 'DST') return teamStats.map((t) => dstEntry(t, teams, ranks));
 	const allowed = allowedRanks(teamStats);
+	const latestWeek = Math.max(0, ...teamStats.flatMap((t) => t.gameLog.map((g) => g.week)));
 	return players
 		.filter((p) => slot.positions.includes(p.position))
-		.map((p) => playerEntry(p, teams, allowed));
+		.map((p) => playerEntry(p, teams, allowed, latestWeek));
 }
 
 const games = (e: PlayerEntry) => `${e.games} G`;
