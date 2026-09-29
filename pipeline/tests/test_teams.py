@@ -4,7 +4,7 @@ from collections import Counter
 
 import pytest
 
-from football_pipeline.teams import LOGO_DIR, TEAMS_JSON, parse_teams
+from football_pipeline.teams import LOGO_DIR, LOGO_OVERRIDES, TEAMS_JSON, parse_teams
 
 HEX = re.compile(r"^#[0-9A-F]{6}$")
 
@@ -21,6 +21,12 @@ def test_parse_teams_filters_legacy_and_orders_by_division():
     assert [t["abbr"] for t in teams] == ["BAL", "BUF", "SF"]
     assert teams[2]["secondaryColor"] == "#B3995D"
     assert teams[2]["logo"] == "/logos/sf.png"
+
+
+def test_parse_teams_uses_logo_overrides():
+    csv_text = SAMPLE_CSV.replace("SF,San Francisco 49ers", "NYJ,New York Jets")
+    nyj = next(t for t in parse_teams(csv_text) if t["abbr"] == "NYJ")
+    assert nyj["logoSource"] == LOGO_OVERRIDES["NYJ"]
 
 
 @pytest.fixture(scope="module")
@@ -48,4 +54,6 @@ def test_generated_colors_and_logos(generated_teams):
     for team in generated_teams:
         assert HEX.match(team["primaryColor"]), team
         assert HEX.match(team["secondaryColor"]), team
-        assert (LOGO_DIR / team["logo"].removeprefix("/logos/")).is_file(), team
+        path, _, version = team["logo"].partition("?v=")
+        assert (LOGO_DIR / path.removeprefix("/logos/")).is_file(), team
+        assert re.fullmatch(r"[0-9a-f]{8}", version), team

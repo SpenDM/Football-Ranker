@@ -22,7 +22,7 @@
 		items = team ? [{ id: team }] : [];
 	});
 
-	// While a team hovers over an occupied slot, the occupant is dimmed to preview the swap.
+	// While a team hovers over an occupied slot, the occupant is dimmed: it will slide right.
 	const previewing = $derived(items.some((i) => i[SHADOW_ITEM_MARKER_PROPERTY_NAME]) && items.length > 1);
 
 	function consider(e: CustomEvent<DndEvent<Item>>) {

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import io
 import json
 from pathlib import Path
@@ -21,6 +22,18 @@ LOGO_DIR = REPO_ROOT / "web" / "static" / "logos"
 
 # nflverse keeps rows for relocated franchises and a duplicate Rams row ("LA").
 LEGACY_ABBRS = {"LA", "OAK", "SD", "STL"}
+
+# ESPN's default logos for these teams are hard to see on their own team-color backgrounds;
+# use the primary logos drawn for a primary-color background (yellow LA, white JETS) instead.
+# (The originals are 4096px; ESPN's image combiner serves them at the default logos' 500px.)
+ESPN_LOGOS = (
+    "https://a.espncdn.com/combiner/i"
+    "?img=/guid/{guid}/logos/primary_logo_on_primary_color.png&w=500&h=500"
+)
+LOGO_OVERRIDES = {
+    "LAR": ESPN_LOGOS.format(guid="2e1473b2-e269-fd7a-1137-c1edacb85986"),
+    "NYJ": ESPN_LOGOS.format(guid="732d3caf-b350-1e34-48c6-b7cebb4a0d88"),
+}
 
 CONFERENCE_ORDER = ["AFC", "NFC"]
 DIVISION_ORDER = ["North", "East", "South", "West"]
@@ -54,7 +67,7 @@ def parse_teams(csv_text: str) -> list[dict]:
                 "primaryColor": row["team_color"].upper(),
                 "secondaryColor": row["team_color2"].upper(),
                 "logo": f"/logos/{abbr.lower()}.png",
-                "logoSource": row["team_logo_espn"],
+                "logoSource": LOGO_OVERRIDES.get(abbr, row["team_logo_espn"]),
             }
         )
     teams.sort(key=lambda t: (division_sort_key(t["division"]), t["name"]))
@@ -70,9 +83,19 @@ def download_logos(teams: list[dict], logo_dir: Path = LOGO_DIR) -> None:
         dest.write_bytes(resp.content)
 
 
+def versioned_logo(logo: str, logo_dir: Path = LOGO_DIR) -> str:
+    """Add a hash of the logo file to its URL, so browsers refetch a logo when it changes
+    (logos are cached for a week; see web/static/_headers)."""
+    digest = hashlib.sha256((logo_dir / Path(logo).name).read_bytes()).hexdigest()[:8]
+    return f"{logo}?v={digest}"
+
+
 def write_teams(teams: list[dict], path: Path = TEAMS_JSON) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    public = [{k: v for k, v in t.items() if k != "logoSource"} for t in teams]
+    public = [
+        {**{k: v for k, v in t.items() if k != "logoSource"}, "logo": versioned_logo(t["logo"])}
+        for t in teams
+    ]
     path.write_text(json.dumps(public, indent=2) + "\n")
 
 
@@ -84,9 +107,9 @@ def main() -> None:
     teams = parse_teams(fetch_csv())
     if len(teams) != 32:
         raise SystemExit(f"Expected 32 teams, got {len(teams)}")
-    write_teams(teams)
     if not args.skip_logos:
         download_logos(teams)
+    write_teams(teams)
     print(f"Wrote {len(teams)} teams to {TEAMS_JSON.relative_to(REPO_ROOT)}")
 
 

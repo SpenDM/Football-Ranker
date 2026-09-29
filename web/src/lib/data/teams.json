@@ -7,7 +7,7 @@
     "division": "AFC North",
     "primaryColor": "#241773",
     "secondaryColor": "#9E7C0C",
-    "logo": "/logos/bal.png"
+    "logo": "/logos/bal.png?v=67796023"
   },
   {
     "abbr": "CIN",
@@ -17,7 +17,7 @@
     "division": "AFC North",
     "primaryColor": "#FB4F14",
     "secondaryColor": "#000000",
-    "logo": "/logos/cin.png"
+    "logo": "/logos/cin.png?v=8e549c0e"
   },
   {
     "abbr": "CLE",
@@ -27,7 +27,7 @@
     "division": "AFC North",
     "primaryColor": "#FF3C00",
     "secondaryColor": "#311D00",
-    "logo": "/logos/cle.png"
+    "logo": "/logos/cle.png?v=9b286fc4"
   },
   {
     "abbr": "PIT",
@@ -37,7 +37,7 @@
     "division": "AFC North",
     "primaryColor": "#000000",
     "secondaryColor": "#FFB612",
-    "logo": "/logos/pit.png"
+    "logo": "/logos/pit.png?v=806bcb72"
   },
   {
     "abbr": "BUF",
@@ -47,7 +47,7 @@
     "division": "AFC East",
     "primaryColor": "#00338D",
     "secondaryColor": "#C60C30",
-    "logo": "/logos/buf.png"
+    "logo": "/logos/buf.png?v=79b71e2f"
   },
   {
     "abbr": "MIA",
@@ -57,7 +57,7 @@
     "division": "AFC East",
     "primaryColor": "#008E97",
     "secondaryColor": "#F58220",
-    "logo": "/logos/mia.png"
+    "logo": "/logos/mia.png?v=b9631269"
   },
   {
     "abbr": "NE",
@@ -67,7 +67,7 @@
     "division": "AFC East",
     "primaryColor": "#002244",
     "secondaryColor": "#C60C30",
-    "logo": "/logos/ne.png"
+    "logo": "/logos/ne.png?v=dac19aa9"
   },
   {
     "abbr": "NYJ",
@@ -77,7 +77,7 @@
     "division": "AFC East",
     "primaryColor": "#003F2D",
     "secondaryColor": "#000000",
-    "logo": "/logos/nyj.png"
+    "logo": "/logos/nyj.png?v=73cea0c0"
   },
   {
     "abbr": "HOU",
@@ -87,7 +87,7 @@
     "division": "AFC South",
     "primaryColor": "#03202F",
     "secondaryColor": "#A71930",
-    "logo": "/logos/hou.png"
+    "logo": "/logos/hou.png?v=54b0fe55"
   },
   {
     "abbr": "IND",
@@ -97,7 +97,7 @@
     "division": "AFC South",
     "primaryColor": "#002C5F",
     "secondaryColor": "#A5ACAF",
-    "logo": "/logos/ind.png"
+    "logo": "/logos/ind.png?v=f1f5222a"
   },
   {
     "abbr": "JAX",
@@ -107,7 +107,7 @@
     "division": "AFC South",
     "primaryColor": "#006778",
     "secondaryColor": "#000000",
-    "logo": "/logos/jax.png"
+    "logo": "/logos/jax.png?v=15cb9a1c"
   },
   {
     "abbr": "TEN",
@@ -117,7 +117,7 @@
     "division": "AFC South",
     "primaryColor": "#4495D2",
     "secondaryColor": "#D50A0A",
-    "logo": "/logos/ten.png"
+    "logo": "/logos/ten.png?v=27cf283f"
   },
   {
     "abbr": "DEN",
@@ -127,7 +127,7 @@
     "division": "AFC West",
     "primaryColor": "#002244",
     "secondaryColor": "#FB4F14",
-    "logo": "/logos/den.png"
+    "logo": "/logos/den.png?v=c98bec2b"
   },
   {
     "abbr": "KC",
@@ -137,7 +137,7 @@
     "division": "AFC West",
     "primaryColor": "#E31837",
     "secondaryColor": "#FFB612",
-    "logo": "/logos/kc.png"
+    "logo": "/logos/kc.png?v=3d77958d"
   },
   {
     "abbr": "LV",
@@ -147,7 +147,7 @@
     "division": "AFC West",
     "primaryColor": "#000000",
     "secondaryColor": "#A5ACAF",
-    "logo": "/logos/lv.png"
+    "logo": "/logos/lv.png?v=25fbb03e"
   },
   {
     "abbr": "LAC",
@@ -157,7 +157,7 @@
     "division": "AFC West",
     "primaryColor": "#007BC7",
     "secondaryColor": "#FFC20E",
-    "logo": "/logos/lac.png"
+    "logo": "/logos/lac.png?v=5400f85b"
   },
   {
     "abbr": "CHI",
@@ -167,7 +167,7 @@
     "division": "NFC North",
     "primaryColor": "#0B162A",
     "secondaryColor": "#E64100",
-    "logo": "/logos/chi.png"
+    "logo": "/logos/chi.png?v=fd7b5a20"
   },
   {
     "abbr": "DET",
@@ -177,7 +177,7 @@
     "division": "NFC North",
     "primaryColor": "#0076B6",
     "secondaryColor": "#B0B7BC",
-    "logo": "/logos/det.png"
+    "logo": "/logos/det.png?v=9776b567"
   },
   {
     "abbr": "GB",
@@ -187,7 +187,7 @@
     "division": "NFC North",
     "primaryColor": "#203731",
     "secondaryColor": "#FFB612",
-    "logo": "/logos/gb.png"
+    "logo": "/logos/gb.png?v=7ea8154c"
   },
   {
     "abbr": "MIN",
@@ -197,7 +197,7 @@
     "division": "NFC North",
     "primaryColor": "#4F2683",
     "secondaryColor": "#FFC62F",
-    "logo": "/logos/min.png"
+    "logo": "/logos/min.png?v=72759956"
   },
   {
     "abbr": "DAL",
@@ -207,7 +207,7 @@
     "division": "NFC East",
     "primaryColor": "#002244",
     "secondaryColor": "#B0B7BC",
-    "logo": "/logos/dal.png"
+    "logo": "/logos/dal.png?v=f4ea9a2e"
   },
   {
     "abbr": "NYG",
@@ -217,7 +217,7 @@
     "division": "NFC East",
     "primaryColor": "#0B2265",
     "secondaryColor": "#A71930",
-    "logo": "/logos/nyg.png"
+    "logo": "/logos/nyg.png?v=62e36185"
   },
   {
     "abbr": "PHI",
@@ -227,7 +227,7 @@
     "division": "NFC East",
     "primaryColor": "#004C54",
     "secondaryColor": "#A5ACAF",
-    "logo": "/logos/phi.png"
+    "logo": "/logos/phi.png?v=2875f50f"
   },
   {
     "abbr": "WAS",
@@ -237,7 +237,7 @@
     "division": "NFC East",
     "primaryColor": "#5A1414",
     "secondaryColor": "#FFB612",
-    "logo": "/logos/was.png"
+    "logo": "/logos/was.png?v=2f67805e"
   },
   {
     "abbr": "ATL",
@@ -247,7 +247,7 @@
     "division": "NFC South",
     "primaryColor": "#A71930",
     "secondaryColor": "#000000",
-    "logo": "/logos/atl.png"
+    "logo": "/logos/atl.png?v=fe566e9d"
   },
   {
     "abbr": "CAR",
@@ -257,7 +257,7 @@
     "division": "NFC South",
     "primaryColor": "#0085CA",
     "secondaryColor": "#000000",
-    "logo": "/logos/car.png"
+    "logo": "/logos/car.png?v=2cebc1bb"
   },
   {
     "abbr": "NO",
@@ -267,7 +267,7 @@
     "division": "NFC South",
     "primaryColor": "#D3BC8D",
     "secondaryColor": "#000000",
-    "logo": "/logos/no.png"
+    "logo": "/logos/no.png?v=68ddfdf1"
   },
   {
     "abbr": "TB",
@@ -277,7 +277,7 @@
     "division": "NFC South",
     "primaryColor": "#A71930",
     "secondaryColor": "#322F2B",
-    "logo": "/logos/tb.png"
+    "logo": "/logos/tb.png?v=bcc5d267"
   },
   {
     "abbr": "ARI",
@@ -287,7 +287,7 @@
     "division": "NFC West",
     "primaryColor": "#97233F",
     "secondaryColor": "#000000",
-    "logo": "/logos/ari.png"
+    "logo": "/logos/ari.png?v=f870b58b"
   },
   {
     "abbr": "LAR",
@@ -297,7 +297,7 @@
     "division": "NFC West",
     "primaryColor": "#003594",
     "secondaryColor": "#FFD100",
-    "logo": "/logos/lar.png"
+    "logo": "/logos/lar.png?v=809772b0"
   },
   {
     "abbr": "SF",
@@ -307,7 +307,7 @@
     "division": "NFC West",
     "primaryColor": "#AA0000",
     "secondaryColor": "#B3995D",
-    "logo": "/logos/sf.png"
+    "logo": "/logos/sf.png?v=82ae812f"
   },
   {
     "abbr": "SEA",
@@ -317,6 +317,6 @@
     "division": "NFC West",
     "primaryColor": "#002244",
     "secondaryColor": "#69BE28",
-    "logo": "/logos/sea.png"
+    "logo": "/logos/sea.png?v=2546b1d4"
   }
 ]

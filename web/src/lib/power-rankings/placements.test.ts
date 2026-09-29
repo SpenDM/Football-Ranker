@@ -56,16 +56,40 @@ describe('placeInSlot', () => {
 		expect(placeInSlot([], 4, 'KC')).toEqual(['', '', '', '', 'KC']);
 	});
 
-	it('swaps when a ranked team is dropped on another ranked team', () => {
-		expect(placeInSlot(['KC', '', 'DET'], 2, 'KC')).toEqual(['DET', '', 'KC']);
+	it('slides the occupant right, up to the slot the moved team left', () => {
+		expect(placeInSlot(['KC', 'DET', 'BAL', 'BUF'], 1, 'BUF')).toEqual(['KC', 'BUF', 'DET', 'BAL']);
+	});
+
+	it('slides the run of teams right only as far as the next empty slot', () => {
+		expect(placeInSlot(['KC', 'DET', 'BAL', '', 'BUF'], 0, 'PHI')).toEqual([
+			'PHI',
+			'KC',
+			'DET',
+			'BAL',
+			'BUF'
+		]);
+		expect(placeInSlot(['KC', '', 'DET', 'BAL', '', 'BUF'], 2, 'KC')).toEqual([
+			'',
+			'',
+			'KC',
+			'DET',
+			'BAL',
+			'BUF'
+		]);
+	});
+
+	it('moving a team right leaves its old slot empty and slides the new slot\'s occupant', () => {
+		expect(placeInSlot(['KC', 'DET', 'BAL'], 1, 'KC')).toEqual(['', 'KC', 'DET', 'BAL']);
 	});
 
 	it('moves a ranked team to an empty slot, emptying its old one', () => {
 		expect(placeInSlot(['KC', 'DET'], 3, 'KC')).toEqual(['', 'DET', '', 'KC']);
 	});
 
-	it('a team from the pool replaces the occupant, which returns to the pool', () => {
-		expect(placeInSlot(['KC', 'DET'], 1, 'BAL')).toEqual(['KC', 'BAL']);
+	it('a team pushed past the last slot returns to the pool', () => {
+		const full = placeInSlot(['KC', 'DET', 'BAL'], 0, 'BUF');
+		expect(full).toEqual(['BUF', 'KC', 'DET', 'BAL']);
+		expect(normalizePlacement({ rank: full }, ranked)).toEqual({ rank: ['BUF', 'KC', 'DET'] });
 	});
 
 	it('dropping a team back on its own slot changes nothing', () => {

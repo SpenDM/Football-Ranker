@@ -46,16 +46,21 @@ export function setTierTeams(placement: Placement, tierId: string, abbrs: string
 }
 
 /**
- * Put a team in rank slot `index` of a positional list. If the team was already in another
- * slot, the two swap; a team displaced by one coming from the pool goes back to the pool.
+ * Put a team in rank slot `index` of a positional list. A team already there slides right one
+ * slot, pushing along any teams next to it, until the run reaches an empty slot (which may be
+ * the one the moved team just left). A team pushed past the last slot is dropped by
+ * normalizePlacement, returning it to the pool.
  */
 export function placeInSlot(list: string[], index: number, abbr: string): string[] {
 	const out = [...list];
 	while (out.length <= index) out.push(EMPTY_SLOT);
 	const from = out.indexOf(abbr);
 	if (from === index) return trimTrailingEmpty(out);
-	if (from >= 0) out[from] = out[index];
-	out[index] = abbr;
+	if (from >= 0) out[from] = EMPTY_SLOT;
+	let end = index;
+	while (end < out.length && out[end] !== EMPTY_SLOT) end++;
+	out.splice(end, 1);
+	out.splice(index, 0, abbr);
 	return trimTrailingEmpty(out);
 }
 

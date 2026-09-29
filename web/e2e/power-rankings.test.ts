@@ -138,7 +138,7 @@ test('click a tier name to rename and recolor it; +/- add and remove the bottom 
 	await expect(page.getByRole('button', { name: 'Edit tier F' })).toBeVisible();
 });
 
-test('1–32: drop into any slot, swap ranked teams, and send a replaced team back to the pool', async ({ page }) => {
+test('1–32: drop into any slot, occupants slide right, and a team sent back leaves a gap', async ({ page }) => {
 	await page.goto('/power-rankings');
 	await formatButton(page, '1–32').click();
 	const slot = (n: number) => page.getByLabel(`Rank ${n}`, { exact: true });
@@ -151,22 +151,25 @@ test('1–32: drop into any slot, swap ranked teams, and send a replaced team ba
 	await drag(page, card(page, 'NFC North pool', 'Detroit Lions'), slot(12));
 	await expect(inSlot(12, 'Detroit Lions')).toBeVisible();
 
-	// Ranked team onto ranked team: they swap.
+	// Ranked team onto ranked team: the occupant slides right; the old slot is left empty.
 	await drag(page, inSlot(12, 'Detroit Lions'), slot(5));
 	await expect(inSlot(5, 'Detroit Lions')).toBeVisible();
-	await expect(inSlot(12, 'Kansas City Chiefs')).toBeVisible();
+	await expect(inSlot(6, 'Kansas City Chiefs')).toBeVisible();
+	await expect(slot(12).locator('.card')).toHaveCount(0);
 
-	// Pool team onto a ranked team: the ranked team goes back to the pool.
+	// Pool team onto a ranked team: the run of teams from there slides right.
 	await drag(page, card(page, 'AFC North pool', 'Baltimore Ravens'), slot(5));
 	await expect(inSlot(5, 'Baltimore Ravens')).toBeVisible();
-	await expect(card(page, 'NFC North pool', 'Detroit Lions')).toBeVisible();
+	await expect(inSlot(6, 'Detroit Lions')).toBeVisible();
+	await expect(inSlot(7, 'Kansas City Chiefs')).toBeVisible();
 
 	// Ranked team back to the pool leaves its slot empty; other ranks don't shift.
 	await drag(page, inSlot(5, 'Baltimore Ravens'), page.getByLabel('NFC West pool', { exact: true }));
 	await expect(slot(5).locator('.card')).toHaveCount(0);
-	await expect(inSlot(12, 'Kansas City Chiefs')).toBeVisible();
+	await expect(inSlot(7, 'Kansas City Chiefs')).toBeVisible();
 
 	await page.reload();
-	await expect(inSlot(12, 'Kansas City Chiefs')).toBeVisible();
-	await expect(page.locator('.slots .card')).toHaveCount(1);
+	await expect(inSlot(6, 'Detroit Lions')).toBeVisible();
+	await expect(inSlot(7, 'Kansas City Chiefs')).toBeVisible();
+	await expect(page.locator('.slots .card')).toHaveCount(2);
 });

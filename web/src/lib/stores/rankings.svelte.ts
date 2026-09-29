@@ -22,7 +22,7 @@ class RankingsStore {
 		);
 	}
 
-	/** Ranked frameworks: put a team in rank slot `index` (swapping if it was already ranked). */
+	/** Ranked frameworks: put a team in rank slot `index` (teams from there slide right). */
 	placeAt(fw: Framework, index: number, abbr: string): void {
 		const tierId = fw.tiers[0].id;
 		const current = this.for(fw);
