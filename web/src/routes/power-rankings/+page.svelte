@@ -60,10 +60,13 @@
 </div>
 
 <style>
-	/* Sidebar | board | teams. The teams column fits two divisions of 2×2 cards. */
+	/* Sidebar | board | teams. The teams column fits two divisions of 2×2 cards, sized so all
+	   32 teams fit in the window: banner, page padding, pool padding and 4 division headers take
+	   about 290px; the rest is 8 rows of cards. */
 	.layout {
+		--pool-card: clamp(36px, calc((100vh - 290px) / 8), 72px);
 		display: grid;
-		grid-template-columns: 216px minmax(0, 1fr) 356px;
+		grid-template-columns: 162px minmax(0, 1fr) calc(4 * var(--pool-card) + 70px);
 		grid-template-areas: 'side board pool';
 		gap: 20px;
 		align-items: start;
@@ -82,7 +85,10 @@
 	}
 
 	.pool-slot {
+		--card-size: var(--pool-card);
 		grid-area: pool;
+		position: sticky;
+		top: calc(var(--banner-height) + 16px);
 	}
 
 	.tier-controls {
@@ -98,12 +104,15 @@
 		line-height: 1;
 	}
 
-	/* Too narrow for three columns (the 1–32 board needs ~680px for rows of 8):
-	   teams move under the board. */
-	@media (max-width: 1339px) {
+	/* Too narrow for three columns: teams move under the board at full size. */
+	@media (max-width: 1149px) {
 		.layout {
-			grid-template-columns: 216px minmax(0, 1fr);
+			--pool-card: var(--card-size);
+			grid-template-columns: 162px minmax(0, 1fr);
 			grid-template-areas: 'side board' 'side pool';
+		}
+		.pool-slot {
+			position: static;
 		}
 	}
 

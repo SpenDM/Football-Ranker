@@ -65,24 +65,31 @@ test('dragging a team into a tier persists across reload', async ({ page }) => {
 
 test('save formats inline as buttons (max 5), rename, and delete', async ({ page }) => {
 	await page.goto('/power-rankings');
-	await page.getByRole('button', { name: 'Add tier' }).click();
-	await expect(page.locator('.board .row')).toHaveCount(7);
+	// Only a modified format can be saved.
+	await expect(page.getByRole('button', { name: 'Save Format' })).toBeDisabled();
 
 	// Save Format turns into a name input for the new format; another Save Format appears under it.
 	for (let i = 1; i <= 5; i++) {
+		await page.getByRole('button', { name: 'Add tier' }).click();
 		await page.getByRole('button', { name: 'Save Format' }).click();
 		const name = page.getByRole('textbox', { name: 'Format name' });
 		await expect(name).toBeFocused();
 		await name.fill(`Mine ${i}`);
 		await name.press('Enter');
 		await expect(formatButton(page, `Mine ${i}`)).toHaveAttribute('aria-pressed', 'true');
+		if (i < 5) await expect(page.getByRole('button', { name: 'Save Format' })).toBeDisabled();
 	}
 	await expect(page.getByRole('button', { name: 'Save Format' })).toHaveCount(0);
 	await expect(page.getByText(/You've saved 5 formats/)).toBeVisible();
 
 	await page.reload();
 	await expect(formatButton(page, 'Mine 5')).toHaveAttribute('aria-pressed', 'true');
+	await expect(page.locator('.board .row')).toHaveCount(11);
+
+	// Each save put the format it came from back the way it was saved.
+	await formatButton(page, 'Mine 1').click();
 	await expect(page.locator('.board .row')).toHaveCount(7);
+	await formatButton(page, 'Mine 5').click();
 
 	// Clicking the active custom format renames it.
 	await formatButton(page, 'Mine 5').click();
@@ -92,7 +99,7 @@ test('save formats inline as buttons (max 5), rename, and delete', async ({ page
 
 	// Delete Format only shows for custom formats, and asks for a second click.
 	await page.getByRole('button', { name: 'Delete Format' }).click();
-	await page.getByRole('button', { name: 'Click to confirm delete' }).click();
+	await page.getByRole('button', { name: 'Confirm delete' }).click();
 	await expect(formatButton(page, 'Renamed')).toHaveCount(0);
 	await expect(page.getByRole('button', { name: 'Save Format' })).toBeVisible();
 
@@ -114,7 +121,7 @@ test('click a tier name to rename and recolor it; +/- add and remove the bottom 
 	const label = page.getByRole('button', { name: 'Edit tier GOAT' });
 	await expect(label).toBeVisible();
 	await expect(label.locator('..')).toHaveCSS('background-color', 'rgb(127, 191, 255)');
-	await expect(page.getByText(/You've changed this preset/)).toBeVisible();
+	await expect(page.getByRole('button', { name: 'Save Format' })).toBeEnabled();
 
 	await page.getByRole('button', { name: 'Remove bottom tier' }).click();
 	await expect(page.locator('.board .row')).toHaveCount(5);

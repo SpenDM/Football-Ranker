@@ -12,7 +12,6 @@
 >
 	<img src={team.logo} alt="" draggable="false" />
 	<span class="abbr">{team.abbr}</span>
-	{#if rank}<span class="rank">{rank}</span>{/if}
 </div>
 
 <style>
@@ -55,22 +54,5 @@
 		letter-spacing: 0.06em;
 		text-align: center;
 		color: #fff;
-	}
-
-	.rank {
-		position: absolute;
-		top: -7px;
-		left: -7px;
-		min-width: 22px;
-		height: 22px;
-		padding: 0 4px;
-		border-radius: 11px;
-		background: var(--accent-strong);
-		color: var(--bg-deep);
-		font-size: 0.72rem;
-		font-weight: 800;
-		display: grid;
-		place-items: center;
-		box-shadow: 0 1px 3px rgb(0 0 0 / 0.5);
 	}
 </style>

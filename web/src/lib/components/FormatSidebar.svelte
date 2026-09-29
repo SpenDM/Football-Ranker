@@ -66,17 +66,9 @@
 		<span class="label" id="formats-label">Format</span>
 		<div class="formats" role="group" aria-labelledby="formats-label">
 			{#each frameworks.presets as fw (fw.id)}
-				<button
-					class="btn ghost format"
-					aria-pressed={fw.id === active.id}
-					title={frameworks.presetEdits.current[fw.id] ? 'Modified' : undefined}
-					onclick={() => select(fw.id)}
+				<button class="btn ghost format" aria-pressed={fw.id === active.id} onclick={() => select(fw.id)}
+					>{PRESET_LABELS[fw.id] ?? fw.name}</button
 				>
-					{PRESET_LABELS[fw.id] ?? fw.name}{#if frameworks.presetEdits.current[fw.id]}<span
-							class="modified"
-							aria-label="(modified)">*</span
-						>{/if}
-				</button>
 			{/each}
 			{#each frameworks.customs.current as fw (fw.id)}
 				{#if fw.id === editingId}
@@ -92,7 +84,7 @@
 					/>
 				{:else}
 					<button
-						class="btn ghost format"
+						class="btn ghost format custom"
 						aria-pressed={fw.id === active.id}
 						title={fw.id === active.id ? 'Click to rename' : undefined}
 						onclick={() => select(fw.id)}><span class="name">{fw.name}</span></button
@@ -102,8 +94,10 @@
 			{#if frameworks.canSaveCustom}
 				<button
 					class="btn save"
-					title="Save this format and its rankings as one of your formats ({frameworks.customs
-						.current.length}/{MAX_CUSTOM_FRAMEWORKS}){auth.user ? '. Syncs to your account.' : ''}"
+					disabled={!frameworks.canSaveActive}
+					title={frameworks.canSaveActive
+						? `Save this format and its rankings as one of your formats (${frameworks.customs.current.length}/${MAX_CUSTOM_FRAMEWORKS})${auth.user ? '. Syncs to your account.' : ''}`
+						: 'Change this format to save it as a new one'}
 					onclick={saveNew}>Save Format</button
 				>
 			{:else}
@@ -114,7 +108,7 @@
 					class="btn ghost danger"
 					onclick={() => confirmOrRun('delete', () => frameworks.deleteCustom(active.id))}
 				>
-					{confirming === 'delete' ? 'Click to confirm delete' : 'Delete Format'}
+					{confirming === 'delete' ? 'Confirm delete' : 'Delete Format'}
 				</button>
 			{/if}
 		</div>
@@ -134,13 +128,6 @@
 		</div>
 	{/if}
 
-	{#if frameworks.activeIsModifiedPreset}
-		<p class="hint">
-			You've changed this preset. <strong>Save Format</strong> keeps it as your own, or
-			<strong>Reset to default</strong> undoes the changes.
-		</p>
-	{/if}
-
 	<div class="actions">
 		{#if frameworks.activeIsPreset}
 			<button
@@ -155,7 +142,7 @@
 			class="btn ghost danger"
 			onclick={() => confirmOrRun('clear', () => rankings.clear(active))}
 		>
-			{confirming === 'clear' ? 'Click to confirm clear' : 'Clear rankings'}
+			{confirming === 'clear' ? 'Confirm clear' : 'Clear rankings'}
 		</button>
 	</div>
 </aside>
@@ -170,6 +157,11 @@
 		background: var(--surface);
 		border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
 		border-radius: var(--radius);
+	}
+
+	/* The sidebar is narrow: let long button labels wrap instead of overflowing. */
+	.sidebar .btn {
+		white-space: normal;
 	}
 
 	.field {
@@ -193,7 +185,7 @@
 		gap: 6px;
 	}
 
-	.format {
+	.format.custom {
 		justify-content: flex-start;
 	}
 
@@ -207,11 +199,6 @@
 		background: var(--accent);
 		border-color: var(--accent);
 		color: var(--bg-deep);
-	}
-
-	.modified {
-		margin-left: 2px;
-		font-weight: 800;
 	}
 
 	.rename {

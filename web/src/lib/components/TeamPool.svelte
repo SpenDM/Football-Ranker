@@ -15,8 +15,7 @@
 	);
 </script>
 
-<section class="pool" aria-labelledby="pool-heading">
-	<h2 id="pool-heading">Teams <span>{32 - placed.size} unranked</span></h2>
+<section class="pool" aria-label="Teams">
 	<div class="divisions">
 		{#each remaining as group (group.division)}
 			<div class="division">
@@ -34,18 +33,6 @@
 		background: var(--bg-deep);
 		border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
 		border-radius: var(--radius);
-	}
-
-	h2 {
-		font-size: 1rem;
-		margin-bottom: 8px;
-	}
-
-	h2 span {
-		margin-left: 6px;
-		font-size: 0.8rem;
-		font-weight: 500;
-		color: var(--muted);
 	}
 
 	/* 2 or 4 divisions per row, so each conference's North/East/South/West stay together. */

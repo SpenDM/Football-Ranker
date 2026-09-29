@@ -38,8 +38,8 @@
 	}
 </script>
 
+<span class="number" aria-hidden="true">{rank}</span>
 <div class="slot" class:filled={items.length > 0}>
-	<span class="number" aria-hidden="true">{rank}</span>
 	<div
 		class="zone"
 		aria-label="Rank {rank}"
@@ -63,27 +63,27 @@
 </div>
 
 <style>
+	.number {
+		display: block;
+		margin-bottom: 4px;
+		text-align: center;
+		color: var(--muted);
+		font-size: 0.85rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+	}
+
+	/* Slots fill their grid column; the card inside grows with them. */
 	.slot {
 		position: relative;
-		width: var(--card-size);
-		height: var(--card-size);
+		width: 100%;
+		aspect-ratio: 1;
 		border: 2px dashed color-mix(in srgb, var(--accent) 45%, transparent);
 		border-radius: 10px;
 	}
 
 	.slot.filled {
 		border-color: transparent;
-	}
-
-	.number {
-		position: absolute;
-		inset: 0;
-		display: grid;
-		place-items: center;
-		color: var(--muted);
-		font-size: 1.3rem;
-		font-weight: 700;
-		pointer-events: none;
 	}
 
 	.zone {
@@ -95,6 +95,7 @@
 
 	/* The occupant and an incoming team's placeholder share the one cell. */
 	.item {
+		--card-size: 100%;
 		grid-area: 1 / 1;
 		transition: opacity 0.12s;
 	}

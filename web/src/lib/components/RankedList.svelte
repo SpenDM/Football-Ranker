@@ -30,19 +30,22 @@
 		padding: 14px;
 	}
 
+	/* Rows of 8 slots that fill the board's width, capped so four rows fit in the window. */
 	.slots {
+		--slot-max: max(64px, calc((100vh - 260px) / 4 - 26px));
 		display: grid;
-		grid-template-columns: repeat(4, var(--card-size));
-		gap: 12px 10px;
-		margin: 0;
+		grid-template-columns: repeat(8, minmax(0, 1fr));
+		gap: 10px 12px;
+		max-width: calc(8 * var(--slot-max) + 7 * 12px);
+		margin: 0 auto;
 		padding: 0;
 		list-style: none;
 	}
 
-	/* Rows of 8 wherever 8 cards fit (8 × 72px + 7 gaps); 4 per row on narrow screens. */
-	@container (min-width: 646px) {
+	/* 4 per row on narrow screens. */
+	@container (max-width: 480px) {
 		.slots {
-			grid-template-columns: repeat(8, var(--card-size));
+			grid-template-columns: repeat(4, minmax(0, 1fr));
 		}
 	}
 </style>

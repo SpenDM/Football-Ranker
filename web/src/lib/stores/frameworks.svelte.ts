@@ -19,12 +19,25 @@ import { rankings } from './rankings.svelte';
 
 type Listener = () => void;
 
+/** The parts of a framework that make up its format (not its name or rankings). */
+type Format = Pick<Framework, 'kind' | 'tiers' | 'slots'>;
+
+function formatOf(fw: Format): Format {
+	return JSON.parse(JSON.stringify({ kind: fw.kind, tiers: fw.tiers, slots: fw.slots }));
+}
+
+function sameFormat(a: Format, b: Format): boolean {
+	return JSON.stringify(formatOf(a)) === JSON.stringify(formatOf(b));
+}
+
 class FrameworksStore {
 	/** User-saved frameworks (max 5). Synced to Firestore while signed in. */
 	customs = new Persisted<Framework[]>('customFrameworks', []);
 	/** Unsaved edits to presets, keyed by preset id. */
 	presetEdits = new Persisted<Record<string, Framework>>('presetWorkingCopies', {});
 	activeId = new Persisted<string>('activeFrameworkId', DEFAULT_FRAMEWORK_ID);
+	/** Each custom framework's format as last saved, recorded on its first edit (local only). */
+	customBaselines = new Persisted<Record<string, Format>>('customBaselines', {});
 
 	#customListeners = new Set<Listener>();
 
@@ -35,8 +48,18 @@ class FrameworksStore {
 			this.presets.find((f) => f.id === DEFAULT_FRAMEWORK_ID)!
 	);
 	activeIsPreset = $derived(isPresetId(this.active.id));
-	activeIsModifiedPreset = $derived(Boolean(this.presetEdits.current[this.active.id]));
+	/** The active format differs from its preset defaults, or from how it was saved. */
+	activeIsModified = $derived.by(() => {
+		const fw = this.active;
+		const baseline = isPresetId(fw.id)
+			? this.presetEdits.current[fw.id] && presetById(fw.id)
+			: this.customBaselines.current[fw.id];
+		return Boolean(baseline) && !sameFormat(baseline as Format, fw);
+	});
+	activeIsModifiedPreset = $derived(this.activeIsPreset && this.activeIsModified);
 	canSaveCustom = $derived(this.customs.current.length < MAX_CUSTOM_FRAMEWORKS);
+	/** Only a modified format can be saved as a new one. */
+	canSaveActive = $derived(this.canSaveCustom && this.activeIsModified);
 
 	/** Called whenever the user changes custom frameworks (used for cloud sync). */
 	onCustomsChange(listener: Listener): () => void {
@@ -63,6 +86,7 @@ class FrameworksStore {
 			rankings.normalize(copy);
 		} else {
 			const custom = this.customs.current.find((f) => f.id === fw.id)!;
+			this.customBaselines.current[fw.id] ??= formatOf(custom);
 			edit(custom);
 			custom.updatedAt = Date.now();
 			rankings.normalize(custom);
@@ -118,17 +142,28 @@ class FrameworksStore {
 		rankings.normalize(presetById(id)!);
 	}
 
+	/** Put a custom framework's format back to how it was saved. */
+	#revertCustom(id: string): void {
+		const baseline = this.customBaselines.current[id];
+		const custom = this.customs.current.find((f) => f.id === id);
+		delete this.customBaselines.current[id];
+		if (!baseline || !custom) return;
+		Object.assign(custom, formatOf(baseline), { updatedAt: Date.now() });
+		rankings.normalize(custom);
+	}
+
 	/**
-	 * Save the active framework's current format (and rankings) as a new custom framework and
-	 * switch to it. A modified preset is reset back to its defaults.
+	 * Save the active framework's modified format (and rankings) as a new custom framework and
+	 * switch to it. The framework it came from goes back to its defaults or saved format.
 	 */
 	saveAsCustom(name: string, owner: string | null): Framework | null {
-		if (!this.canSaveCustom) return null;
+		if (!this.canSaveActive) return null;
 		const source = this.active;
 		const custom = createCustom(source, name, owner);
 		this.customs.current.push(custom);
 		rankings.copy(source.id, custom.id);
 		if (isPresetId(source.id)) this.resetPreset();
+		else this.#revertCustom(source.id);
 		this.select(custom.id);
 		this.#customsChanged();
 		return custom;
@@ -136,6 +171,7 @@ class FrameworksStore {
 
 	deleteCustom(id: string): void {
 		this.customs.current = this.customs.current.filter((f) => f.id !== id);
+		delete this.customBaselines.current[id];
 		rankings.remove(id);
 		this.#customsChanged();
 	}
