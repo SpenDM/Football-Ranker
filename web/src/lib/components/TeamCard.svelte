@@ -10,7 +10,7 @@
 	style:--secondary={team.secondaryColor}
 	title={rank ? `#${rank} ${team.name}` : team.name}
 >
-	<img src={team.logo} alt="" draggable="false" />
+	<img src={team.logo} alt="" draggable="false" class:on-color={team.logoOnColor} />
 	<span class="abbr">{team.abbr}</span>
 </div>
 
@@ -41,6 +41,10 @@
 		object-fit: contain;
 		filter: drop-shadow(0 0 1px rgb(255 255 255 / 0.9)) drop-shadow(0 1px 2px rgb(0 0 0 / 0.55));
 		pointer-events: none;
+	}
+
+	img.on-color {
+		filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.55));
 	}
 
 	.abbr {

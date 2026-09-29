@@ -24,7 +24,8 @@ LOGO_DIR = REPO_ROOT / "web" / "static" / "logos"
 LEGACY_ABBRS = {"LA", "OAK", "SD", "STL"}
 
 # ESPN's default logos for these teams are hard to see on their own team-color backgrounds;
-# use the primary logos drawn for a primary-color background (yellow LA, white JETS) instead.
+# use the primary logos drawn for a primary-color background (yellow LA, white JETS and ny)
+# instead. The app draws these without the light glow it adds behind other logos.
 # (The originals are 4096px; ESPN's image combiner serves them at the default logos' 500px.)
 ESPN_LOGOS = (
     "https://a.espncdn.com/combiner/i"
@@ -33,6 +34,7 @@ ESPN_LOGOS = (
 LOGO_OVERRIDES = {
     "LAR": ESPN_LOGOS.format(guid="2e1473b2-e269-fd7a-1137-c1edacb85986"),
     "NYJ": ESPN_LOGOS.format(guid="732d3caf-b350-1e34-48c6-b7cebb4a0d88"),
+    "NYG": ESPN_LOGOS.format(guid="378600ea-2397-8364-8399-b7c1606a49a7"),
 }
 
 CONFERENCE_ORDER = ["AFC", "NFC"]
@@ -67,6 +69,7 @@ def parse_teams(csv_text: str) -> list[dict]:
                 "primaryColor": row["team_color"].upper(),
                 "secondaryColor": row["team_color2"].upper(),
                 "logo": f"/logos/{abbr.lower()}.png",
+                "logoOnColor": abbr in LOGO_OVERRIDES,
                 "logoSource": LOGO_OVERRIDES.get(abbr, row["team_logo_espn"]),
             }
         )

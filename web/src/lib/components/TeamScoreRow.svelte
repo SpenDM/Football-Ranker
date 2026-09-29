@@ -26,7 +26,7 @@
 
 {#snippet cells()}
 	<span class="rank">{entry.rank}</span>
-	<span class="logo">{#if team}<img src={team.logo} alt="" />{/if}</span>
+	<span class="logo">{#if team}<img src={team.logo} alt="" class:on-color={team.logoOnColor} />{/if}</span>
 	<span class="name">{team?.nickname ?? entry.abbr}</span>
 	<span class="detail">{info}</span>
 	<span class="score">{entry.score.toFixed(1)}</span>
@@ -94,6 +94,10 @@
 		height: 20px;
 		object-fit: contain;
 		filter: drop-shadow(0 0 1px rgb(255 255 255 / 0.9));
+	}
+
+	.logo img.on-color {
+		filter: none;
 	}
 
 	.name {

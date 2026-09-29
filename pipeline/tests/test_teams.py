@@ -27,6 +27,8 @@ def test_parse_teams_uses_logo_overrides():
     csv_text = SAMPLE_CSV.replace("SF,San Francisco 49ers", "NYJ,New York Jets")
     nyj = next(t for t in parse_teams(csv_text) if t["abbr"] == "NYJ")
     assert nyj["logoSource"] == LOGO_OVERRIDES["NYJ"]
+    assert nyj["logoOnColor"] is True
+    assert not any(t["logoOnColor"] for t in parse_teams(SAMPLE_CSV))
 
 
 @pytest.fixture(scope="module")
