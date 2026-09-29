@@ -14,12 +14,12 @@ test('fantasy roster: team mode lists top/bottom 10s; mode choice persists', asy
 	await expect(page.getByLabel('Top 10 offense overall').locator('.rank').first()).toHaveText('1');
 	await expect(page.getByLabel('Bottom 10 offense overall').locator('.rank').first()).toHaveText('32');
 
-	await page.getByRole('button', { name: 'Player' }).click();
-	await expect(page.getByRole('heading', { name: 'Player mode' })).toBeVisible();
+	await page.getByRole('button', { name: 'Player', exact: true }).click();
+	await expect(page.getByRole('region', { name: 'Top Performers QB' })).toBeVisible();
 	await expect(page.getByLabel('Top 10 offense overall')).toHaveCount(0);
 
 	await page.reload();
-	await expect(page.getByRole('button', { name: 'Player' })).toHaveAttribute('aria-pressed', 'true');
+	await expect(page.getByRole('button', { name: 'Player', exact: true })).toHaveAttribute('aria-pressed', 'true');
 	await page.getByRole('button', { name: 'Team', exact: true }).click();
 	await expect(page.getByLabel('Top 10 defense passing').locator('li')).toHaveCount(10);
 });
@@ -81,4 +81,95 @@ test('fantasy roster: Team Lookup finds a team by city or name and shows its gam
 	await expect(page.getByRole('group', { name: 'CHI offense rushing' })).toBeVisible();
 	await page.getByRole('heading', { name: 'Offense' }).click();
 	await expect(page.getByRole('group', { name: 'CHI offense rushing' })).toHaveCount(0);
+});
+
+test('fantasy roster: player mode ranks each position in three columns', async ({ page }) => {
+	await page.goto('/fantasy-roster');
+	await page.getByRole('button', { name: 'Player', exact: true }).click();
+
+	const positions = page.getByRole('group', { name: 'Position' });
+	for (const label of ['QB', 'RB', 'WR', 'TE', 'FLEX', 'D/ST', 'K']) {
+		await positions.getByRole('button', { name: label, exact: true }).click();
+		for (const column of ['Top Performers', 'Best Matchup', 'Best Available']) {
+			await expect(
+				page.getByRole('region', { name: `${column} ${label}` }).locator('li')
+			).toHaveCount(20);
+		}
+	}
+
+	// D/ST matchups are lowest first; player matchups are highest first.
+	const scores = async (name: string) =>
+		(await page.getByRole('region', { name }).locator('.score').allTextContents()).map((t) =>
+			Number(t.replace('−', '-'))
+		);
+	const dst = await scores('Best Matchup D/ST');
+	expect(dst).toEqual([...dst].sort((a, b) => a - b));
+	await positions.getByRole('button', { name: 'RB', exact: true }).click();
+	const rb = await scores('Best Matchup RB');
+	expect(rb).toEqual([...rb].sort((a, b) => b - a));
+	const top = await scores('Top Performers RB');
+	expect(top).toEqual([...top].sort((a, b) => b - a));
+
+	// Clicking a player shows their games, ending with the upcoming one.
+	const first = page
+		.getByRole('region', { name: 'Top Performers RB' })
+		.locator('button.row')
+		.first();
+	await first.click();
+	const games = page.getByRole('region', { name: 'Top Performers RB' }).getByRole('group');
+	await expect(games.locator('li').first()).toContainText(/Wk \d+/);
+	await expect(games.locator('.opp-rank').first()).toHaveAttribute(
+		'title',
+		/^rushing defense rank \d+$/
+	);
+
+	// The chosen position is remembered.
+	await page.reload();
+	await expect(positions.getByRole('button', { name: 'RB', exact: true })).toHaveAttribute(
+		'aria-pressed',
+		'true'
+	);
+});
+
+test('fantasy roster: players marked not available can be restored from Player Lookup', async ({
+	page
+}) => {
+	await page.goto('/fantasy-roster');
+	await page.getByRole('button', { name: 'Player', exact: true }).click();
+	await page
+		.getByRole('group', { name: 'Position' })
+		.getByRole('button', { name: 'WR', exact: true })
+		.click();
+
+	const available = page.getByRole('region', { name: 'Best Available WR' });
+	const firstName = (await available.locator('.name').first().textContent())!;
+	await available.getByRole('button', { name: `Mark ${firstName} not available` }).click();
+	await expect(available.locator('.name').first()).not.toHaveText(firstName);
+	await expect(available.locator('.rank').first()).toHaveText('1');
+	// Still listed under Best Matchup.
+	await expect(
+		page.getByRole('region', { name: 'Best Matchup WR' }).locator('.name').first()
+	).toHaveText(firstName);
+
+	// Hidden players stay hidden after a reload.
+	await page.reload();
+	await expect(available.getByText(firstName, { exact: true })).toHaveCount(0);
+
+	await page.getByRole('button', { name: 'Player Lookup' }).click();
+	const input = page.getByRole('combobox', { name: 'Player lookup, WR' });
+	await input.fill(firstName);
+	await input.press('Enter');
+	const result = page.getByRole('group', { name: `${firstName} WR` });
+	await expect(result).toContainText('Not available');
+	await expect(
+		result
+			.getByRole('group', { name: `${firstName} by game` })
+			.locator('li')
+			.last()
+	).toContainText('UPCOMING');
+	await result.getByRole('button', { name: `Mark ${firstName} available` }).click();
+	await expect(result).toContainText('Available.');
+
+	await page.keyboard.press('Escape');
+	await expect(available.locator('.name').first()).toHaveText(firstName);
 });

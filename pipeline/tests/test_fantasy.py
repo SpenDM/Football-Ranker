@@ -11,6 +11,7 @@ from football_pipeline.fantasy import (
     default_season,
     dst_fantasy_points,
     final_scores,
+    kicker_fantasy_points,
     next_games,
     passing_fantasy_points,
     points_allowed_score,
@@ -125,19 +126,41 @@ def test_week_status_flags_unplayed_games():
 
 
 def test_players_keep_fantasy_positions_and_latest_team():
-    def row(week, team, points, position="WR", player_id="p1"):
+    def row(week, team, opponent, points, position="WR", player_id="p1"):
         game_id = {"1": "2026_01_LA_KC", "2": "2026_02_KC_BUF"}[week]
         return {"player_id": player_id, "player_display_name": "Player", "position": position,
                 "season_type": "REG", "week": week, "game_id": game_id, "team": team,
-                "fantasy_points_ppr": points}
+                "opponent_team": opponent, "fantasy_points_ppr": points}
 
     scores = {**final_scores(SCHEDULE, 2026), "2026_02_KC_BUF": SCHEDULE[1]}
     players = build_players(
-        [row("2", "KC", "5.5"), row("1", "LA", "10.25"), row("1", "LA", "8", position="LB", player_id="p2")],
+        [row("2", "KC", "BUF", "5.5"), row("1", "LA", "KC", "10.25"),
+         row("1", "LA", "KC", "8", position="LB", player_id="p2")],
         scores,
     )
-    assert players == [{"id": "p1", "name": "Player", "position": "WR", "team": "KC",
-                        "total": 15.75, "weeks": {"1": 10.25, "2": 5.5}}]
+    assert players == [{
+        "id": "p1", "name": "Player", "position": "WR", "team": "KC",
+        "games": 2, "total": 15.75, "average": 7.88,
+        "gameLog": [
+            {"week": 1, "opponent": "KC", "home": False, "points": 10.25},
+            {"week": 2, "opponent": "BUF", "home": False, "points": 5.5},
+        ],
+    }]
+
+
+def test_kicker_fantasy_points():
+    row = {"pat_made": "3", "pat_missed": "1", "fg_made_20_29": "1", "fg_made_30_39": "1",
+           "fg_made_40_49": "1", "fg_made_50_59": "1", "fg_missed": "2"}
+    # 3 - 1 PAT, 3 + 3 + 4 + 5 FG, -2 missed FG.
+    assert kicker_fantasy_points(row) == 15
+
+
+def test_kickers_score_kicker_points():
+    row = {"player_id": "k1", "player_display_name": "Kicker", "position": "K",
+           "season_type": "REG", "week": "1", "game_id": "2026_01_LA_KC", "team": "KC",
+           "opponent_team": "LA", "fantasy_points_ppr": "0", "pat_made": "3", "fg_made_40_49": "1"}
+    [kicker] = build_players([row], final_scores(SCHEDULE, 2026))
+    assert kicker["gameLog"] == [{"week": 1, "opponent": "LAR", "home": True, "points": 7}]
 
 
 @pytest.fixture(scope="module")
@@ -167,4 +190,7 @@ def test_generated_players_match_season():
     players = json.loads(PLAYERS_JSON.read_text())
     assert players["season"] == json.loads(TEAMS_JSON.read_text())["season"]
     assert players["players"], "no players"
-    assert all(p["position"] in {"QB", "RB", "WR", "TE"} for p in players["players"])
+    assert {p["position"] for p in players["players"]} == {"QB", "RB", "WR", "TE", "K"}
+    for p in players["players"]:
+        assert len(p["gameLog"]) == p["games"], p
+        assert p["average"] == pytest.approx(p["total"] / p["games"], abs=0.01), p

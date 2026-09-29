@@ -65,3 +65,34 @@ export type FantasyTeamData = {
 
 /** Generated weekly by `pipeline/football_pipeline/fantasy.py` from nflverse stats. */
 export const fantasyTeams = raw as FantasyTeamData;
+
+export type PlayerPosition = 'QB' | 'RB' | 'WR' | 'TE' | 'K';
+
+/** One game's fantasy points (PPR, or standard kicker points for kickers). */
+export type PlayerGame = {
+	week: number;
+	opponent: string;
+	home: boolean;
+	points: number;
+};
+
+export type FantasyPlayer = {
+	id: string;
+	name: string;
+	position: PlayerPosition;
+	/** Current team abbreviation. */
+	team: string;
+	games: number;
+	total: number;
+	/** Points per game played. */
+	average: number;
+	/** Games played, in week order. */
+	gameLog: PlayerGame[];
+};
+
+export type FantasyPlayerData = Omit<FantasyTeamData, 'teams'> & {
+	players: FantasyPlayer[];
+};
+
+/** Where the pipeline writes player data; it's served as a static file and fetched when needed. */
+export const PLAYERS_PATH = '/data/fantasy-players.json';

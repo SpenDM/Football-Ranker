@@ -1,4 +1,5 @@
 <script lang="ts">
+	import PlayerMode from '$lib/components/PlayerMode.svelte';
 	import RosterSidebar from '$lib/components/RosterSidebar.svelte';
 	import TeamLookup from '$lib/components/TeamLookup.svelte';
 	import TeamRankList from '$lib/components/TeamRankList.svelte';
@@ -79,11 +80,7 @@
 				</section>
 			{/each}
 		{:else}
-			<section class="soon" aria-label="Player mode">
-				<span class="badge">Coming soon</span>
-				<h2>Player mode</h2>
-				<p>Weekly PPR performance for every quarterback, running back, receiver and tight end.</p>
-			</section>
+			<PlayerMode />
 		{/if}
 	</div>
 </div>
@@ -161,34 +158,6 @@
 		margin: -4px 0 2px;
 		font-size: 0.8rem;
 		color: var(--muted);
-	}
-
-	.soon {
-		max-width: 680px;
-		padding: 28px;
-		background: var(--surface);
-		border: 1px solid var(--accent);
-		border-radius: 14px;
-	}
-
-	.soon h2 {
-		margin-top: 12px;
-		font-size: 1.4rem;
-	}
-
-	.soon p {
-		color: var(--muted);
-	}
-
-	.badge {
-		display: inline-block;
-		padding: 2px 10px;
-		border-radius: 999px;
-		background: var(--accent);
-		color: var(--bg-deep);
-		font-size: 0.75rem;
-		font-weight: 700;
-		text-transform: uppercase;
 	}
 
 	@media (max-width: 900px) {

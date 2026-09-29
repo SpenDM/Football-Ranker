@@ -50,7 +50,7 @@ npm run deploy              # build and deploy with wrangler (needs `npx wrangle
 ### Fantasy data
 `football_pipeline.fantasy` pulls nflverse's weekly [team](https://github.com/nflverse/nflverse-data/releases/tag/stats_team) and [player](https://github.com/nflverse/nflverse-data/releases/tag/stats_player) stats, plus final scores from the [schedule](https://github.com/nflverse/nfldata/blob/master/data/games.csv). It writes two files:
 - `web/src/lib/data/fantasy-teams.json`: Team mode scores, bundled into the app.
-- `web/static/data/fantasy-players.json`: weekly PPR points for every QB/RB/WR/TE, for Player mode.
+- `web/static/data/fantasy-players.json`: game logs for every QB/RB/WR/TE/K, for Player mode.
 
 Only regular-season games with a final score count, and every score is per game played, so byes don't count against a team:
 

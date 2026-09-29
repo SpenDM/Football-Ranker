@@ -2,7 +2,7 @@
 
 Pulls nflverse's weekly team and player stats plus the schedule (for final scores), then writes:
 - web/src/lib/data/fantasy-teams.json: per-team offense and defense scores (Team mode)
-- web/static/data/fantasy-players.json: weekly PPR points for every QB/RB/WR/TE (Player mode)
+- web/static/data/fantasy-players.json: game logs for every QB/RB/WR/TE/K (Player mode)
 
 Only regular-season games that have both stats and a final score are counted. Scores are per
 game played, so bye weeks don't count against a team.
@@ -34,7 +34,7 @@ PLAYERS_JSON = REPO_ROOT / "web" / "static" / "data" / "fantasy-players.json"
 # nflverse stats and schedules use "LA" for the Rams; the app uses "LAR".
 TEAM_ALIASES = {"LA": "LAR"}
 
-FANTASY_POSITIONS = {"QB", "RB", "WR", "TE"}
+FANTASY_POSITIONS = {"QB", "RB", "WR", "TE", "K"}
 
 # Offense scores count each point scored as this many yards.
 POINT_WEIGHT = 10
@@ -260,15 +260,27 @@ def build_team_rankings(
     return teams
 
 
+def kicker_fantasy_points(row: dict) -> float:
+    """Standard kicker points: PATs 1, FGs 3 (under 40 yards), 4 (40-49) or 5 (50+), misses -1."""
+    return (
+        num(row, "pat_made")
+        - num(row, "pat_missed")
+        + 3 * (num(row, "fg_made_0_19") + num(row, "fg_made_20_29") + num(row, "fg_made_30_39"))
+        + 4 * num(row, "fg_made_40_49")
+        + 5 * (num(row, "fg_made_50_59") + num(row, "fg_made_60_"))
+        - num(row, "fg_missed")
+    )
+
+
 def build_players(player_rows: list[dict], scores: dict[str, dict]) -> list[dict]:
-    """Weekly PPR points for each fantasy-position player, highest season total first."""
+    """Each fantasy-position player's game log and points per game, highest season total first.
+
+    QBs, RBs, WRs and TEs score PPR points; kickers score standard kicker points.
+    """
     players: dict[str, dict] = {}
     for row in sorted(player_rows, key=lambda r: int(r["week"])):
-        if (
-            row["season_type"] != "REG"
-            or row["game_id"] not in scores
-            or row["position"] not in FANTASY_POSITIONS
-        ):
+        game = scores.get(row["game_id"])
+        if row["season_type"] != "REG" or game is None or row["position"] not in FANTASY_POSITIONS:
             continue
         player = players.setdefault(
             row["player_id"],
@@ -277,17 +289,30 @@ def build_players(player_rows: list[dict], scores: dict[str, dict]) -> list[dict
                 "name": row["player_display_name"],
                 "position": row["position"],
                 "team": "",
+                "games": 0,
                 "total": 0.0,
-                "weeks": {},
+                "average": 0.0,
+                "gameLog": [],
             },
         )
         # Rows are in week order, so this ends on the player's current team.
-        player["team"] = team_abbr(row["team"])
-        points = num(row, "fantasy_points_ppr")
-        player["weeks"][row["week"]] = round(points, 2)
+        team = player["team"] = team_abbr(row["team"])
+        points = (
+            kicker_fantasy_points(row) if row["position"] == "K" else num(row, "fantasy_points_ppr")
+        )
+        player["gameLog"].append(
+            {
+                "week": int(row["week"]),
+                "opponent": team_abbr(row["opponent_team"]),
+                "home": team_abbr(game["home_team"]) == team,
+                "points": round(points, 2),
+            }
+        )
+        player["games"] += 1
         player["total"] += points
 
     for player in players.values():
+        player["average"] = round(player["total"] / player["games"], 2)
         player["total"] = round(player["total"], 2)
     return sorted(players.values(), key=lambda p: (-p["total"], p["name"]))
 
