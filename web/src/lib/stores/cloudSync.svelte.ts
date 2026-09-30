@@ -6,6 +6,7 @@ import {
 import type { Framework } from '$lib/power-rankings/types';
 import { auth } from './auth.svelte';
 import { frameworks } from './frameworks.svelte';
+import { leagueSync } from './leagueSync.svelte';
 import { Persisted } from './persisted.svelte';
 
 const WRITE_DEBOUNCE_MS = 500;
@@ -105,6 +106,11 @@ class CloudSync {
 			} catch (err) {
 				console.error('Final sync before sign-out failed', err);
 			}
+		}
+		try {
+			await leagueSync.flush();
+		} catch (err) {
+			console.error('Final league sync before sign-out failed', err);
 		}
 		await auth.signOut();
 	}

@@ -2,7 +2,8 @@
 
 Pulls nflverse's weekly team and player stats plus the schedule (for final scores), then writes:
 - web/src/lib/data/fantasy-teams.json: per-team offense and defense scores (Team mode)
-- web/static/data/fantasy-players.json: game logs for every QB/RB/WR/TE/K (Player mode)
+- web/static/data/fantasy-players.json: game logs for every QB/RB/WR/TE/K (Player mode), plus
+  every D/ST's game log with ESPN's default scoring (Leagues)
 
 Only regular-season games that have both stats and a final score are counted. Scores are per
 game played, so bye weeks don't count against a team.
@@ -42,6 +43,14 @@ POINT_WEIGHT = 10
 # Standard DST scoring for points allowed: (max points allowed, fantasy points).
 POINTS_ALLOWED_TIERS = [(0, 10), (6, 7), (13, 4), (20, 1), (27, 0), (34, -1)]
 POINTS_ALLOWED_FLOOR = -4
+
+# ESPN's default D/ST scoring for points and yards allowed: (max allowed, fantasy points).
+ESPN_POINTS_ALLOWED_TIERS = [(0, 5), (6, 4), (13, 3), (17, 1), (27, 0), (34, -1), (45, -3)]
+ESPN_POINTS_ALLOWED_FLOOR = -5
+ESPN_YARDS_ALLOWED_TIERS = [
+    (99, 5), (199, 3), (299, 2), (349, 0), (399, -1), (449, -3), (499, -5), (549, -6)
+]
+ESPN_YARDS_ALLOWED_FLOOR = -7
 
 
 def team_abbr(abbr: str) -> str:
@@ -129,15 +138,19 @@ def passing_fantasy_points(row: dict) -> float:
     return passer + receivers
 
 
-def points_allowed_score(points_allowed: int) -> int:
-    for max_allowed, score in POINTS_ALLOWED_TIERS:
-        if points_allowed <= max_allowed:
+def tier_score(allowed: float, tiers: list[tuple[int, int]], floor: int) -> int:
+    for max_allowed, score in tiers:
+        if allowed <= max_allowed:
             return score
-    return POINTS_ALLOWED_FLOOR
+    return floor
 
 
-def dst_fantasy_points(row: dict, points_allowed: int) -> float:
-    """Standard DST fantasy points for one team stats row."""
+def points_allowed_score(points_allowed: int) -> int:
+    return tier_score(points_allowed, POINTS_ALLOWED_TIERS, POINTS_ALLOWED_FLOOR)
+
+
+def dst_play_points(row: dict) -> float:
+    """DST points from sacks, takeaways, safeties, blocked kicks and TDs (the same for ESPN)."""
     touchdowns = (
         num(row, "def_tds") + num(row, "fumble_recovery_tds") + num(row, "special_teams_tds")
     )
@@ -151,7 +164,27 @@ def dst_fantasy_points(row: dict, points_allowed: int) -> float:
         + 2 * num(row, "def_safeties")
         + 2 * blocked_kicks
         + 6 * touchdowns
-        + points_allowed_score(points_allowed)
+    )
+
+
+def dst_fantasy_points(row: dict, points_allowed: int) -> float:
+    """Standard DST fantasy points for one team stats row."""
+    return dst_play_points(row) + points_allowed_score(points_allowed)
+
+
+def yards_gained(row: dict) -> float:
+    """An offense's net yards in one team stats row (sack yardage comes off passing)."""
+    return (
+        num(row, "passing_yards") - num(row, "sack_yards_lost") + num(row, "rushing_yards")
+    )
+
+
+def espn_dst_points(row: dict, points_allowed: int, yards_allowed: float) -> float:
+    """ESPN's default D/ST fantasy points: plays plus points and yards allowed tiers."""
+    return (
+        dst_play_points(row)
+        + tier_score(points_allowed, ESPN_POINTS_ALLOWED_TIERS, ESPN_POINTS_ALLOWED_FLOOR)
+        + tier_score(yards_allowed, ESPN_YARDS_ALLOWED_TIERS, ESPN_YARDS_ALLOWED_FLOOR)
     )
 
 
@@ -317,6 +350,41 @@ def build_players(player_rows: list[dict], scores: dict[str, dict]) -> list[dict
     return sorted(players.values(), key=lambda p: (-p["total"], p["name"]))
 
 
+def build_defenses(team_rows: list[dict], scores: dict[str, dict]) -> list[dict]:
+    """Every D/ST's game log with ESPN's default scoring, sorted by team abbreviation.
+
+    Yards allowed come from the opponent's row for the same game.
+    """
+    rows = [r for r in team_rows if r["season_type"] == "REG" and r["game_id"] in scores]
+    offense = {(r["game_id"], team_abbr(r["team"])): r for r in rows}
+    defenses: dict[str, dict] = {}
+    for row in sorted(rows, key=lambda r: int(scores[r["game_id"]]["week"])):
+        game = scores[row["game_id"]]
+        team, opponent = team_abbr(row["team"]), team_abbr(row["opponent_team"])
+        _, allowed = points_for_and_against(game, team)
+        opponent_row = offense.get((row["game_id"], opponent))
+        yards_allowed = yards_gained(opponent_row) if opponent_row else 0.0
+        points = espn_dst_points(row, allowed, yards_allowed)
+        dst = defenses.setdefault(
+            team, {"team": team, "games": 0, "total": 0.0, "average": 0.0, "gameLog": []}
+        )
+        dst["gameLog"].append(
+            {
+                "week": int(game["week"]),
+                "opponent": opponent,
+                "home": team_abbr(game["home_team"]) == team,
+                "points": round(points, 2),
+            }
+        )
+        dst["games"] += 1
+        dst["total"] += points
+
+    for dst in defenses.values():
+        dst["average"] = round(dst["total"] / dst["games"], 2)
+        dst["total"] = round(dst["total"], 2)
+    return [defenses[abbr] for abbr in sorted(defenses)]
+
+
 def week_status(team_rows: list[dict], schedule: list[dict], season: int) -> tuple[int, bool]:
     """The latest week with counted games, and whether every game that week is counted."""
     scores = final_scores(schedule, season)
@@ -364,14 +432,16 @@ def main() -> None:
     if len(teams) != 32:
         raise SystemExit(f"Expected 32 teams, got {len(teams)}")
     players = build_players(player_rows, scores)
+    defenses = build_defenses(team_rows, scores)
 
     meta = {"season": season, "throughWeek": through_week, "weekComplete": week_complete}
     write_json({**meta, "teams": teams}, TEAMS_JSON, indent=2)
-    write_json({**meta, "players": players}, PLAYERS_JSON, indent=None)
+    write_json({**meta, "players": players, "defenses": defenses}, PLAYERS_JSON, indent=None)
     print(
         f"{season} through week {through_week}{'' if week_complete else ' (partial)'}: "
         f"wrote {len(teams)} teams to {TEAMS_JSON.relative_to(REPO_ROOT)} and "
-        f"{len(players)} players to {PLAYERS_JSON.relative_to(REPO_ROOT)}"
+        f"{len(players)} players and {len(defenses)} D/STs to "
+        f"{PLAYERS_JSON.relative_to(REPO_ROOT)}"
     )
 
 

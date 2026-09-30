@@ -6,14 +6,14 @@
 
 <svelte:head>
 	<title>Football Tools</title>
-	<meta name="description" content="Power rankings, fantasy roster and draft tools for football fans." />
+	<meta name="description" content="Power rankings, fantasy roster, league and draft tools for football fans." />
 </svelte:head>
 
 <div class="top"><LoginButton /></div>
 
 <section class="hero">
 	<h1>Football Tools</h1>
-	<p>Rank the league, run your fantasy roster, and build your draft board.</p>
+	<p>Rank the league, run your fantasy roster and leagues, and build your draft board.</p>
 </section>
 
 <div class="tools">

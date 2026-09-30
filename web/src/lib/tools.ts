@@ -23,6 +23,14 @@ export const tools: Tool[] = [
 		status: 'live'
 	},
 	{
+		slug: 'leagues',
+		name: 'Leagues',
+		path: '/leagues',
+		description:
+			'Run your own fantasy leagues with up to 16 teams: set lineups, add and drop players, and track the standings.',
+		status: 'live'
+	},
+	{
 		slug: 'fantasy-draft',
 		name: 'Fantasy Draft Manager',
 		path: '/fantasy-draft',

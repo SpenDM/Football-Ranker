@@ -90,9 +90,29 @@ export type FantasyPlayer = {
 	gameLog: PlayerGame[];
 };
 
+/** A team's D/ST game log with ESPN's default D/ST scoring (used by Leagues). */
+export type FantasyDefense = Omit<FantasyPlayer, 'id' | 'name' | 'position'>;
+
 export type FantasyPlayerData = Omit<FantasyTeamData, 'teams'> & {
 	players: FantasyPlayer[];
+	defenses: FantasyDefense[];
 };
 
 /** Where the pipeline writes player data; it's served as a static file and fetched when needed. */
 export const PLAYERS_PATH = '/data/fantasy-players.json';
+
+let playersRequest: Promise<FantasyPlayerData> | undefined;
+
+/** Fetch the player data once per page load (a failed request is retried on the next call). */
+export function loadPlayers(url: string): Promise<FantasyPlayerData> {
+	playersRequest ??= fetch(url)
+		.then((res) => {
+			if (!res.ok) throw new Error(`HTTP ${res.status}`);
+			return res.json() as Promise<FantasyPlayerData>;
+		})
+		.catch((err) => {
+			playersRequest = undefined;
+			throw err;
+		});
+	return playersRequest;
+}

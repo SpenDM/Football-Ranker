@@ -4,7 +4,16 @@ import {
 	initializeTestEnvironment,
 	type RulesTestEnvironment
 } from '@firebase/rules-unit-testing';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import {
+	collection,
+	deleteDoc,
+	doc,
+	getDoc,
+	getDocs,
+	query,
+	setDoc,
+	where
+} from 'firebase/firestore';
 import { readFileSync } from 'node:fs';
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
 
@@ -58,5 +67,50 @@ describe('users/{uid}', () => {
 		await assertFails(setDoc(doc(bob, 'users/alice'), { frameworks: [], updatedAt: 1 }));
 		const anon = env.unauthenticatedContext().firestore();
 		await assertFails(getDoc(doc(anon, 'users/alice')));
+	});
+});
+
+const league = (id: string, owner: string, teams = 10) => ({
+	id,
+	name: 'League',
+	type: 'fantasy',
+	season: 2026,
+	owner,
+	createdAt: 1,
+	updatedAt: 1,
+	settings: { sharedPlayers: false, startWeek: 1 },
+	teams: Array.from({ length: teams }, (_, i) => ({ id: `t${i}`, name: `Team ${i}`, lineups: {} }))
+});
+
+describe('leagues/{leagueId}', () => {
+	it('lets a user create, update, query and delete their own leagues', async () => {
+		const db = env.authenticatedContext('alice').firestore();
+		await assertSucceeds(setDoc(doc(db, 'leagues/l1'), league('l1', 'alice', 16)));
+		await assertSucceeds(setDoc(doc(db, 'leagues/l1'), { ...league('l1', 'alice'), name: 'New' }));
+		await assertSucceeds(getDoc(doc(db, 'leagues/l1')));
+		await assertSucceeds(getDocs(query(collection(db, 'leagues'), where('owner', '==', 'alice'))));
+		await assertSucceeds(deleteDoc(doc(db, 'leagues/l1')));
+		await assertSucceeds(deleteDoc(doc(db, 'leagues/never-uploaded')));
+	});
+
+	it('rejects leagues owned by someone else, over 16 teams, or with unexpected fields', async () => {
+		const db = env.authenticatedContext('alice').firestore();
+		await assertFails(setDoc(doc(db, 'leagues/l1'), league('l1', 'bob')));
+		await assertFails(setDoc(doc(db, 'leagues/l1'), league('l1', 'alice', 17)));
+		await assertFails(setDoc(doc(db, 'leagues/l1'), league('other-id', 'alice')));
+		await assertFails(setDoc(doc(db, 'leagues/l1'), { ...league('l1', 'alice'), admin: true }));
+	});
+
+	it("blocks access to other users' leagues and to signed-out visitors", async () => {
+		await env.withSecurityRulesDisabled((ctx) =>
+			setDoc(doc(ctx.firestore(), 'leagues/l1'), league('l1', 'alice'))
+		);
+		const bob = env.authenticatedContext('bob').firestore();
+		await assertFails(getDoc(doc(bob, 'leagues/l1')));
+		await assertFails(setDoc(doc(bob, 'leagues/l1'), league('l1', 'bob')));
+		await assertFails(deleteDoc(doc(bob, 'leagues/l1')));
+		await assertFails(getDocs(query(collection(bob, 'leagues'), where('owner', '==', 'alice'))));
+		const anon = env.unauthenticatedContext().firestore();
+		await assertFails(getDoc(doc(anon, 'leagues/l1')));
 	});
 });

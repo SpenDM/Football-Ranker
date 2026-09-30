@@ -6,6 +6,7 @@
 	import TopBanner from '$lib/components/TopBanner.svelte';
 	import { auth } from '$lib/stores/auth.svelte';
 	import { cloudSync } from '$lib/stores/cloudSync.svelte';
+	import { leagueSync } from '$lib/stores/leagueSync.svelte';
 	import { toolForPath } from '$lib/tools';
 	import { onMount } from 'svelte';
 
@@ -15,6 +16,7 @@
 
 	onMount(() => {
 		cloudSync.start();
+		leagueSync.start();
 		void auth.init();
 	});
 </script>

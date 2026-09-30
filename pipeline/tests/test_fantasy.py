@@ -6,10 +6,12 @@ import pytest
 from football_pipeline.fantasy import (
     PLAYERS_JSON,
     TEAMS_JSON,
+    build_defenses,
     build_players,
     build_team_rankings,
     default_season,
     dst_fantasy_points,
+    espn_dst_points,
     final_scores,
     kicker_fantasy_points,
     next_games,
@@ -72,6 +74,29 @@ def test_points_allowed_tiers(allowed, score):
 def test_dst_fantasy_points():
     # 3.5 sacks + 2 INT + 2 fumble recovery + 6 TD + 1 for allowing 17.
     assert dst_fantasy_points(KC_ROW, 17) == pytest.approx(14.5)
+
+
+@pytest.mark.parametrize(
+    ("allowed", "yards", "score"),
+    [(0, 99, 10), (1, 100, 7), (6, 199, 7), (7, 200, 5), (13, 299, 5), (14, 300, 1), (17, 349, 1),
+     (18, 350, -1), (27, 399, -1), (28, 400, -4), (34, 449, -4), (35, 450, -8), (45, 499, -8),
+     (46, 500, -11), (60, 549, -11), (60, 550, -12)],
+)
+def test_espn_dst_points_allowed_and_yards_allowed_tiers(allowed, yards, score):
+    assert espn_dst_points({}, allowed, yards) == score
+
+
+def test_defenses_use_espn_scoring_and_opponent_yards():
+    # KC: 13.5 play points, 17 allowed (+1), LA gained 300 - 20 sack yards + 50 = 330 (0).
+    # LA: nothing, 24 allowed (0), KC gained 250 + 100 = 350 (-1).
+    la_row = {**LA_ROW, "sack_yards_lost": "20"}
+    defenses = build_defenses([KC_ROW, la_row], final_scores(SCHEDULE, 2026))
+    assert defenses == [
+        {"team": "KC", "games": 1, "total": 14.5, "average": 14.5,
+         "gameLog": [{"week": 1, "opponent": "LAR", "home": True, "points": 14.5}]},
+        {"team": "LAR", "games": 1, "total": -1.0, "average": -1.0,
+         "gameLog": [{"week": 1, "opponent": "KC", "home": False, "points": -1.0}]},
+    ]
 
 
 def test_team_rankings_are_per_game_and_map_rams():
@@ -194,3 +219,7 @@ def test_generated_players_match_season():
     for p in players["players"]:
         assert len(p["gameLog"]) == p["games"], p
         assert p["average"] == pytest.approx(p["total"] / p["games"], abs=0.01), p
+    assert len(players["defenses"]) == 32
+    for d in players["defenses"]:
+        assert len(d["gameLog"]) == d["games"], d
+        assert d["total"] == pytest.approx(sum(g["points"] for g in d["gameLog"]), abs=0.01), d

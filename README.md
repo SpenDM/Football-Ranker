@@ -5,6 +5,7 @@ Web App for Fantasy Football Tools
 | --- | --- |
 | **Power Rankings**: drag and drop all 32 teams into a 1–32 ranking, letter-grade tiers, or up to 5 saved custom formats | Live |
 | **Fantasy Roster Manager**: Team mode ranks the top and bottom 10 offenses and defenses (overall, rushing, passing), refreshed weekly. Player mode is next | Live (Team mode) |
+| **Leagues**: create fantasy leagues of up to 16 teams with ESPN's default lineup, roster limits and PPR scoring. Set weekly lineups, add and drop players (optionally shared between teams), and see weekly and season standings. Inviting other users is next | Live (single user) |
 | **Fantasy Draft Manager**: build a draft big board from NFL rosters | Placeholder |
 
 ## Architecture
@@ -19,6 +20,10 @@ firestore.rules, firebase.json   Firebase Auth (Google) + Firestore for per-user
 - **Signed-in users** also get their custom formats synced to Firestore (`users/{uid}`, max 5, enforced by the security rules).
   - Formats created while signed out are merged into the account on login.
   - Signing out removes the account's formats from the browser.
+- **Leagues** are saved to localStorage too. Signed-in users' leagues also sync to Firestore, one document per league (`leagues/{id}`, readable and writable only by its `owner`).
+  - Leagues created while signed out join the account on login.
+  - Each team stores a lineup for every week it changed, so earlier weeks keep the lineup they were scored with.
+  - Signing out removes the account's leagues from the browser.
 - **Firebase config** lives in `web/src/lib/firebase-config.ts`, which is committed; the values are public identifiers. While its `apiKey` is empty, login is disabled and everything else still works.
  
 ## Development
@@ -50,7 +55,9 @@ npm run deploy              # build and deploy with wrangler (needs `npx wrangle
 ### Fantasy data
 `football_pipeline.fantasy` pulls nflverse's weekly [team](https://github.com/nflverse/nflverse-data/releases/tag/stats_team) and [player](https://github.com/nflverse/nflverse-data/releases/tag/stats_player) stats, plus final scores from the [schedule](https://github.com/nflverse/nfldata/blob/master/data/games.csv). It writes two files:
 - `web/src/lib/data/fantasy-teams.json`: Team mode scores, bundled into the app.
-- `web/static/data/fantasy-players.json`: game logs for every QB/RB/WR/TE/K, for Player mode.
+- `web/static/data/fantasy-players.json`: game logs for every QB/RB/WR/TE/K, for Player mode and Leagues, plus every D/ST's game log for Leagues.
+  - QBs, RBs, WRs and TEs score PPR points, and kickers score 3/4/5 per field goal by distance, 1 per PAT and −1 per miss. Both match ESPN's defaults.
+  - D/STs use ESPN's default D/ST scoring: sack 1; INT, fumble recovery, safety and blocked kick 2; TD 6. Points allowed score 5/4/3/1/0/−1/−3/−5 (0, 1–6, 7–13, 14–17, 18–27, 28–34, 35–45, 46+). Yards allowed score 5/3/2/0/−1/−3/−5/−6/−7 (under 100, 100–199, 200–299, 300–349, 350–399, 400–449, 450–499, 500–549, 550+).
 
 Only regular-season games with a final score count, and every score is per game played, so byes don't count against a team:
 

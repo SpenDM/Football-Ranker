@@ -14,5 +14,33 @@ service cloud.firestore {
         && request.resource.data.frameworks is list
         && request.resource.data.frameworks.size() <= 5;
     }
+
+    // One document per league, readable and writable only by the account that owns it.
+    match /leagues/{leagueId} {
+      function signedIn() {
+        return request.auth != null;
+      }
+
+      function ownsStored() {
+        return signedIn() && resource.data.owner == request.auth.uid;
+      }
+
+      function validLeague() {
+        let data = request.resource.data;
+        return data.owner == request.auth.uid
+          && data.id == leagueId
+          && data.keys().hasOnly(
+            ['id', 'name', 'type', 'season', 'owner', 'createdAt', 'updatedAt', 'settings', 'teams'])
+          && data.type == 'fantasy'
+          && data.name is string && data.name.size() <= 40
+          && data.teams is list && data.teams.size() <= 16;
+      }
+
+      allow read: if ownsStored();
+      allow create: if signedIn() && validLeague();
+      allow update: if ownsStored() && validLeague();
+      // Deleting a league that was never uploaded is a no-op.
+      allow delete: if signedIn() && (resource == null || ownsStored());
+    }
   }
 }

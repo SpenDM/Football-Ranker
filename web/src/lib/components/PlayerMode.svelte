@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { asset } from '$app/paths';
-	import { fantasyTeams, PLAYERS_PATH, type FantasyPlayerData } from '$lib/data/fantasy';
+	import { fantasyTeams, loadPlayers, PLAYERS_PATH, type FantasyPlayerData } from '$lib/data/fantasy';
 	import {
 		bestMatchups,
 		renumber,
@@ -19,14 +19,9 @@
 
 	const ranks = rankIndex(fantasyTeams.teams);
 
-	async function loadPlayers(): Promise<FantasyPlayerData> {
-		const res = await fetch(asset(PLAYERS_PATH));
-		if (!res.ok) throw new Error(`HTTP ${res.status}`);
-		return res.json();
-	}
 	let data = $state<FantasyPlayerData | null>(null);
 	let failed = $state(false);
-	loadPlayers().then(
+	loadPlayers(asset(PLAYERS_PATH)).then(
 		(d) => (data = d),
 		() => (failed = true)
 	);
