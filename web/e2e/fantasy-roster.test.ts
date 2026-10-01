@@ -177,3 +177,31 @@ test('fantasy roster: players marked not available can be restored from Player L
 	await page.keyboard.press('Escape');
 	await expect(available.locator('.name').first()).toHaveText(firstName);
 });
+
+test('fantasy roster: Team Matchups lists the upcoming week, better team first; view persists', async ({
+	page
+}) => {
+	await page.goto('/fantasy-roster');
+	await expect(page.getByRole('button', { name: 'Team Rankings' })).toHaveAttribute('aria-pressed', 'true');
+	await page.getByRole('button', { name: 'Team Matchups' }).click();
+	await expect(page.getByLabel('Top 10 offense overall')).toHaveCount(0);
+
+	await expect(page.getByRole('heading', { name: /^Week \d+ Matchups$/ })).toBeVisible();
+	const games = page.getByRole('list', { name: /^Week \d+ games$/ }).locator('li');
+	await expect(games).not.toHaveCount(0);
+	const first = games.first();
+	await expect(first.locator('.ranks').first()).toHaveText(/^Off #\d+ · Def #\d+$/);
+	await expect(first.locator('.score')).toHaveText(/^\d+$/);
+
+	// Better team first: its offense + defense rank total is no higher than its opponent's.
+	const total = async (i: number) =>
+		(await first.locator('.ranks').nth(i).innerText()).match(/\d+/g)!.map(Number).reduce((a, b) => a + b);
+	const [better, worse] = [await total(0), await total(1)];
+	expect(better).toBeLessThanOrEqual(worse);
+	await expect(first.locator('.score')).toHaveText(String(worse - better));
+
+	await page.reload();
+	await expect(page.getByRole('button', { name: 'Team Matchups' })).toHaveAttribute('aria-pressed', 'true');
+	await page.getByRole('button', { name: 'Team Rankings' }).click();
+	await expect(page.getByLabel('Top 10 offense overall').locator('li')).toHaveCount(10);
+});

@@ -16,3 +16,8 @@ export function setAvailable(id: string, available: boolean): void {
 	const rest = unavailable.current.filter((x) => x !== id);
 	unavailable.current = available ? rest : [...rest, id];
 }
+
+export type TeamView = 'rankings' | 'matchups';
+
+/** Team mode's view, remembered per browser. */
+export const rosterTeamView = new Persisted<TeamView>('roster-team-view', 'rankings');

@@ -2,6 +2,7 @@
 	import PlayerMode from '$lib/components/PlayerMode.svelte';
 	import RosterSidebar from '$lib/components/RosterSidebar.svelte';
 	import TeamLookup from '$lib/components/TeamLookup.svelte';
+	import TeamMatchups from '$lib/components/TeamMatchups.svelte';
 	import TeamRankList from '$lib/components/TeamRankList.svelte';
 	import { fantasyTeams, type TeamFantasyStats } from '$lib/data/fantasy';
 	import {
@@ -12,7 +13,12 @@
 		topAndBottom,
 		UNITS
 	} from '$lib/fantasy-roster/team-rankings';
-	import { rosterMode } from '$lib/stores/rosterMode.svelte';
+	import { rosterMode, rosterTeamView, type TeamView } from '$lib/stores/rosterMode.svelte';
+
+	const teamViews: { id: TeamView; label: string }[] = [
+		{ id: 'rankings', label: 'Team Rankings' },
+		{ id: 'matchups', label: 'Team Matchups' }
+	];
 
 	// The data is fixed at build time, so the rankings only need computing once.
 	const ranks = rankIndex(fantasyTeams.teams);
@@ -40,6 +46,19 @@
 
 	<div class="canvas">
 		{#if rosterMode.current === 'team'}
+			<div class="views" role="group" aria-label="Team view">
+				{#each teamViews as v (v.id)}
+					<button
+						class="btn ghost"
+						aria-pressed={rosterTeamView.current === v.id}
+						onclick={() => (rosterTeamView.current = v.id)}>{v.label}</button
+					>
+				{/each}
+			</div>
+		{/if}
+		{#if rosterMode.current === 'team' && rosterTeamView.current === 'matchups'}
+			<TeamMatchups />
+		{:else if rosterMode.current === 'team'}
 			{#each views as view (view.unit)}
 				<section class="unit" aria-labelledby="unit-{view.unit}">
 					<h2 id="unit-{view.unit}">{view.title}</h2>
@@ -102,6 +121,25 @@
 		container-type: inline-size;
 		display: grid;
 		gap: 28px;
+	}
+
+	/* Pulled up so it sits closer to the view below than the canvas gap. */
+	.views {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		margin-bottom: -14px;
+	}
+
+	.views .btn {
+		padding: 0.3rem 0.7rem;
+		font-weight: 700;
+	}
+
+	.views .btn[aria-pressed='true'] {
+		background: var(--accent);
+		border-color: var(--accent);
+		color: var(--bg-deep);
 	}
 
 	.unit h2 {
