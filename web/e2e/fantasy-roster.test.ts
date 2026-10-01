@@ -204,4 +204,9 @@ test('fantasy roster: Team Matchups lists the upcoming week, better team first; 
 	await expect(page.getByRole('button', { name: 'Team Matchups' })).toHaveAttribute('aria-pressed', 'true');
 	await page.getByRole('button', { name: 'Team Rankings' }).click();
 	await expect(page.getByLabel('Top 10 offense overall').locator('li')).toHaveCount(10);
+
+	// The views branch from the Team button only while Team mode is selected.
+	await page.getByRole('button', { name: 'Player', exact: true }).click();
+	await expect(page.getByRole('group', { name: 'Team view' })).toHaveCount(0);
+	await expect(page.locator('.data-note')).toContainText(/^Data: \d{4} regular season/);
 });

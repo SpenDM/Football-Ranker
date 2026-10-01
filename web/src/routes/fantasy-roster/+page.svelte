@@ -13,12 +13,9 @@
 		topAndBottom,
 		UNITS
 	} from '$lib/fantasy-roster/team-rankings';
-	import { rosterMode, rosterTeamView, type TeamView } from '$lib/stores/rosterMode.svelte';
+	import { rosterMode, rosterTeamView } from '$lib/stores/rosterMode.svelte';
 
-	const teamViews: { id: TeamView; label: string }[] = [
-		{ id: 'rankings', label: 'Team Rankings' },
-		{ id: 'matchups', label: 'Team Matchups' }
-	];
+	const { season, throughWeek, weekComplete } = fantasyTeams;
 
 	// The data is fixed at build time, so the rankings only need computing once.
 	const ranks = rankIndex(fantasyTeams.teams);
@@ -45,17 +42,6 @@
 	<div class="sidebar-slot"><RosterSidebar /></div>
 
 	<div class="canvas">
-		{#if rosterMode.current === 'team'}
-			<div class="views" role="group" aria-label="Team view">
-				{#each teamViews as v (v.id)}
-					<button
-						class="btn ghost"
-						aria-pressed={rosterTeamView.current === v.id}
-						onclick={() => (rosterTeamView.current = v.id)}>{v.label}</button
-					>
-				{/each}
-			</div>
-		{/if}
 		{#if rosterMode.current === 'team' && rosterTeamView.current === 'matchups'}
 			<TeamMatchups />
 		{:else if rosterMode.current === 'team'}
@@ -104,6 +90,13 @@
 	</div>
 </div>
 
+<footer class="data-note">
+	Data: {season} regular season{throughWeek ? `, through Week ${throughWeek}` : ', no games yet'}.
+	{#if throughWeek && !weekComplete}Some Week {throughWeek} games aren't in yet.{/if}
+	Updated every Tuesday during the season from
+	<a href="https://github.com/nflverse" target="_blank" rel="noopener">nflverse</a>.
+</footer>
+
 <style>
 	.layout {
 		display: grid;
@@ -121,25 +114,6 @@
 		container-type: inline-size;
 		display: grid;
 		gap: 28px;
-	}
-
-	/* Pulled up so it sits closer to the view below than the canvas gap. */
-	.views {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 6px;
-		margin-bottom: -14px;
-	}
-
-	.views .btn {
-		padding: 0.3rem 0.7rem;
-		font-weight: 700;
-	}
-
-	.views .btn[aria-pressed='true'] {
-		background: var(--accent);
-		border-color: var(--accent);
-		color: var(--bg-deep);
 	}
 
 	.unit h2 {
@@ -195,6 +169,14 @@
 	.formula {
 		margin: -4px 0 2px;
 		font-size: 0.8rem;
+		color: var(--muted);
+	}
+
+	.data-note {
+		margin-top: 40px;
+		padding-top: 10px;
+		border-top: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+		font-size: 0.78rem;
 		color: var(--muted);
 	}
 

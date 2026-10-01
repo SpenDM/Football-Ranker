@@ -1,13 +1,20 @@
 <script lang="ts">
-	import { fantasyTeams } from '$lib/data/fantasy';
-	import { rosterMode, type RosterMode } from '$lib/stores/rosterMode.svelte';
+	import {
+		rosterMode,
+		rosterTeamView,
+		type RosterMode,
+		type TeamView
+	} from '$lib/stores/rosterMode.svelte';
 
 	const modes: { id: RosterMode; label: string }[] = [
 		{ id: 'team', label: 'Team' },
 		{ id: 'player', label: 'Player' }
 	];
 
-	const { season, throughWeek, weekComplete } = fantasyTeams;
+	const teamViews: { id: TeamView; label: string }[] = [
+		{ id: 'rankings', label: 'Team Rankings' },
+		{ id: 'matchups', label: 'Team Matchups' }
+	];
 </script>
 
 <aside class="sidebar" aria-label="Roster settings">
@@ -22,20 +29,19 @@
 				>
 			{/each}
 		</div>
-	</div>
-
-	<div class="data">
-		<span class="label">Data</span>
-		<p>
-			{season} regular season{throughWeek ? `, through Week ${throughWeek}` : ': no games yet'}.
-			{#if throughWeek && !weekComplete}<span class="partial">Some Week {throughWeek} games aren't in yet.</span
-				>{/if}
-		</p>
-		<p class="hint">
-			Updated every Tuesday during the season from
-			<a href="https://github.com/nflverse" target="_blank" rel="noopener">nflverse</a>. PPR
-			scoring. Scores are per game played, so byes don't count against a team.
-		</p>
+		{#if rosterMode.current === 'team'}
+			<ul class="branches" role="group" aria-label="Team view">
+				{#each teamViews as v (v.id)}
+					<li>
+						<button
+							class="btn ghost"
+							aria-pressed={rosterTeamView.current === v.id}
+							onclick={() => (rosterTeamView.current = v.id)}>{v.label}</button
+						>
+					</li>
+				{/each}
+			</ul>
+		{/if}
 	</div>
 </aside>
 
@@ -68,30 +74,53 @@
 		gap: 6px;
 	}
 
-	.modes .btn[aria-pressed='true'] {
+	.btn[aria-pressed='true'] {
 		background: var(--accent);
 		border-color: var(--accent);
 		color: var(--bg-deep);
 	}
 
-	.data {
-		display: grid;
-		gap: 6px;
-		padding-top: 14px;
-		border-top: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+	/* A tree hanging from the Team button: a line down from under it, with a tick to each view. */
+	.branches {
+		--line: color-mix(in srgb, var(--accent) 60%, transparent);
+		--indent: 16px;
+		margin: -6px 0 0 calc(25% - 4px);
+		padding: 0;
+		list-style: none;
 	}
 
-	.data p {
-		margin: 0;
+	.branches li {
+		position: relative;
+		padding: 6px 0 0 var(--indent);
+	}
+
+	/* The trunk: through every item, stopping at the last item's tick. */
+	.branches li::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		border-left: 2px solid var(--line);
+	}
+
+	.branches li:last-child::before {
+		bottom: auto;
+		height: calc(6px + 1em);
+	}
+
+	.branches li::after {
+		content: '';
+		position: absolute;
+		top: calc(6px + 1em);
+		left: 0;
+		width: calc(var(--indent) - 4px);
+		border-top: 2px solid var(--line);
+	}
+
+	.branches .btn {
+		width: 100%;
+		padding: 0.3rem 0.6rem;
 		font-size: 0.88rem;
-	}
-
-	.partial,
-	.hint {
-		color: var(--muted);
-	}
-
-	.data .hint {
-		font-size: 0.8rem;
 	}
 </style>
