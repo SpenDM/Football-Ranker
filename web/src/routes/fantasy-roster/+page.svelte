@@ -13,7 +13,7 @@
 		topAndBottom,
 		UNITS
 	} from '$lib/fantasy-roster/team-rankings';
-	import { rosterMode, rosterTeamView } from '$lib/stores/rosterMode.svelte';
+	import { rosterMode } from '$lib/stores/rosterMode.svelte';
 
 	const { season, throughWeek, weekComplete } = fantasyTeams;
 
@@ -42,7 +42,7 @@
 	<div class="sidebar-slot"><RosterSidebar /></div>
 
 	<div class="canvas">
-		{#if rosterMode.current === 'team' && rosterTeamView.current === 'matchups'}
+		{#if rosterMode.current === 'matchups'}
 			<TeamMatchups />
 		{:else if rosterMode.current === 'team'}
 			{#each views as view (view.unit)}

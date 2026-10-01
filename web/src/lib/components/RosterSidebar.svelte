@@ -1,19 +1,10 @@
 <script lang="ts">
-	import {
-		rosterMode,
-		rosterTeamView,
-		type RosterMode,
-		type TeamView
-	} from '$lib/stores/rosterMode.svelte';
+	import { rosterMode, type RosterMode } from '$lib/stores/rosterMode.svelte';
 
 	const modes: { id: RosterMode; label: string }[] = [
-		{ id: 'team', label: 'Team' },
-		{ id: 'player', label: 'Player' }
-	];
-
-	const teamViews: { id: TeamView; label: string }[] = [
-		{ id: 'rankings', label: 'Team Rankings' },
-		{ id: 'matchups', label: 'Team Matchups' }
+		{ id: 'team', label: 'Team Rankings' },
+		{ id: 'matchups', label: 'Team Matchups' },
+		{ id: 'player', label: 'Player Rankings' }
 	];
 </script>
 
@@ -29,19 +20,6 @@
 				>
 			{/each}
 		</div>
-		{#if rosterMode.current === 'team'}
-			<ul class="branches" role="group" aria-label="Team view">
-				{#each teamViews as v (v.id)}
-					<li>
-						<button
-							class="btn ghost"
-							aria-pressed={rosterTeamView.current === v.id}
-							onclick={() => (rosterTeamView.current = v.id)}>{v.label}</button
-						>
-					</li>
-				{/each}
-			</ul>
-		{/if}
 	</div>
 </aside>
 
@@ -70,57 +48,12 @@
 
 	.modes {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
 		gap: 6px;
 	}
 
-	.btn[aria-pressed='true'] {
+	.modes .btn[aria-pressed='true'] {
 		background: var(--accent);
 		border-color: var(--accent);
 		color: var(--bg-deep);
-	}
-
-	/* A tree hanging from the Team button: a line down from under it, with a tick to each view. */
-	.branches {
-		--line: color-mix(in srgb, var(--accent) 60%, transparent);
-		--indent: 16px;
-		margin: -6px 0 0 calc(25% - 4px);
-		padding: 0;
-		list-style: none;
-	}
-
-	.branches li {
-		position: relative;
-		padding: 6px 0 0 var(--indent);
-	}
-
-	/* The trunk: through every item, stopping at the last item's tick. */
-	.branches li::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		bottom: 0;
-		left: 0;
-		border-left: 2px solid var(--line);
-	}
-
-	.branches li:last-child::before {
-		bottom: auto;
-		height: calc(6px + 1em);
-	}
-
-	.branches li::after {
-		content: '';
-		position: absolute;
-		top: calc(6px + 1em);
-		left: 0;
-		width: calc(var(--indent) - 4px);
-		border-top: 2px solid var(--line);
-	}
-
-	.branches .btn {
-		width: 100%;
-		padding: 0.3rem 0.6rem;
-		font-size: 0.88rem;
 	}
 </style>

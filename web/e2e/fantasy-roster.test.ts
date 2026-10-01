@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 test('fantasy roster: team mode lists top/bottom 10s; mode choice persists', async ({ page }) => {
 	await page.goto('/fantasy-roster');
 	await expect(page.getByRole('heading', { level: 1, name: 'Fantasy Roster Manager' })).toBeVisible();
-	await expect(page.getByRole('button', { name: 'Team', exact: true })).toHaveAttribute('aria-pressed', 'true');
+	await expect(page.getByRole('button', { name: 'Team Rankings' })).toHaveAttribute('aria-pressed', 'true');
 
 	for (const unit of ['offense', 'defense']) {
 		for (const split of ['overall', 'rushing', 'passing']) {
@@ -14,13 +14,13 @@ test('fantasy roster: team mode lists top/bottom 10s; mode choice persists', asy
 	await expect(page.getByLabel('Top 10 offense overall').locator('.rank').first()).toHaveText('1');
 	await expect(page.getByLabel('Bottom 10 offense overall').locator('.rank').first()).toHaveText('32');
 
-	await page.getByRole('button', { name: 'Player', exact: true }).click();
+	await page.getByRole('button', { name: 'Player Rankings' }).click();
 	await expect(page.getByRole('region', { name: 'Top Performers QB' })).toBeVisible();
 	await expect(page.getByLabel('Top 10 offense overall')).toHaveCount(0);
 
 	await page.reload();
-	await expect(page.getByRole('button', { name: 'Player', exact: true })).toHaveAttribute('aria-pressed', 'true');
-	await page.getByRole('button', { name: 'Team', exact: true }).click();
+	await expect(page.getByRole('button', { name: 'Player Rankings' })).toHaveAttribute('aria-pressed', 'true');
+	await page.getByRole('button', { name: 'Team Rankings' }).click();
 	await expect(page.getByLabel('Top 10 defense passing').locator('li')).toHaveCount(10);
 });
 
@@ -85,7 +85,7 @@ test('fantasy roster: Team Lookup finds a team by city or name and shows its gam
 
 test('fantasy roster: player mode ranks each position in three columns', async ({ page }) => {
 	await page.goto('/fantasy-roster');
-	await page.getByRole('button', { name: 'Player', exact: true }).click();
+	await page.getByRole('button', { name: 'Player Rankings' }).click();
 
 	const positions = page.getByRole('group', { name: 'Position' });
 	for (const label of ['QB', 'RB', 'WR', 'TE', 'FLEX', 'D/ST', 'K']) {
@@ -139,7 +139,7 @@ test('fantasy roster: players marked not available can be restored from Player L
 	page
 }) => {
 	await page.goto('/fantasy-roster');
-	await page.getByRole('button', { name: 'Player', exact: true }).click();
+	await page.getByRole('button', { name: 'Player Rankings' }).click();
 	await page
 		.getByRole('group', { name: 'Position' })
 		.getByRole('button', { name: 'WR', exact: true })
@@ -204,9 +204,5 @@ test('fantasy roster: Team Matchups lists the upcoming week, better team first; 
 	await expect(page.getByRole('button', { name: 'Team Matchups' })).toHaveAttribute('aria-pressed', 'true');
 	await page.getByRole('button', { name: 'Team Rankings' }).click();
 	await expect(page.getByLabel('Top 10 offense overall').locator('li')).toHaveCount(10);
-
-	// The views branch from the Team button only while Team mode is selected.
-	await page.getByRole('button', { name: 'Player', exact: true }).click();
-	await expect(page.getByRole('group', { name: 'Team view' })).toHaveCount(0);
 	await expect(page.locator('.data-note')).toContainText(/^Data: \d{4} regular season/);
 });

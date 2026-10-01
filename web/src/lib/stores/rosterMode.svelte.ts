@@ -1,7 +1,8 @@
 import { Persisted } from './persisted.svelte';
 import type { SlotId } from '$lib/fantasy-roster/player-rankings';
 
-export type RosterMode = 'team' | 'player';
+/** 'team' is Team Rankings (named before Team Matchups existed, kept so saved choices still work). */
+export type RosterMode = 'team' | 'matchups' | 'player';
 
 /** Fantasy Roster Manager view, remembered per browser. */
 export const rosterMode = new Persisted<RosterMode>('roster-mode', 'team');
@@ -16,8 +17,3 @@ export function setAvailable(id: string, available: boolean): void {
 	const rest = unavailable.current.filter((x) => x !== id);
 	unavailable.current = available ? rest : [...rest, id];
 }
-
-export type TeamView = 'rankings' | 'matchups';
-
-/** Team mode's view, remembered per browser. */
-export const rosterTeamView = new Persisted<TeamView>('roster-team-view', 'rankings');
