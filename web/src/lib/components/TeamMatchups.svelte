@@ -1,27 +1,58 @@
 <script lang="ts">
 	import { fantasyTeams } from '$lib/data/fantasy';
 	import { teamsByAbbr } from '$lib/data/teams';
-	import { upcomingMatchups, type MatchupSide } from '$lib/fantasy-roster/team-matchups';
+	import {
+		gameResults,
+		upcomingMatchups,
+		type MatchupSide
+	} from '$lib/fantasy-roster/team-matchups';
 	import { rankIndex } from '$lib/fantasy-roster/team-rankings';
+	import GameResultsPanel from './GameResultsPanel.svelte';
 
 	// The data is fixed at build time, so the matchups only need computing once.
 	const { week, games } = upcomingMatchups(fantasyTeams.teams, rankIndex(fantasyTeams.teams));
+	const statsByAbbr = new Map(fantasyTeams.teams.map((t) => [t.abbr, t]));
+
+	/** The team whose results are open. */
+	let open = $state<string | null>(null);
+	let listEl = $state<HTMLElement>();
+
+	// Clicking anywhere outside the open team and its results closes them.
+	function onPointerDown(e: PointerEvent) {
+		const openSide = listEl?.querySelector('.side.open');
+		if (openSide && !openSide.contains(e.target as Node)) open = null;
+	}
 </script>
+
+<svelte:window
+	onpointerdown={onPointerDown}
+	onkeydown={(e) => {
+		if (e.key === 'Escape') open = null;
+	}}
+/>
 
 {#snippet side(s: MatchupSide)}
 	{@const team = teamsByAbbr.get(s.abbr)}
-	<span
-		class="team"
-		style:--primary={team?.primaryColor}
-		style:--secondary={team?.secondaryColor}
-		title="{team?.name ?? s.abbr}: offense rank {s.offenseRank}, defense rank {s.defenseRank}"
-	>
-		<span class="logo">{#if team}<img src={team.logo} alt="" class:on-color={team.logoOnColor} />{/if}</span>
-		<span class="name">{team?.nickname ?? s.abbr}</span>
-		<span class="ranks"
-			><span class="off">Off #{s.offenseRank}</span> · <span class="def">Def #{s.defenseRank}</span></span
+	{@const stats = statsByAbbr.get(s.abbr)}
+	<div class="side" class:open={open === s.abbr}>
+		<button
+			class="team"
+			style:--primary={team?.primaryColor}
+			style:--secondary={team?.secondaryColor}
+			aria-expanded={open === s.abbr}
+			title="{team?.name ?? s.abbr}: offense rank {s.offenseRank}, defense rank {s.defenseRank}. Click for each game."
+			onclick={() => (open = open === s.abbr ? null : s.abbr)}
 		>
-	</span>
+			<span class="logo">{#if team}<img src={team.logo} alt="" class:on-color={team.logoOnColor} />{/if}</span>
+			<span class="name">{team?.nickname ?? s.abbr}</span>
+			<span class="ranks">Off #{s.offenseRank} · Def #{s.defenseRank}</span>
+		</button>
+		{#if open === s.abbr && stats}
+			<div class="popup">
+				<GameResultsPanel games={gameResults(stats)} label="{team?.nickname ?? s.abbr} by game" />
+			</div>
+		{/if}
+	</div>
 {/snippet}
 
 <section class="matchups" aria-labelledby="matchups-title">
@@ -32,7 +63,7 @@
 	</p>
 
 	{#if games.length}
-		<ol aria-label="Week {week} games">
+		<ol aria-label="Week {week} games" bind:this={listEl}>
 			{#each games as game (game.better.abbr)}
 				<li class="game">
 					{@render side(game.better)}
@@ -85,8 +116,32 @@
 		font-size: 0.88rem;
 	}
 
+	.side {
+		position: relative;
+		min-width: 0;
+	}
+
+	/* Above the rows below, so the open results aren't covered. */
+	.side.open {
+		z-index: 5;
+	}
+
+	.popup {
+		position: absolute;
+		top: calc(100% + 4px);
+		left: 0;
+		right: 0;
+		z-index: 1;
+	}
+
 	.team {
 		display: grid;
+		width: 100%;
+		border: 0;
+		text-align: left;
+		font: inherit;
+		color: inherit;
+		cursor: pointer;
 		grid-template-columns: 26px minmax(0, auto) minmax(0, 1fr);
 		align-items: center;
 		gap: 8px;
@@ -95,6 +150,11 @@
 		border-left: 3px solid var(--primary);
 		border-radius: 6px;
 		background: color-mix(in srgb, var(--primary) 14%, var(--surface));
+	}
+
+	.team:hover,
+	.team[aria-expanded='true'] {
+		background: color-mix(in srgb, var(--primary) 30%, var(--surface));
 	}
 
 	.logo {
@@ -156,7 +216,7 @@
 		.game + .game {
 			margin-top: 6px;
 		}
-		.team:first-child {
+		.side:first-child {
 			grid-column: 2;
 		}
 		.at {

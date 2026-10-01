@@ -30,6 +30,8 @@
           "week": 1,
           "opponent": "LAC",
           "home": false,
+          "pointsFor": 26,
+          "pointsAgainst": 14,
           "offense": {
             "total": 653.0,
             "rush": 176.0,
@@ -45,6 +47,8 @@
           "week": 2,
           "opponent": "SEA",
           "home": true,
+          "pointsFor": 7,
+          "pointsAgainst": 31,
           "offense": {
             "total": 235.0,
             "rush": 70.0,
@@ -60,6 +64,8 @@
           "week": 3,
           "opponent": "SF",
           "home": false,
+          "pointsFor": 30,
+          "pointsAgainst": 36,
           "offense": {
             "total": 673.0,
             "rush": 153.0,
@@ -105,6 +111,8 @@
           "week": 1,
           "opponent": "PIT",
           "home": false,
+          "pointsFor": 13,
+          "pointsAgainst": 20,
           "offense": {
             "total": 393.0,
             "rush": 120.0,
@@ -120,6 +128,8 @@
           "week": 2,
           "opponent": "CAR",
           "home": true,
+          "pointsFor": 3,
+          "pointsAgainst": 34,
           "offense": {
             "total": 332.0,
             "rush": 157.0,
@@ -135,6 +145,8 @@
           "week": 3,
           "opponent": "GB",
           "home": false,
+          "pointsFor": 35,
+          "pointsAgainst": 14,
           "offense": {
             "total": 848.0,
             "rush": 422.0,
@@ -180,6 +192,8 @@
           "week": 1,
           "opponent": "IND",
           "home": false,
+          "pointsFor": 41,
+          "pointsAgainst": 23,
           "offense": {
             "total": 936.0,
             "rush": 442.0,
@@ -195,6 +209,8 @@
           "week": 2,
           "opponent": "NO",
           "home": true,
+          "pointsFor": 17,
+          "pointsAgainst": 24,
           "offense": {
             "total": 513.0,
             "rush": 168.0,
@@ -210,6 +226,8 @@
           "week": 3,
           "opponent": "DAL",
           "home": false,
+          "pointsFor": 34,
+          "pointsAgainst": 31,
           "offense": {
             "total": 718.0,
             "rush": 312.0,
@@ -255,6 +273,8 @@
           "week": 1,
           "opponent": "HOU",
           "home": false,
+          "pointsFor": 36,
+          "pointsAgainst": 31,
           "offense": {
             "total": 780.0,
             "rush": 206.0,
@@ -270,6 +290,8 @@
           "week": 2,
           "opponent": "DET",
           "home": true,
+          "pointsFor": 41,
+          "pointsAgainst": 31,
           "offense": {
             "total": 861.0,
             "rush": 383.0,
@@ -285,6 +307,8 @@
           "week": 3,
           "opponent": "LAC",
           "home": true,
+          "pointsFor": 24,
+          "pointsAgainst": 16,
           "offense": {
             "total": 620.0,
             "rush": 356.0,
@@ -330,6 +354,8 @@
           "week": 1,
           "opponent": "CHI",
           "home": true,
+          "pointsFor": 37,
+          "pointsAgainst": 59,
           "offense": {
             "total": 856.0,
             "rush": 245.0,
@@ -345,6 +371,8 @@
           "week": 2,
           "opponent": "ATL",
           "home": false,
+          "pointsFor": 34,
+          "pointsAgainst": 3,
           "offense": {
             "total": 695.0,
             "rush": 68.0,
@@ -360,6 +388,8 @@
           "week": 3,
           "opponent": "CLE",
           "home": false,
+          "pointsFor": 18,
+          "pointsAgainst": 21,
           "offense": {
             "total": 569.0,
             "rush": 98.0,
@@ -405,6 +435,8 @@
           "week": 1,
           "opponent": "CAR",
           "home": false,
+          "pointsFor": 59,
+          "pointsAgainst": 37,
           "offense": {
             "total": 1150.0,
             "rush": 651.0,
@@ -420,6 +452,8 @@
           "week": 2,
           "opponent": "MIN",
           "home": true,
+          "pointsFor": 3,
+          "pointsAgainst": 9,
           "offense": {
             "total": 356.0,
             "rush": 134.0,
@@ -435,6 +469,8 @@
           "week": 3,
           "opponent": "PHI",
           "home": true,
+          "pointsFor": 27,
+          "pointsAgainst": 7,
           "offense": {
             "total": 645.0,
             "rush": 188.0,
@@ -480,6 +516,8 @@
           "week": 1,
           "opponent": "TB",
           "home": true,
+          "pointsFor": 33,
+          "pointsAgainst": 27,
           "offense": {
             "total": 690.0,
             "rush": 166.0,
@@ -495,6 +533,8 @@
           "week": 2,
           "opponent": "HOU",
           "home": false,
+          "pointsFor": 20,
+          "pointsAgainst": 6,
           "offense": {
             "total": 492.0,
             "rush": 85.0,
@@ -510,6 +550,8 @@
           "week": 3,
           "opponent": "PIT",
           "home": false,
+          "pointsFor": 27,
+          "pointsAgainst": 30,
           "offense": {
             "total": 635.0,
             "rush": 83.0,
@@ -555,6 +597,8 @@
           "week": 1,
           "opponent": "JAX",
           "home": false,
+          "pointsFor": 10,
+          "pointsAgainst": 34,
           "offense": {
             "total": 392.0,
             "rush": 87.0,
@@ -570,6 +614,8 @@
           "week": 2,
           "opponent": "TB",
           "home": false,
+          "pointsFor": 23,
+          "pointsAgainst": 19,
           "offense": {
             "total": 512.0,
             "rush": 44.0,
@@ -585,6 +631,8 @@
           "week": 3,
           "opponent": "CAR",
           "home": true,
+          "pointsFor": 21,
+          "pointsAgainst": 18,
           "offense": {
             "total": 486.0,
             "rush": 132.0,
@@ -630,6 +678,8 @@
           "week": 1,
           "opponent": "NYG",
           "home": false,
+          "pointsFor": 20,
+          "pointsAgainst": 28,
           "offense": {
             "total": 444.0,
             "rush": 129.0,
@@ -645,6 +695,8 @@
           "week": 2,
           "opponent": "WAS",
           "home": true,
+          "pointsFor": 37,
+          "pointsAgainst": 20,
           "offense": {
             "total": 715.0,
             "rush": 66.0,
@@ -660,6 +712,8 @@
           "week": 3,
           "opponent": "BAL",
           "home": true,
+          "pointsFor": 31,
+          "pointsAgainst": 34,
           "offense": {
             "total": 734.0,
             "rush": 268.0,
@@ -705,6 +759,8 @@
           "week": 1,
           "opponent": "KC",
           "home": false,
+          "pointsFor": 10,
+          "pointsAgainst": 31,
           "offense": {
             "total": 292.0,
             "rush": 61.0,
@@ -720,6 +776,8 @@
           "week": 2,
           "opponent": "JAX",
           "home": true,
+          "pointsFor": 20,
+          "pointsAgainst": 13,
           "offense": {
             "total": 592.0,
             "rush": 164.0,
@@ -735,6 +793,8 @@
           "week": 3,
           "opponent": "LAR",
           "home": true,
+          "pointsFor": 30,
+          "pointsAgainst": 26,
           "offense": {
             "total": 564.0,
             "rush": 138.0,
@@ -780,6 +840,8 @@
           "week": 1,
           "opponent": "NO",
           "home": true,
+          "pointsFor": 31,
+          "pointsAgainst": 30,
           "offense": {
             "total": 681.0,
             "rush": 285.0,
@@ -795,6 +857,8 @@
           "week": 2,
           "opponent": "BUF",
           "home": false,
+          "pointsFor": 31,
+          "pointsAgainst": 41,
           "offense": {
             "total": 703.0,
             "rush": 66.0,
@@ -810,6 +874,8 @@
           "week": 3,
           "opponent": "NYJ",
           "home": true,
+          "pointsFor": 31,
+          "pointsAgainst": 24,
           "offense": {
             "total": 710.0,
             "rush": 251.0,
@@ -855,6 +921,8 @@
           "week": 1,
           "opponent": "MIN",
           "home": false,
+          "pointsFor": 22,
+          "pointsAgainst": 39,
           "offense": {
             "total": 673.0,
             "rush": 66.0,
@@ -870,6 +938,8 @@
           "week": 2,
           "opponent": "NYJ",
           "home": false,
+          "pointsFor": 20,
+          "pointsAgainst": 17,
           "offense": {
             "total": 408.0,
             "rush": 63.0,
@@ -885,6 +955,8 @@
           "week": 3,
           "opponent": "ATL",
           "home": true,
+          "pointsFor": 14,
+          "pointsAgainst": 35,
           "offense": {
             "total": 469.0,
             "rush": 17.0,
@@ -930,6 +1002,8 @@
           "week": 1,
           "opponent": "BUF",
           "home": true,
+          "pointsFor": 31,
+          "pointsAgainst": 36,
           "offense": {
             "total": 708.0,
             "rush": 244.0,
@@ -945,6 +1019,8 @@
           "week": 2,
           "opponent": "CIN",
           "home": true,
+          "pointsFor": 6,
+          "pointsAgainst": 20,
           "offense": {
             "total": 473.0,
             "rush": 60.0,
@@ -960,6 +1036,8 @@
           "week": 3,
           "opponent": "IND",
           "home": false,
+          "pointsFor": 17,
+          "pointsAgainst": 19,
           "offense": {
             "total": 407.0,
             "rush": 130.0,
@@ -1005,6 +1083,8 @@
           "week": 1,
           "opponent": "BAL",
           "home": true,
+          "pointsFor": 23,
+          "pointsAgainst": 41,
           "offense": {
             "total": 498.0,
             "rush": 222.0,
@@ -1020,6 +1100,8 @@
           "week": 2,
           "opponent": "KC",
           "home": false,
+          "pointsFor": 30,
+          "pointsAgainst": 33,
           "offense": {
             "total": 629.0,
             "rush": 239.0,
@@ -1035,6 +1117,8 @@
           "week": 3,
           "opponent": "HOU",
           "home": true,
+          "pointsFor": 19,
+          "pointsAgainst": 17,
           "offense": {
             "total": 514.0,
             "rush": 89.0,
@@ -1080,6 +1164,8 @@
           "week": 1,
           "opponent": "CLE",
           "home": true,
+          "pointsFor": 34,
+          "pointsAgainst": 10,
           "offense": {
             "total": 711.0,
             "rush": 126.0,
@@ -1095,6 +1181,8 @@
           "week": 2,
           "opponent": "DEN",
           "home": false,
+          "pointsFor": 13,
+          "pointsAgainst": 20,
           "offense": {
             "total": 414.0,
             "rush": 155.0,
@@ -1110,6 +1198,8 @@
           "week": 3,
           "opponent": "NE",
           "home": true,
+          "pointsFor": 35,
+          "pointsAgainst": 6,
           "offense": {
             "total": 669.0,
             "rush": 257.0,
@@ -1155,6 +1245,8 @@
           "week": 1,
           "opponent": "DEN",
           "home": true,
+          "pointsFor": 31,
+          "pointsAgainst": 10,
           "offense": {
             "total": 714.0,
             "rush": 340.0,
@@ -1170,6 +1262,8 @@
           "week": 2,
           "opponent": "IND",
           "home": true,
+          "pointsFor": 33,
+          "pointsAgainst": 30,
           "offense": {
             "total": 864.0,
             "rush": 152.0,
@@ -1185,6 +1279,8 @@
           "week": 3,
           "opponent": "MIA",
           "home": false,
+          "pointsFor": 24,
+          "pointsAgainst": 10,
           "offense": {
             "total": 574.0,
             "rush": 148.0,
@@ -1230,6 +1326,8 @@
           "week": 1,
           "opponent": "ARI",
           "home": true,
+          "pointsFor": 14,
+          "pointsAgainst": 26,
           "offense": {
             "total": 430.0,
             "rush": 141.0,
@@ -1245,6 +1343,8 @@
           "week": 2,
           "opponent": "LV",
           "home": true,
+          "pointsFor": 14,
+          "pointsAgainst": 26,
           "offense": {
             "total": 459.0,
             "rush": 187.0,
@@ -1260,6 +1360,8 @@
           "week": 3,
           "opponent": "BUF",
           "home": false,
+          "pointsFor": 16,
+          "pointsAgainst": 24,
           "offense": {
             "total": 517.0,
             "rush": 131.0,
@@ -1305,6 +1407,8 @@
           "week": 1,
           "opponent": "SF",
           "home": true,
+          "pointsFor": 7,
+          "pointsAgainst": 27,
           "offense": {
             "total": 360.0,
             "rush": 182.0,
@@ -1320,6 +1424,8 @@
           "week": 2,
           "opponent": "NYG",
           "home": true,
+          "pointsFor": 28,
+          "pointsAgainst": 6,
           "offense": {
             "total": 770.0,
             "rush": 163.0,
@@ -1335,6 +1441,8 @@
           "week": 3,
           "opponent": "DEN",
           "home": false,
+          "pointsFor": 26,
+          "pointsAgainst": 30,
           "offense": {
             "total": 766.0,
             "rush": 116.0,
@@ -1380,6 +1488,8 @@
           "week": 1,
           "opponent": "MIA",
           "home": true,
+          "pointsFor": 27,
+          "pointsAgainst": 13,
           "offense": {
             "total": 560.0,
             "rush": 130.0,
@@ -1395,6 +1505,8 @@
           "week": 2,
           "opponent": "LAC",
           "home": false,
+          "pointsFor": 26,
+          "pointsAgainst": 14,
           "offense": {
             "total": 570.0,
             "rush": 57.0,
@@ -1410,6 +1522,8 @@
           "week": 3,
           "opponent": "NO",
           "home": false,
+          "pointsFor": 35,
+          "pointsAgainst": 27,
           "offense": {
             "total": 711.0,
             "rush": 173.0,
@@ -1455,6 +1569,8 @@
           "week": 1,
           "opponent": "LV",
           "home": false,
+          "pointsFor": 13,
+          "pointsAgainst": 27,
           "offense": {
             "total": 424.0,
             "rush": 134.0,
@@ -1470,6 +1586,8 @@
           "week": 2,
           "opponent": "SF",
           "home": false,
+          "pointsFor": 13,
+          "pointsAgainst": 35,
           "offense": {
             "total": 429.0,
             "rush": 102.0,
@@ -1485,6 +1603,8 @@
           "week": 3,
           "opponent": "KC",
           "home": true,
+          "pointsFor": 10,
+          "pointsAgainst": 24,
           "offense": {
             "total": 429.0,
             "rush": 179.0,
@@ -1530,6 +1650,8 @@
           "week": 1,
           "opponent": "GB",
           "home": true,
+          "pointsFor": 39,
+          "pointsAgainst": 22,
           "offense": {
             "total": 648.0,
             "rush": 227.0,
@@ -1545,6 +1667,8 @@
           "week": 2,
           "opponent": "CHI",
           "home": false,
+          "pointsFor": 9,
+          "pointsAgainst": 3,
           "offense": {
             "total": 352.0,
             "rush": 119.0,
@@ -1560,6 +1684,8 @@
           "week": 3,
           "opponent": "TB",
           "home": false,
+          "pointsFor": 23,
+          "pointsAgainst": 16,
           "offense": {
             "total": 476.0,
             "rush": 78.0,
@@ -1605,6 +1731,8 @@
           "week": 1,
           "opponent": "SEA",
           "home": false,
+          "pointsFor": 10,
+          "pointsAgainst": 13,
           "offense": {
             "total": 387.0,
             "rush": 109.0,
@@ -1620,6 +1748,8 @@
           "week": 2,
           "opponent": "PIT",
           "home": true,
+          "pointsFor": 20,
+          "pointsAgainst": 3,
           "offense": {
             "total": 544.0,
             "rush": 196.0,
@@ -1635,6 +1765,8 @@
           "week": 3,
           "opponent": "JAX",
           "home": false,
+          "pointsFor": 6,
+          "pointsAgainst": 35,
           "offense": {
             "total": 388.0,
             "rush": 83.0,
@@ -1680,6 +1812,8 @@
           "week": 1,
           "opponent": "DET",
           "home": false,
+          "pointsFor": 30,
+          "pointsAgainst": 31,
           "offense": {
             "total": 801.0,
             "rush": 151.0,
@@ -1695,6 +1829,8 @@
           "week": 2,
           "opponent": "BAL",
           "home": false,
+          "pointsFor": 24,
+          "pointsAgainst": 17,
           "offense": {
             "total": 557.0,
             "rush": 145.0,
@@ -1710,6 +1846,8 @@
           "week": 3,
           "opponent": "LV",
           "home": true,
+          "pointsFor": 27,
+          "pointsAgainst": 35,
           "offense": {
             "total": 673.0,
             "rush": 148.0,
@@ -1755,6 +1893,8 @@
           "week": 1,
           "opponent": "DAL",
           "home": true,
+          "pointsFor": 28,
+          "pointsAgainst": 20,
           "offense": {
             "total": 675.0,
             "rush": 225.0,
@@ -1770,6 +1910,8 @@
           "week": 2,
           "opponent": "LAR",
           "home": false,
+          "pointsFor": 6,
+          "pointsAgainst": 28,
           "offense": {
             "total": 243.0,
             "rush": 52.0,
@@ -1785,6 +1927,8 @@
           "week": 3,
           "opponent": "TEN",
           "home": true,
+          "pointsFor": 12,
+          "pointsAgainst": 7,
           "offense": {
             "total": 376.0,
             "rush": 138.0,
@@ -1830,6 +1974,8 @@
           "week": 1,
           "opponent": "TEN",
           "home": false,
+          "pointsFor": 23,
+          "pointsAgainst": 10,
           "offense": {
             "total": 597.0,
             "rush": 272.0,
@@ -1845,6 +1991,8 @@
           "week": 2,
           "opponent": "GB",
           "home": true,
+          "pointsFor": 17,
+          "pointsAgainst": 20,
           "offense": {
             "total": 484.0,
             "rush": 127.0,
@@ -1860,6 +2008,8 @@
           "week": 3,
           "opponent": "DET",
           "home": false,
+          "pointsFor": 24,
+          "pointsAgainst": 31,
           "offense": {
             "total": 619.0,
             "rush": 58.0,
@@ -1905,6 +2055,8 @@
           "week": 1,
           "opponent": "WAS",
           "home": true,
+          "pointsFor": 24,
+          "pointsAgainst": 22,
           "offense": {
             "total": 579.0,
             "rush": 136.0,
@@ -1920,6 +2072,8 @@
           "week": 2,
           "opponent": "TEN",
           "home": false,
+          "pointsFor": 24,
+          "pointsAgainst": 20,
           "offense": {
             "total": 593.0,
             "rush": 149.0,
@@ -1935,6 +2089,8 @@
           "week": 3,
           "opponent": "CHI",
           "home": false,
+          "pointsFor": 7,
+          "pointsAgainst": 27,
           "offense": {
             "total": 330.0,
             "rush": 167.0,
@@ -1980,6 +2136,8 @@
           "week": 1,
           "opponent": "ATL",
           "home": true,
+          "pointsFor": 20,
+          "pointsAgainst": 13,
           "offense": {
             "total": 479.0,
             "rush": 58.0,
@@ -1995,6 +2153,8 @@
           "week": 2,
           "opponent": "NE",
           "home": false,
+          "pointsFor": 3,
+          "pointsAgainst": 20,
           "offense": {
             "total": 308.0,
             "rush": 91.0,
@@ -2010,6 +2170,8 @@
           "week": 3,
           "opponent": "CIN",
           "home": true,
+          "pointsFor": 30,
+          "pointsAgainst": 27,
           "offense": {
             "total": 730.0,
             "rush": 138.0,
@@ -2055,6 +2217,8 @@
           "week": 1,
           "opponent": "NE",
           "home": true,
+          "pointsFor": 13,
+          "pointsAgainst": 10,
           "offense": {
             "total": 427.0,
             "rush": 97.0,
@@ -2070,6 +2234,8 @@
           "week": 2,
           "opponent": "ARI",
           "home": false,
+          "pointsFor": 31,
+          "pointsAgainst": 7,
           "offense": {
             "total": 707.0,
             "rush": 222.0,
@@ -2085,6 +2251,8 @@
           "week": 3,
           "opponent": "WAS",
           "home": false,
+          "pointsFor": 31,
+          "pointsAgainst": 33,
           "offense": {
             "total": 747.0,
             "rush": 44.0,
@@ -2130,6 +2298,8 @@
           "week": 1,
           "opponent": "LAR",
           "home": false,
+          "pointsFor": 27,
+          "pointsAgainst": 7,
           "offense": {
             "total": 649.0,
             "rush": 174.0,
@@ -2145,6 +2315,8 @@
           "week": 2,
           "opponent": "MIA",
           "home": true,
+          "pointsFor": 35,
+          "pointsAgainst": 13,
           "offense": {
             "total": 732.0,
             "rush": 275.0,
@@ -2160,6 +2332,8 @@
           "week": 3,
           "opponent": "ARI",
           "home": true,
+          "pointsFor": 36,
+          "pointsAgainst": 30,
           "offense": {
             "total": 797.0,
             "rush": 200.0,
@@ -2205,6 +2379,8 @@
           "week": 1,
           "opponent": "CIN",
           "home": false,
+          "pointsFor": 27,
+          "pointsAgainst": 33,
           "offense": {
             "total": 575.0,
             "rush": 209.0,
@@ -2220,6 +2396,8 @@
           "week": 2,
           "opponent": "CLE",
           "home": true,
+          "pointsFor": 19,
+          "pointsAgainst": 23,
           "offense": {
             "total": 509.0,
             "rush": 137.0,
@@ -2235,6 +2413,8 @@
           "week": 3,
           "opponent": "MIN",
           "home": true,
+          "pointsFor": 16,
+          "pointsAgainst": 23,
           "offense": {
             "total": 434.0,
             "rush": 57.0,
@@ -2280,6 +2460,8 @@
           "week": 1,
           "opponent": "NYJ",
           "home": true,
+          "pointsFor": 10,
+          "pointsAgainst": 23,
           "offense": {
             "total": 308.0,
             "rush": 68.0,
@@ -2295,6 +2477,8 @@
           "week": 2,
           "opponent": "PHI",
           "home": true,
+          "pointsFor": 20,
+          "pointsAgainst": 24,
           "offense": {
             "total": 505.0,
             "rush": 242.0,
@@ -2310,6 +2494,8 @@
           "week": 3,
           "opponent": "NYG",
           "home": false,
+          "pointsFor": 7,
+          "pointsAgainst": 12,
           "offense": {
             "total": 332.0,
             "rush": 81.0,
@@ -2355,6 +2541,8 @@
           "week": 1,
           "opponent": "PHI",
           "home": false,
+          "pointsFor": 22,
+          "pointsAgainst": 24,
           "offense": {
             "total": 516.0,
             "rush": 192.0,
@@ -2370,6 +2558,8 @@
           "week": 2,
           "opponent": "DAL",
           "home": false,
+          "pointsFor": 20,
+          "pointsAgainst": 37,
           "offense": {
             "total": 589.0,
             "rush": 182.0,
@@ -2385,6 +2575,8 @@
           "week": 3,
           "opponent": "SEA",
           "home": true,
+          "pointsFor": 33,
+          "pointsAgainst": 31,
           "offense": {
             "total": 595.0,
             "rush": 82.0,

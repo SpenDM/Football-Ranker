@@ -99,6 +99,8 @@ describe('slotEntries', () => {
 			week,
 			opponent,
 			home,
+			pointsFor: 0,
+			pointsAgainst: 0,
 			offense: zero,
 			defense: zero
 		});

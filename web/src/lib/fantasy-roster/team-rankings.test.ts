@@ -71,6 +71,8 @@ describe('gameBreakdown', () => {
 				week: 1,
 				opponent: 'NYJ',
 				home: true,
+				pointsFor: 0,
+				pointsAgainst: 0,
 				offense: { total: 450, rush: 0, pass: 0 },
 				defense: { total: 0, rush: 25, pass: 0 }
 			},
@@ -78,6 +80,8 @@ describe('gameBreakdown', () => {
 				week: 3,
 				opponent: 'BUF',
 				home: false,
+				pointsFor: 0,
+				pointsAgainst: 0,
 				offense: { total: 550, rush: 0, pass: 0 },
 				defense: { total: 0, rush: 15, pass: 0 }
 			}

@@ -55,3 +55,27 @@ export function upcomingMatchups(
 	games.sort((a, b) => b.score - a.score || a.better.abbr.localeCompare(b.better.abbr));
 	return { week, games };
 }
+
+export type GameResult = {
+	week: number;
+	opponent: string;
+	home: boolean;
+	/** Null for the upcoming game. */
+	result: { outcome: 'W' | 'L' | 'T'; pointsFor: number; pointsAgainst: number } | null;
+};
+
+/** A team's results game by game, followed by its upcoming game (without a result). */
+export function gameResults(team: TeamFantasyStats): GameResult[] {
+	const played: GameResult[] = team.gameLog.map((g) => ({
+		week: g.week,
+		opponent: g.opponent,
+		home: g.home,
+		result: {
+			outcome: g.pointsFor > g.pointsAgainst ? 'W' : g.pointsFor < g.pointsAgainst ? 'L' : 'T',
+			pointsFor: g.pointsFor,
+			pointsAgainst: g.pointsAgainst
+		}
+	}));
+	const next = team.nextGame;
+	return next ? [...played, { ...next, result: null }] : played;
+}

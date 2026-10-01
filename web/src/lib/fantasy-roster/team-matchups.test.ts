@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { fantasyTeams, type TeamFantasyStats, type UpcomingGame } from '$lib/data/fantasy';
-import { upcomingMatchups } from './team-matchups';
+import { gameResults, upcomingMatchups } from './team-matchups';
 import { rankIndex } from './team-rankings';
 
 function team(abbr: string, offense: number, defense: number, nextGame: UpcomingGame | null): TeamFantasyStats {
@@ -81,5 +81,23 @@ describe('upcomingMatchups', () => {
 		const playing = fantasyTeams.teams.filter((t) => t.nextGame?.week === week);
 		expect(games).toHaveLength(playing.length / 2);
 		for (const g of games) expect(g.score).toBeGreaterThanOrEqual(0);
+	});
+});
+
+describe('gameResults', () => {
+	it('lists each final score with a win, loss or tie, then the upcoming game', () => {
+		const t = team('KC', 0, 0, { week: 4, opponent: 'DAL', home: true });
+		const zero = { total: 0, rush: 0, pass: 0 };
+		t.gameLog = [
+			{ week: 1, opponent: 'BUF', home: true, pointsFor: 27, pointsAgainst: 20, offense: zero, defense: zero },
+			{ week: 2, opponent: 'NYJ', home: false, pointsFor: 10, pointsAgainst: 13, offense: zero, defense: zero },
+			{ week: 3, opponent: 'MIA', home: false, pointsFor: 17, pointsAgainst: 17, offense: zero, defense: zero }
+		];
+		expect(gameResults(t)).toEqual([
+			{ week: 1, opponent: 'BUF', home: true, result: { outcome: 'W', pointsFor: 27, pointsAgainst: 20 } },
+			{ week: 2, opponent: 'NYJ', home: false, result: { outcome: 'L', pointsFor: 10, pointsAgainst: 13 } },
+			{ week: 3, opponent: 'MIA', home: false, result: { outcome: 'T', pointsFor: 17, pointsAgainst: 17 } },
+			{ week: 4, opponent: 'DAL', home: true, result: null }
+		]);
 	});
 });

@@ -206,3 +206,29 @@ test('fantasy roster: Team Matchups lists the upcoming week, better team first; 
 	await expect(page.getByLabel('Top 10 offense overall').locator('li')).toHaveCount(10);
 	await expect(page.locator('.data-note')).toContainText(/^Data: \d{4} regular season/);
 });
+
+test('fantasy roster: clicking a Team Matchups team shows its results by week', async ({ page }) => {
+	await page.goto('/fantasy-roster');
+	await page.getByRole('button', { name: 'Team Matchups' }).click();
+	const games = page.getByRole('list', { name: /^Week \d+ games$/ });
+	const team = games.locator('.team').first();
+	await team.click();
+	await expect(team).toHaveAttribute('aria-expanded', 'true');
+
+	const results = games.getByRole('group', { name: / by game$/ });
+	await expect(results.locator('li').first()).toContainText(/Wk \d+/);
+	await expect(results.locator('.outcome').first()).toHaveText(/^[WLT]$/);
+	await expect(results.locator('.game-score').first()).toHaveText(/^\d+–\d+$/);
+	await expect(results.locator('li').last()).toContainText('UPCOMING');
+
+	await page.getByRole('heading', { name: /Matchups$/ }).click();
+	await expect(results).toHaveCount(0);
+
+	// Opening one team's results closes another's; Esc closes too.
+	await team.click();
+	await games.locator('.team').nth(1).click();
+	await expect(games.getByRole('group')).toHaveCount(1);
+	await expect(games.locator('.team').nth(1)).toHaveAttribute('aria-expanded', 'true');
+	await page.keyboard.press('Escape');
+	await expect(games.getByRole('group')).toHaveCount(0);
+});

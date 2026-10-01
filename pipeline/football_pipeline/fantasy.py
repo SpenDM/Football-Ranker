@@ -193,20 +193,24 @@ def build_team_rankings(
 ) -> list[dict]:
     """Per-team offense and defense scores, per game played, sorted by team abbreviation.
 
-    Each team also gets a game log with that game's score in every category (a category's
-    season score is the average of its game scores) and its next game from `upcoming`, if any.
+    Each team also gets a game log with that game's final score and its score in every category
+    (a category's season score is the average of its game scores) and its next game from
+    `upcoming`, if any.
     """
     upcoming = upcoming or {}
     totals: dict[str, defaultdict[str, float]] = defaultdict(lambda: defaultdict(float))
     logs: dict[str, dict[str, dict]] = defaultdict(dict)
 
     def log_entry(team: str, opponent: str, game: dict) -> dict:
+        points_for, points_against = points_for_and_against(game, team)
         return logs[team].setdefault(
             game["game_id"],
             {
                 "week": int(game["week"]),
                 "opponent": opponent,
                 "home": team_abbr(game["home_team"]) == team,
+                "pointsFor": points_for,
+                "pointsAgainst": points_against,
                 "offense": {},
                 "defense": {},
             },

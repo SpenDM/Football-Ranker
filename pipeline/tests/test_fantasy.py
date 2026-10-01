@@ -120,7 +120,7 @@ def test_team_rankings_are_per_game_and_map_rams():
     assert teams["LAR"]["defense"]["pointsAllowedPerGame"] == 24
 
     assert kc["gameLog"] == [{
-        "week": 1, "opponent": "LAR", "home": True,
+        "week": 1, "opponent": "LAR", "home": True, "pointsFor": 24, "pointsAgainst": 17,
         "offense": {"total": 590, "rush": 160, "pass": 390},
         "defense": {"total": 14.5, "rush": 11, "pass": 12},
     }]
@@ -205,6 +205,10 @@ def test_generated_teams_cover_the_league(generated):
         assert len(team["gameLog"]) == team["games"], team
         if team["nextGame"]:
             assert team["nextGame"]["week"] >= team["gameLog"][-1]["week"], team
+        points_allowed = [g["pointsAgainst"] for g in team["gameLog"]]
+        assert sum(points_allowed) / len(points_allowed) == pytest.approx(
+            team["defense"]["pointsAllowedPerGame"], abs=0.051
+        )
         for unit in ("offense", "defense"):
             for split in ("total", "rush", "pass"):
                 scores = [g[unit][split] for g in team["gameLog"]]

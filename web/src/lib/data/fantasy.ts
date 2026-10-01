@@ -31,11 +31,15 @@ export type DefenseStats = {
 
 type SplitScores = { total: number; rush: number; pass: number };
 
-/** One game's score in every category (a season score is the average of these). */
+/** One game's final score and its score in every category (a season score is the average of
+ *  these). */
 export type GameLogEntry = {
 	week: number;
 	opponent: string;
 	home: boolean;
+	/** Final score: this team's points and its opponent's. */
+	pointsFor: number;
+	pointsAgainst: number;
 	offense: SplitScores;
 	defense: SplitScores;
 };
