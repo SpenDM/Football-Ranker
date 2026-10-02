@@ -44,8 +44,9 @@ export type PowerWeek = {
 
 /**
  * Power rankings going into each regular-season week. Week 1 is the reverse of the draft order
- * (the last pick ranks first); after each completed week, teams add their ranking points from
- * that week's game and are re-ranked by total, ties keeping the previous week's order.
+ * (the last pick ranks first), with each team starting on ranking points equal to its reversed
+ * rank (32 for #1 down to 1 for #32). After each completed week, teams add their ranking points
+ * from that week's game and are re-ranked by total, ties keeping the previous week's order.
  */
 export function weeklyPowerRankings(
 	teams: TeamFantasyStats[],
@@ -54,7 +55,7 @@ export function weeklyPowerRankings(
 ): PowerWeek[] {
 	const games = new Map(teams.map((t) => [t.abbr, new Map(t.gameLog.map((g) => [g.week, g]))]));
 	let order = [...draftOrder].reverse();
-	const points = new Map(order.map((abbr) => [abbr, 0]));
+	const points = new Map(order.map((abbr, i) => [abbr, order.length - i]));
 	const weeks: PowerWeek[] = [];
 
 	for (let week = 1; week <= REGULAR_SEASON_WEEKS; week++) {

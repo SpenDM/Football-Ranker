@@ -15,25 +15,45 @@
 	const GROUP = 8;
 	const GROUP_GAP = 6;
 	const HEADER_HEIGHT = 22;
-	/** Where the first logo starts: below the week titles, with room for a result above it. */
-	const TOP = HEADER_HEIGHT + 18;
+	/** Where the first logo starts, just below the week titles. */
+	const TOP = HEADER_HEIGHT + 9;
 	/** Room under the last logo for the selected team's rank. */
 	const BOTTOM = 14;
+	/** Space kept below the chart when fitting it on screen. */
+	const MARGIN = 12;
 	const MIN_PITCH = 56;
-	/** Page height above and around the chart (banner, heading, padding), for sizing the logos. */
-	const PAGE_CHROME = 210;
+	/** Horizontal room kept between columns for the selected team's line and results. */
+	const LANE = 28;
+	const MIN_CELL = 16;
 
 	let width = $state(0);
 	let viewportHeight = $state(900);
+	/** Where the chart starts on the page, and the sticky banner's height. */
+	let chartTop = $state(0);
+	let bannerHeight = $state(0);
+	let chartEl = $state<HTMLElement>();
+
+	function measure() {
+		if (!chartEl) return;
+		chartTop = chartEl.getBoundingClientRect().top + window.scrollY;
+		bannerHeight = document.querySelector('header.banner')?.getBoundingClientRect().height ?? 0;
+	}
+	$effect(measure);
+
 	/** Column spacing: the full width, or scrolling sideways when that's too narrow. */
 	const pitch = $derived(Math.max(MIN_PITCH, width / REGULAR_SEASON_WEEKS));
-	/** Logo size: as large as lets a whole column fit on screen, within 16–26px. */
-	const cell = $derived(
-		Math.max(
-			16,
-			Math.min(26, Math.floor((viewportHeight - PAGE_CHROME - 3 * GROUP_GAP) / TEAM_COUNT))
-		)
-	);
+	/**
+	 * Logo size: as large as lets a whole column fit on screen. That's from where the chart
+	 * starts when it's on the first screen (wide layouts), otherwise below the sticky banner
+	 * once scrolled to (narrow layouts, where the sidebar comes first). It's also kept narrow
+	 * enough to leave room between columns.
+	 */
+	const cell = $derived.by(() => {
+		const start = chartTop + 200 < viewportHeight ? chartTop : bannerHeight;
+		const room = viewportHeight - start - MARGIN - TOP - BOTTOM - 3 * GROUP_GAP;
+		const fit = Math.floor(room / TEAM_COUNT);
+		return Math.max(MIN_CELL, Math.min(fit, Math.floor(pitch) - LANE));
+	});
 
 	/** Left edge of a week's logos, by column index, on whole pixels so they stack seamlessly. */
 	const left = (i: number) => Math.round(i * pitch + (pitch - cell) / 2);
@@ -85,6 +105,7 @@
 
 <svelte:window
 	bind:innerHeight={viewportHeight}
+	onresize={measure}
 	onpointerdown={onPointerDown}
 	onkeydown={(e) => {
 		if (e.key === 'Escape') {
@@ -97,6 +118,7 @@
 <div class="scroller" bind:clientWidth={width}>
 	<div
 		class="chart"
+		bind:this={chartEl}
 		role="group"
 		aria-label="Power rankings by week"
 		style:width="{pitch * REGULAR_SEASON_WEEKS}px"
@@ -159,7 +181,7 @@
 					<span
 						class="label result"
 						style:left="{(x(p.i) + x(next.i)) / 2}px"
-						style:top="{(y(p.entry.rank) + y(next.entry.rank)) / 2 - cell / 2 - 1}px"
+						style:top="{(y(p.entry.rank) + y(next.entry.rank)) / 2 - 3}px"
 						title={game
 							? `Week ${weeks[p.i].week}: ${game.outcome} ${game.pointsFor}–${game.pointsAgainst} ${game.home ? 'vs' : '@'} #${game.opponentRank} ${opp?.name ?? game.opponent}`
 							: `Week ${weeks[p.i].week}: bye`}
@@ -299,18 +321,22 @@
 		transform: translateY(-50%);
 	}
 
+	/* W/L, opponent and ranking points stacked, sitting just above the line. */
 	.result {
 		display: flex;
+		flex-direction: column;
 		align-items: center;
-		gap: 2px;
+		gap: 1px;
+		padding: 2px 3px;
+		line-height: 1.1;
 		transform: translate(-50%, -100%);
 		border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
 		background: var(--surface-2);
 	}
 
 	.result img {
-		width: 14px;
-		height: 14px;
+		width: 16px;
+		height: 16px;
 		object-fit: contain;
 	}
 

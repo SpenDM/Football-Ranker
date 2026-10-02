@@ -47,7 +47,13 @@ describe('weeklyPowerRankings', () => {
 	it('starts in reverse draft order and re-ranks by ranking points after each complete week', () => {
 		const weeks = weeklyPowerRankings(teams, draftOrder, 2);
 		expect(weeks).toHaveLength(REGULAR_SEASON_WEEKS);
-		expect(ranked(weeks[0].entries)).toEqual(['BUF', 'KC', 'MIA', 'NYJ']);
+		// Starting ranking points are the reversed rank: 4 for #1 down to 1 for #4.
+		expect(weeks[0].entries!.map((e) => [e.abbr, e.rank, e.points])).toEqual([
+			['BUF', 1, 4],
+			['KC', 2, 3],
+			['MIA', 3, 2],
+			['NYJ', 4, 1]
+		]);
 
 		const [buf, kc, , nyj] = weeks[0].entries!;
 		// A 10-point win over #1 counts 1.5×; a 10-point loss to #4 (last) counts 1.5×.
@@ -55,12 +61,11 @@ describe('weeklyPowerRankings', () => {
 		expect(buf.game).toMatchObject({ outcome: 'L', opponentRank: 4, change: -15 });
 		expect(kc.game).toMatchObject({ outcome: 'T', change: 0 });
 
-		// KC and MIA tie on 0 points, so KC keeps its higher rank.
 		expect(weeks[1].entries!.map((e) => [e.abbr, e.rank, e.points])).toEqual([
-			['NYJ', 1, 15],
-			['KC', 2, 0],
-			['MIA', 3, 0],
-			['BUF', 4, -15]
+			['NYJ', 1, 16],
+			['KC', 2, 3],
+			['MIA', 3, 2],
+			['BUF', 4, -11]
 		]);
 		const week2 = new Map(weeks[1].entries!.map((e) => [e.abbr, e]));
 		// A 10-point win over #4 counts 0.5×; a 10-point loss to #2 counts 1.5 - 2/3.
@@ -75,14 +80,29 @@ describe('weeklyPowerRankings', () => {
 			['MIA', null],
 			['BUF', null]
 		]);
-		expect(weeks[2].entries![1].points).toBe(5);
+		expect(weeks[2].entries![1].points).toBe(8);
 		expect(weeks.slice(3).every((w) => w.entries === null)).toBe(true);
+	});
+
+	it('keeps the previous order for teams tied on ranking points', () => {
+		// 5 teams start on 5..1. #5 E beats #3 C by 1 (1× either way against the middle team):
+		// E reaches 2, level with D (bye), and D stays ahead; C drops to 1.5.
+		const five = [team('C', [[1, 'E', 10, 11]]), team('E', [[1, 'C', 11, 10]])];
+		const weeks = weeklyPowerRankings(five, ['E', 'D', 'C', 'B', 'A'], 1);
+		expect(weeks[1].entries!.map((e) => [e.abbr, e.points])).toEqual([
+			['A', 5],
+			['B', 4],
+			['D', 2],
+			['E', 2],
+			['C', 1.5]
+		]);
 	});
 
 	it("ignores an incomplete week's games", () => {
 		const weeks = weeklyPowerRankings(teams, draftOrder, 0);
 		expect(weeks[0]).toMatchObject({ complete: false });
-		expect(weeks[0].entries!.every((e) => e.game === null && e.points === 0)).toBe(true);
+		expect(weeks[0].entries!.every((e) => e.game === null)).toBe(true);
+		expect(ranked(weeks[0].entries)).toEqual(['BUF', 'KC', 'MIA', 'NYJ']);
 		expect(weeks[1].entries).toBeNull();
 	});
 

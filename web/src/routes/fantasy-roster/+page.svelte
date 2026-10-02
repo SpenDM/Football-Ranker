@@ -48,11 +48,6 @@
 		{:else if rosterMode.current === 'team'}
 			<section class="unit" aria-labelledby="unit-power">
 				<h2 id="unit-power">Power Rankings</h2>
-				<p class="formula">
-					Going into each week. Week 1 is the reverse of the draft order; each game then earns point
-					differential × 0.5–1.5 by opponent rank (wins count more against better teams, losses
-					more against worse ones). Click a team to follow it, or a week for ranking points.
-				</p>
 				<PowerRankingsChart />
 			</section>
 			{#each views as view (view.unit)}
