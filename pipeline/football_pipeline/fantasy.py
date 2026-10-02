@@ -1,7 +1,8 @@
 """Build the weekly fantasy dataset consumed by the Fantasy Roster Manager.
 
 Pulls nflverse's weekly team and player stats plus the schedule (for final scores), then writes:
-- web/src/lib/data/fantasy-teams.json: per-team offense and defense scores (Team mode)
+- web/src/lib/data/fantasy-teams.json: per-team offense and defense scores and game results, plus
+  the natural draft order the season's power rankings start from (Team mode)
 - web/static/data/fantasy-players.json: game logs for every QB/RB/WR/TE/K (Player mode), plus
   every D/ST's game log with ESPN's default scoring (Leagues)
 
@@ -102,6 +103,49 @@ def next_games(schedule: list[dict], season: int) -> dict[str, dict]:
         games.setdefault(home, {"week": week, "opponent": away, "home": True})
         games.setdefault(away, {"week": week, "opponent": home, "home": False})
     return games
+
+
+# Postseason rounds in the schedule's game_type, in order.
+PLAYOFF_ROUNDS = ["WC", "DIV", "CON", "SB"]
+
+
+def draft_order(schedule: list[dict], season: int) -> list[str]:
+    """Teams in natural first-round pick order for the draft before a season (pick 1 first).
+
+    Follows the NFL's rules on the previous season's results, ignoring trades: non-playoff teams
+    first, then playoff teams by the round they went out in, with the Super Bowl winner last.
+    Within each group, worse records pick earlier, then easier strength of schedule (opponents'
+    combined record). Any remaining ties (the NFL's division/conference tiebreakers and coin
+    flips) fall back to alphabetical order.
+    """
+    played = [g for g in schedule if g["season"] == str(season - 1) and g["home_score"] != ""]
+    wins: defaultdict[str, float] = defaultdict(float)  # ties count half
+    games: defaultdict[str, int] = defaultdict(int)
+    opponents: defaultdict[str, list[str]] = defaultdict(list)
+    exit_round: dict[str, int] = {}  # 0 for non-playoff teams; the Super Bowl winner is highest
+    for g in played:
+        home, away = team_abbr(g["home_team"]), team_abbr(g["away_team"])
+        home_score, away_score = int(g["home_score"]), int(g["away_score"])
+        if g["game_type"] == "REG":
+            for team, opponent, margin in ((home, away, home_score - away_score),
+                                           (away, home, away_score - home_score)):
+                wins[team] += 1 if margin > 0 else 0.5 if margin == 0 else 0
+                games[team] += 1
+                opponents[team].append(opponent)
+        elif g["game_type"] in PLAYOFF_ROUNDS:
+            playoff_round = PLAYOFF_ROUNDS.index(g["game_type"]) + 1
+            winner, loser = (home, away) if home_score > away_score else (away, home)
+            exit_round[loser] = playoff_round
+            if g["game_type"] == "SB":
+                exit_round[winner] = playoff_round + 1
+
+    def strength_of_schedule(team: str) -> float:
+        return sum(wins[o] for o in opponents[team]) / sum(games[o] for o in opponents[team])
+
+    return sorted(
+        games,
+        key=lambda t: (exit_round.get(t, 0), wins[t] / games[t], strength_of_schedule(t), t),
+    )
 
 
 def points_for_and_against(game: dict, team: str) -> tuple[int, int]:
@@ -438,8 +482,12 @@ def main() -> None:
     players = build_players(player_rows, scores)
     defenses = build_defenses(team_rows, scores)
 
+    order = draft_order(schedule, season)
+    if len(order) != 32:
+        raise SystemExit(f"Expected 32 teams in the {season} draft order, got {len(order)}")
+
     meta = {"season": season, "throughWeek": through_week, "weekComplete": week_complete}
-    write_json({**meta, "teams": teams}, TEAMS_JSON, indent=2)
+    write_json({**meta, "draftOrder": order, "teams": teams}, TEAMS_JSON, indent=2)
     write_json({**meta, "players": players, "defenses": defenses}, PLAYERS_JSON, indent=None)
     print(
         f"{season} through week {through_week}{'' if week_complete else ' (partial)'}: "

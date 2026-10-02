@@ -1,5 +1,6 @@
 <script lang="ts">
 	import PlayerMode from '$lib/components/PlayerMode.svelte';
+	import PowerRankingsChart from '$lib/components/PowerRankingsChart.svelte';
 	import RosterSidebar from '$lib/components/RosterSidebar.svelte';
 	import TeamLookup from '$lib/components/TeamLookup.svelte';
 	import TeamMatchups from '$lib/components/TeamMatchups.svelte';
@@ -45,6 +46,15 @@
 		{#if rosterMode.current === 'matchups'}
 			<TeamMatchups />
 		{:else if rosterMode.current === 'team'}
+			<section class="unit" aria-labelledby="unit-power">
+				<h2 id="unit-power">Power Rankings</h2>
+				<p class="formula">
+					Going into each week. Week 1 is the reverse of the draft order; each game then earns point
+					differential × 0.5–1.5 by opponent rank (wins count more against better teams, losses
+					more against worse ones). Click a team to follow it, or a week for ranking points.
+				</p>
+				<PowerRankingsChart />
+			</section>
 			{#each views as view (view.unit)}
 				<section class="unit" aria-labelledby="unit-{view.unit}">
 					<h2 id="unit-{view.unit}">{view.title}</h2>
@@ -113,6 +123,8 @@
 	.canvas {
 		container-type: inline-size;
 		display: grid;
+		/* Wide content (the power rankings) scrolls within the column instead of widening it. */
+		grid-template-columns: minmax(0, 1fr);
 		gap: 28px;
 	}
 

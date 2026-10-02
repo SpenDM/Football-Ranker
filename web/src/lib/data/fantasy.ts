@@ -64,6 +64,9 @@ export type FantasyTeamData = {
 	throughWeek: number;
 	/** False while some of that week's games aren't in yet (e.g. Monday night). */
 	weekComplete: boolean;
+	/** Teams by natural first-round pick in the draft before the season (pick 1 first, ignoring
+	 *  trades). Week 1's power rankings are this order reversed. */
+	draftOrder: string[];
 	teams: TeamFantasyStats[];
 };
 
@@ -97,7 +100,7 @@ export type FantasyPlayer = {
 /** A team's D/ST game log with ESPN's default D/ST scoring (used by Leagues). */
 export type FantasyDefense = Omit<FantasyPlayer, 'id' | 'name' | 'position'>;
 
-export type FantasyPlayerData = Omit<FantasyTeamData, 'teams'> & {
+export type FantasyPlayerData = Omit<FantasyTeamData, 'teams' | 'draftOrder'> & {
 	players: FantasyPlayer[];
 	defenses: FantasyDefense[];
 };

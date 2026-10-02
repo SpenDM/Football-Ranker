@@ -10,6 +10,7 @@ from football_pipeline.fantasy import (
     build_players,
     build_team_rankings,
     default_season,
+    draft_order,
     dst_fantasy_points,
     espn_dst_points,
     final_scores,
@@ -97,6 +98,30 @@ def test_defenses_use_espn_scoring_and_opponent_yards():
         {"team": "LAR", "games": 1, "total": -1.0, "average": -1.0,
          "gameLog": [{"week": 1, "opponent": "KC", "home": False, "points": -1.0}]},
     ]
+
+
+def game(season, game_type, home, home_score, away, away_score):
+    return {"season": season, "game_type": game_type, "home_team": home,
+            "home_score": home_score, "away_team": away, "away_score": away_score}
+
+
+def test_draft_order_follows_records_strength_of_schedule_and_playoff_exits():
+    schedule = [
+        game("2025", "REG", "KC", "30", "NYJ", "10"),
+        game("2025", "REG", "KC", "21", "MIA", "20"),
+        game("2025", "REG", "BUF", "17", "NYJ", "3"),
+        game("2025", "REG", "LA", "28", "MIA", "7"),
+        game("2025", "REG", "BUF", "13", "DAL", "13"),
+        game("2025", "WC", "LA", "24", "BUF", "10"),
+        game("2025", "SB", "LA", "20", "KC", "27"),
+        # Other seasons and unplayed games don't count.
+        game("2024", "REG", "NYJ", "50", "KC", "0"),
+        game("2026", "REG", "MIA", "", "NYJ", ""),
+    ]
+    # NYJ and MIA are both 0-2; NYJ's opponents (KC 2-0, BUF 1-0-1) have the easier combined
+    # record than MIA's (KC 2-0, LAR 1-0), so NYJ picks first. DAL (0-0-1) missed the playoffs;
+    # BUF went out in the wild card round, LAR lost the Super Bowl and KC won it.
+    assert draft_order(schedule, 2026) == ["NYJ", "MIA", "DAL", "BUF", "LAR", "KC"]
 
 
 def test_team_rankings_are_per_game_and_map_rams():
@@ -197,6 +222,7 @@ def test_generated_teams_cover_the_league(generated):
     app_abbrs = {t["abbr"] for t in json.loads(APP_TEAMS_JSON.read_text())}
     assert {t["abbr"] for t in generated["teams"]} == app_abbrs
     assert generated["throughWeek"] >= 1
+    assert sorted(generated["draftOrder"]) == sorted(app_abbrs)
     for team in generated["teams"]:
         assert 1 <= team["games"] <= generated["throughWeek"], team
         assert set(team["offense"]) >= {"total", "rush", "pass"}, team

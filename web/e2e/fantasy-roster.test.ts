@@ -232,3 +232,34 @@ test('fantasy roster: clicking a Team Matchups team shows its results by week', 
 	await page.keyboard.press('Escape');
 	await expect(games.getByRole('group')).toHaveCount(0);
 });
+
+test('fantasy roster: power rankings follow a team or show a week, and clicking off resets', async ({
+	page
+}) => {
+	await page.goto('/fantasy-roster');
+	const chart = page.getByRole('group', { name: 'Power rankings by week' });
+	await expect(chart.getByRole('button', { name: /^Wk \d+$/ })).toHaveCount(18);
+	// Week 1 lists every team, in reverse draft order.
+	await expect(chart.getByRole('button', { name: /^Week 1: #\d+ / })).toHaveCount(32);
+	await expect(chart.getByRole('button', { name: 'Wk 18' })).toBeDisabled();
+
+	// Following a team: its other logos stay lit, the rest dim, and its ranks and results show.
+	const first = chart.getByRole('button', { name: /^Week 1: #1 / });
+	await first.click();
+	await expect(first).toHaveAttribute('aria-pressed', 'true');
+	await expect(chart.locator('.tile.dim').first()).toBeVisible();
+	await expect(chart.locator('.tile:not(.dim)')).toHaveCount(await chart.locator('.tile.picked').count());
+	await expect(chart.locator('.label.rank').first()).toHaveText('#1');
+	await expect(chart.locator('polyline')).toHaveCount(2);
+	await expect(chart.locator('.label.result').first()).toHaveText(/^([WLT]\s*[+−]?\d+\.\d|BYE)$/);
+
+	// A week: that column's ranking points show and the other columns dim.
+	await chart.getByRole('button', { name: 'Wk 1', exact: true }).click();
+	await expect(chart.locator('.label.rank')).toHaveCount(0);
+	await expect(chart.locator('.label.points')).toHaveCount(32);
+	await expect(chart.locator('.label.points').first()).toHaveText('0.0');
+
+	await page.getByRole('heading', { name: 'Power Rankings' }).click();
+	await expect(chart.locator('.label')).toHaveCount(0);
+	await expect(chart.locator('.tile.dim')).toHaveCount(0);
+});
