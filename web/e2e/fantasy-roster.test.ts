@@ -254,12 +254,12 @@ test('fantasy roster: power rankings follow a team or show a week, and clicking 
 	await expect(chart.locator('.label.result').first()).toHaveText(/^([WLT]\s*[+−]?\d+\.\d|BYE)$/);
 	await expect(chart.locator('.label.result').first()).toHaveCSS('flex-direction', 'column');
 
-	// A week: that column's ranking points show and the other columns dim.
+	// A week: that column's power scores show and the other columns dim.
 	await chart.getByRole('button', { name: 'Wk 1', exact: true }).click();
 	await expect(chart.locator('.label.rank')).toHaveCount(0);
 	await expect(chart.locator('.label.points')).toHaveCount(32);
-	// Teams start on their reversed rank: 32 for #1 down to 1 for #32.
-	await expect(chart.locator('.label.points').first()).toHaveText('32.0');
+	// Before any games the power score is just the points rank: 1 for #1 down to 32 for #32.
+	await expect(chart.locator('.label.points').first()).toHaveText('1.0');
 
 	await page.getByRole('heading', { name: 'Power Rankings' }).click();
 	await expect(chart.locator('.label')).toHaveCount(0);
