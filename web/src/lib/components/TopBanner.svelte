@@ -24,8 +24,7 @@
 
 <style>
 	.banner {
-		position: sticky;
-		top: 0;
+		position: relative;
 		z-index: 10;
 		display: flex;
 		align-items: center;

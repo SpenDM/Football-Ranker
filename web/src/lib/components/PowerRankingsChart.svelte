@@ -28,15 +28,13 @@
 
 	let width = $state(0);
 	let viewportHeight = $state(900);
-	/** Where the chart starts on the page, and the sticky banner's height. */
+	/** Where the chart starts on the page. */
 	let chartTop = $state(0);
-	let bannerHeight = $state(0);
 	let chartEl = $state<HTMLElement>();
 
 	function measure() {
 		if (!chartEl) return;
 		chartTop = chartEl.getBoundingClientRect().top + window.scrollY;
-		bannerHeight = document.querySelector('header.banner')?.getBoundingClientRect().height ?? 0;
 	}
 	$effect(measure);
 
@@ -44,12 +42,11 @@
 	const pitch = $derived(Math.max(MIN_PITCH, width / REGULAR_SEASON_WEEKS));
 	/**
 	 * Logo size: as large as lets a whole column fit on screen. That's from where the chart
-	 * starts when it's on the first screen (wide layouts), otherwise below the sticky banner
-	 * once scrolled to (narrow layouts, where the sidebar comes first). It's also kept narrow
-	 * enough to leave room between columns.
+	 * starts when it's on the first screen, otherwise from the top of the window once scrolled
+	 * to. It's also kept narrow enough to leave room between columns.
 	 */
 	const cell = $derived.by(() => {
-		const start = chartTop + 200 < viewportHeight ? chartTop : bannerHeight;
+		const start = chartTop + 200 < viewportHeight ? chartTop : 0;
 		const room = viewportHeight - start - MARGIN - TOP - BOTTOM - 3 * GROUP_GAP;
 		const fit = Math.floor(room / TEAM_COUNT);
 		return Math.max(MIN_CELL, Math.min(fit, Math.floor(pitch) - LANE));

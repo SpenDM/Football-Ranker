@@ -71,7 +71,7 @@
 
 	.sidebar-slot {
 		position: sticky;
-		top: calc(var(--banner-height) + 16px);
+		top: 16px;
 	}
 
 	.canvas {

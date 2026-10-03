@@ -75,7 +75,7 @@
 	.sidebar-slot {
 		grid-area: side;
 		position: sticky;
-		top: calc(var(--banner-height) + 16px);
+		top: 16px;
 	}
 
 	.board {
@@ -88,7 +88,7 @@
 		--card-size: var(--pool-card);
 		grid-area: pool;
 		position: sticky;
-		top: calc(var(--banner-height) + 16px);
+		top: 16px;
 	}
 
 	.tier-controls {
