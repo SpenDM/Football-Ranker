@@ -133,7 +133,7 @@
 				style:height="{HEADER_HEIGHT}px"
 				disabled={!w.entries}
 				aria-pressed={selectedWeek === w.week}
-				title={w.entries ? `Week ${w.week}: click for each team's ranking points` : `Week ${w.week}`}
+				title={w.entries ? `Week ${w.week}: click for each team's power score` : `Week ${w.week}`}
 				onclick={() => selectWeek(w.week)}>Wk {w.week}</button
 			>
 			{#each w.entries ?? [] as e (e.abbr)}
@@ -150,13 +150,17 @@
 					tabindex={w.week === currentWeek ? 0 : -1}
 					aria-pressed={picked}
 					aria-label="Week {w.week}: #{e.rank} {team?.name ?? e.abbr}"
-					title="Week {w.week}: #{e.rank} {team?.name ?? e.abbr}, {fmt(e.points)} ranking points"
+					title={`Week ${w.week}: #${e.rank} ${team?.name ?? e.abbr}, power score ${fmt(e.score)}\n` +
+						`#${e.pointsRank} by ranking points (${fmt(e.points)})` +
+						(e.offenseRank !== null && e.defenseRank !== null
+							? `, #${e.offenseRank} offense, #${e.defenseRank} defense`
+							: '')}
 					onclick={() => selectTeam(e.abbr)}
 					>{#if team}<img src={team.logo} alt="" class:on-color={team.logoOnColor} />{/if}</button
 				>
 				{#if selectedWeek === w.week}
 					<span class="label points" style:left="{x(i) + cell / 2 + 2}px" style:top="{y(e.rank)}px"
-						>{fmt(e.points)}</span
+						>{fmt(e.score)}</span
 					>
 				{/if}
 			{/each}

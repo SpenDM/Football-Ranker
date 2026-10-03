@@ -30,6 +30,14 @@ export type PowerEntry = {
 	rank: number;
 	/** Total ranking points going into the week. */
 	points: number;
+	/** Rank by ranking points alone. */
+	pointsRank: number;
+	/** Overall offense and defense ranks from games before this week (null before any games). */
+	offenseRank: number | null;
+	defenseRank: number | null;
+	/** Power score: half the points rank, half the average of the offense and defense ranks
+	 *  (lower is better). */
+	score: number;
 	/** The week's game, once the week is over (null for a bye or a week still to come). */
 	game: PowerGame | null;
 };
@@ -43,10 +51,35 @@ export type PowerWeek = {
 };
 
 /**
- * Power rankings going into each regular-season week. Week 1 is the reverse of the draft order
- * (the last pick ranks first), with each team starting on ranking points equal to its reversed
- * rank (32 for #1 down to 1 for #32). After each completed week, teams add their ranking points
- * from that week's game and are re-ranked by total, ties keeping the previous week's order.
+ * Overall offense or defense rank of each team from its games before `week` (per-game average,
+ * higher is better, ties alphabetical). Teams with no games yet are left out.
+ */
+export function unitRanksBefore(
+	teams: TeamFantasyStats[],
+	unit: 'offense' | 'defense',
+	week: number
+): Map<string, number> {
+	const averages = teams.flatMap((t) => {
+		const played = t.gameLog.filter((g) => g.week < week);
+		if (!played.length) return [];
+		const avg = played.reduce((sum, g) => sum + g[unit].total, 0) / played.length;
+		return [{ abbr: t.abbr, avg }];
+	});
+	averages.sort((a, b) => b.avg - a.avg || a.abbr.localeCompare(b.abbr));
+	return new Map(averages.map((a, i) => [a.abbr, i + 1]));
+}
+
+/**
+ * Power rankings going into each regular-season week.
+ *
+ * Ranking points: week 1 is the reverse of the draft order (the last pick ranks first), with
+ * each team starting on points equal to its reversed rank (32 for #1 down to 1 for #32). After
+ * each completed week, teams add the ranking points from that week's game.
+ *
+ * Power rank: teams are ordered by a score that's half their rank by ranking points and half the
+ * average of their overall offense and defense ranks from games so far (lower is better). A team
+ * with no games yet uses its points rank for both halves. Ties go to the better points rank,
+ * then the previous week's order. Opponent modifiers use the power rank.
  */
 export function weeklyPowerRankings(
 	teams: TeamFantasyStats[],
@@ -54,8 +87,11 @@ export function weeklyPowerRankings(
 	lastCompleteWeek: number
 ): PowerWeek[] {
 	const games = new Map(teams.map((t) => [t.abbr, new Map(t.gameLog.map((g) => [g.week, g]))]));
-	let order = [...draftOrder].reverse();
-	const points = new Map(order.map((abbr, i) => [abbr, order.length - i]));
+	/** Order by ranking points alone (ties keep the previous order). */
+	let pointsOrder = [...draftOrder].reverse();
+	/** Power order from the previous week, for breaking ties. */
+	let order = pointsOrder;
+	const points = new Map(pointsOrder.map((abbr, i) => [abbr, pointsOrder.length - i]));
 	const weeks: PowerWeek[] = [];
 
 	for (let week = 1; week <= REGULAR_SEASON_WEEKS; week++) {
@@ -64,8 +100,35 @@ export function weeklyPowerRankings(
 			continue;
 		}
 		const complete = week <= lastCompleteWeek;
+
+		const pointsRankOf = new Map(pointsOrder.map((abbr, i) => [abbr, i + 1]));
+		const offenseRanks = unitRanksBefore(teams, 'offense', week);
+		const defenseRanks = unitRanksBefore(teams, 'defense', week);
+		const previousRank = new Map(order.map((abbr, i) => [abbr, i]));
+		const scored = pointsOrder.map((abbr) => {
+			const pointsRank = pointsRankOf.get(abbr)!;
+			const offenseRank = offenseRanks.get(abbr) ?? null;
+			const defenseRank = defenseRanks.get(abbr) ?? null;
+			const unitAverage =
+				offenseRank !== null && defenseRank !== null ? (offenseRank + defenseRank) / 2 : pointsRank;
+			return {
+				abbr,
+				pointsRank,
+				offenseRank,
+				defenseRank,
+				score: (pointsRank + unitAverage) / 2
+			};
+		});
+		scored.sort(
+			(a, b) =>
+				a.score - b.score ||
+				a.pointsRank - b.pointsRank ||
+				previousRank.get(a.abbr)! - previousRank.get(b.abbr)!
+		);
+		order = scored.map((s) => s.abbr);
+
 		const rankOf = new Map(order.map((abbr, i) => [abbr, i + 1]));
-		const entries = order.map((abbr, i): PowerEntry => {
+		const entries = scored.map(({ abbr, ...parts }, i): PowerEntry => {
 			const g = complete ? games.get(abbr)?.get(week) : undefined;
 			let game: PowerGame | null = null;
 			if (g) {
@@ -81,14 +144,20 @@ export function weeklyPowerRankings(
 					change: margin * opponentModifier(opponentRank, margin, order.length)
 				};
 			}
-			return { abbr, rank: i + 1, points: points.get(abbr) ?? 0, game };
+			return {
+				abbr,
+				rank: i + 1,
+				points: points.get(abbr) ?? 0,
+				...parts,
+				game
+			};
 		});
 		weeks.push({ week, entries, complete });
 
 		if (complete) {
 			for (const e of entries) points.set(e.abbr, e.points + (e.game?.change ?? 0));
-			// Array sort is stable, so tied teams keep this week's order.
-			order = [...order].sort((a, b) => points.get(b)! - points.get(a)!);
+			// Array sort is stable, so teams tied on points keep this week's points order.
+			pointsOrder = [...pointsOrder].sort((a, b) => points.get(b)! - points.get(a)!);
 		}
 	}
 	return weeks;

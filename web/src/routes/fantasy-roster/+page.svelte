@@ -46,10 +46,6 @@
 		{#if rosterMode.current === 'matchups'}
 			<TeamMatchups />
 		{:else if rosterMode.current === 'team'}
-			<section class="unit" aria-labelledby="unit-power">
-				<h2 id="unit-power">Power Rankings</h2>
-				<PowerRankingsChart />
-			</section>
 			{#each views as view (view.unit)}
 				<section class="unit" aria-labelledby="unit-{view.unit}">
 					<h2 id="unit-{view.unit}">{view.title}</h2>
@@ -89,6 +85,14 @@
 					</div>
 				</section>
 			{/each}
+			<section class="unit" aria-labelledby="unit-power">
+				<h2 id="unit-power">Power Rankings</h2>
+				<p class="formula">
+					Half rank by ranking points (game margin × opponent strength), half the average of
+					overall offense and defense ranks.
+				</p>
+				<PowerRankingsChart />
+			</section>
 		{:else}
 			<PlayerMode />
 		{/if}
