@@ -7,10 +7,14 @@
 		type MatchupSide
 	} from '$lib/fantasy-roster/team-matchups';
 	import { rankIndex } from '$lib/fantasy-roster/team-rankings';
+	import { rosterWeek } from '$lib/stores/rosterMode.svelte';
 	import GameResultsPanel from './GameResultsPanel.svelte';
 
-	// The data is fixed at build time, so the matchups only need computing once.
-	const { week, games } = upcomingMatchups(fantasyTeams.teams, rankIndex(fantasyTeams.teams));
+	// The data is fixed at build time, so the ranks only need computing once.
+	const ranks = rankIndex(fantasyTeams.teams);
+	const { week, games, byes } = $derived(
+		upcomingMatchups(fantasyTeams.teams, ranks, rosterWeek.current)
+	);
 	const statsByAbbr = new Map(fantasyTeams.teams.map((t) => [t.abbr, t]));
 
 	/** The team whose results are open. */
@@ -49,7 +53,7 @@
 		</button>
 		{#if open === s.abbr && stats}
 			<div class="popup">
-				<GameResultsPanel games={gameResults(stats)} label="{team?.nickname ?? s.abbr} by game" />
+				<GameResultsPanel games={gameResults(stats, week)} label="{team?.nickname ?? s.abbr} by game" />
 			</div>
 		{/if}
 	</div>
@@ -73,6 +77,11 @@
 				</li>
 			{/each}
 		</ol>
+		{#if byes.length}
+			<p class="formula">
+				Bye: {byes.map((abbr) => teamsByAbbr.get(abbr)?.nickname ?? abbr).join(', ')}
+			</p>
+		{/if}
 	{:else}
 		<p class="formula">No upcoming games.</p>
 	{/if}

@@ -56,6 +56,8 @@ export type TeamFantasyStats = {
 	gameLog: GameLogEntry[];
 	/** The team's next game, or null once its season is over. */
 	nextGame: UpcomingGame | null;
+	/** Every game still to play, in week order (missing from data generated before it existed). */
+	schedule?: UpcomingGame[];
 };
 
 export type FantasyTeamData = {

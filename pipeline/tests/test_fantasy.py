@@ -16,6 +16,7 @@ from football_pipeline.fantasy import (
     final_scores,
     kicker_fantasy_points,
     next_games,
+    upcoming_games,
     passing_fantasy_points,
     points_allowed_score,
     rushing_fantasy_points,
@@ -162,10 +163,20 @@ def test_next_games_are_the_earliest_unplayed_games():
         "BUF": {"week": 2, "opponent": "KC", "home": True},
         "LAR": {"week": 3, "opponent": "KC", "home": False},
     }
-    teams = build_team_rankings([KC_ROW, LA_ROW], final_scores(schedule, 2026), next_games(schedule, 2026))
+    assert upcoming_games(schedule, 2026)["KC"] == [
+        {"week": 2, "opponent": "BUF", "home": False},
+        {"week": 3, "opponent": "LAR", "home": True},
+    ]
+    teams = build_team_rankings(
+        [KC_ROW, LA_ROW], final_scores(schedule, 2026), upcoming_games(schedule, 2026)
+    )
     assert [t["nextGame"] for t in teams] == [
         {"week": 2, "opponent": "BUF", "home": False},
         {"week": 3, "opponent": "KC", "home": False},
+    ]
+    assert [t["schedule"] for t in teams] == [
+        [{"week": 2, "opponent": "BUF", "home": False}, {"week": 3, "opponent": "LAR", "home": True}],
+        [{"week": 3, "opponent": "KC", "home": False}],
     ]
 
 
@@ -231,6 +242,10 @@ def test_generated_teams_cover_the_league(generated):
         assert len(team["gameLog"]) == team["games"], team
         if team["nextGame"]:
             assert team["nextGame"]["week"] >= team["gameLog"][-1]["week"], team
+        if "schedule" in team:
+            assert (team["schedule"] or [None])[0] == team["nextGame"], team
+            weeks = [g["week"] for g in team["schedule"]]
+            assert weeks == sorted(set(weeks)), team
         points_allowed = [g["pointsAgainst"] for g in team["gameLog"]]
         assert sum(points_allowed) / len(points_allowed) == pytest.approx(
             team["defense"]["pointsAllowedPerGame"], abs=0.051

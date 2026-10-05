@@ -1,4 +1,5 @@
 import type { DefenseStats, OffenseStats, TeamFantasyStats } from '$lib/data/fantasy';
+import { gameInWeek } from './schedule';
 
 export type Unit = 'offense' | 'defense';
 export type Split = 'total' | 'rush' | 'pass';
@@ -125,12 +126,13 @@ export type GameBreakdown = {
 };
 
 /** A team's game-by-game scores in one category, with each opponent's complementary rank,
- *  followed by its upcoming game (without a score). */
+ *  followed by its game in `week` (its next game by default), without a score. */
 export function gameBreakdown(
 	team: TeamFantasyStats,
 	unit: Unit,
 	split: Split,
-	ranks: RankIndex
+	ranks: RankIndex,
+	week: number | null = null
 ): GameBreakdown[] {
 	const opposing = ranks[otherUnit(unit)][split];
 	const played = team.gameLog.map((g) => ({
@@ -140,7 +142,7 @@ export function gameBreakdown(
 		score: g[unit][split],
 		opponentRank: opposing.get(g.opponent)
 	}));
-	const next = team.nextGame;
+	const next = gameInWeek(team, week);
 	return next
 		? [...played, { ...next, score: null, opponentRank: opposing.get(next.opponent) }]
 		: played;

@@ -1,6 +1,7 @@
 import type { FantasyPlayer, PlayerPosition, TeamFantasyStats } from '$lib/data/fantasy';
 import { teamsByAbbr } from '$lib/data/teams';
 import { gameBreakdown, type GameBreakdown, type RankIndex, type Split } from './team-rankings';
+import { gameInWeek } from './schedule';
 
 export type SlotId = 'QB' | 'RB' | 'WR' | 'TE' | 'FLEX' | 'DST' | 'K';
 
@@ -90,11 +91,12 @@ export type PlayerEntry = {
 	games: number;
 	/** Fantasy points per game played. */
 	average: number;
-	/** Game-by-game points (including team games the player missed), then the upcoming game. */
+	/** Game-by-game points (including team games the player missed), then the selected week's
+	 *  game. */
 	breakdown: GameBreakdown[];
 	/** What each breakdown row's opponent rank is in, e.g. "rushing defense rank". */
 	opponentRankLabel: string;
-	/** The upcoming game's matchup, or null if the team has no games left. */
+	/** The selected week's matchup, or null on a bye or once the team has no games left. */
 	matchup: Matchup | null;
 };
 
@@ -150,12 +152,14 @@ export function matchupFactor(rank: number, teamCount = 32): number {
 /**
  * @param latestWeek The latest week with games counted; DNPs from the last RECENT_DNP_WEEKS
  *   weeks count as 0-point games in the matchup score.
+ * @param week The week to judge the matchup for (the team's next game by default).
  */
 export function playerEntry(
 	player: FantasyPlayer,
 	teams: Map<string, TeamFantasyStats>,
 	allowed: Record<Split, Map<string, number>>,
-	latestWeek: number
+	latestWeek: number,
+	week: number | null = null
 ): PlayerEntry {
 	const split = MATCHUP_SPLIT[player.position];
 	const opponentRank = allowed[split];
@@ -187,7 +191,7 @@ export function playerEntry(
 	).length;
 	const matchupAverage = player.total / (player.games + recentDnps);
 
-	const next = team?.nextGame;
+	const next = team ? gameInWeek(team, week) : null;
 	let matchup: Matchup | null = null;
 	if (next && teams.has(next.opponent)) {
 		const rank = opponentRank.get(next.opponent) ?? teams.size;
@@ -214,13 +218,15 @@ export function playerEntry(
 	};
 }
 
-/** A team's D/ST: its next opponent's overall offense rank minus its overall defense rank. */
+/** A team's D/ST: its opponent's overall offense rank minus its overall defense rank, for the
+ *  game in `week` (its next game by default). */
 export function dstEntry(
 	team: TeamFantasyStats,
 	teams: Map<string, TeamFantasyStats>,
-	ranks: RankIndex
+	ranks: RankIndex,
+	week: number | null = null
 ): PlayerEntry {
-	const next = team.nextGame;
+	const next = gameInWeek(team, week);
 	let matchup: Matchup | null = null;
 	if (next && teams.has(next.opponent)) {
 		const defenseRank = ranks.defense.total.get(team.abbr) ?? 0;
@@ -239,26 +245,27 @@ export function dstEntry(
 		position: 'D/ST',
 		games: team.games,
 		average: team.defense.total,
-		breakdown: gameBreakdown(team, 'defense', 'total', ranks),
+		breakdown: gameBreakdown(team, 'defense', 'total', ranks, week),
 		opponentRankLabel: 'overall offense rank',
 		matchup
 	};
 }
 
-/** Everyone who can fill a slot. */
+/** Everyone who can fill a slot, with matchups for `week` (each team's next game by default). */
 export function slotEntries(
 	slot: Slot,
 	players: FantasyPlayer[],
 	teamStats: TeamFantasyStats[],
-	ranks: RankIndex
+	ranks: RankIndex,
+	week: number | null = null
 ): PlayerEntry[] {
 	const teams = new Map(teamStats.map((t) => [t.abbr, t]));
-	if (slot.id === 'DST') return teamStats.map((t) => dstEntry(t, teams, ranks));
+	if (slot.id === 'DST') return teamStats.map((t) => dstEntry(t, teams, ranks, week));
 	const allowed = allowedRanks(teamStats);
 	const latestWeek = Math.max(0, ...teamStats.flatMap((t) => t.gameLog.map((g) => g.week)));
 	return players
 		.filter((p) => slot.positions.includes(p.position))
-		.map((p) => playerEntry(p, teams, allowed, latestWeek));
+		.map((p) => playerEntry(p, teams, allowed, latestWeek, week));
 }
 
 const games = (e: PlayerEntry) => `${e.games} G`;

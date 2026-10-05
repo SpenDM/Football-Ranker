@@ -1,5 +1,6 @@
 import type { TeamFantasyStats } from '$lib/data/fantasy';
 import type { RankIndex } from './team-rankings';
+import { gameInWeek, resolveWeek } from './schedule';
 
 export type MatchupSide = {
 	abbr: string;
@@ -21,17 +22,18 @@ export type TeamMatchup = {
 const rankTotal = (side: MatchupSide) => side.offenseRank + side.defenseRank;
 
 /**
- * The games of the upcoming week (NFL weeks run Thursday through Monday, as nflverse numbers
- * them), better team first, most lopsided first. The week is the earliest one with a game
- * still to play, so it's null once the season is over.
+ * The games of a week still to play (NFL weeks run Thursday through Monday, as nflverse numbers
+ * them), better team first, most lopsided first, and the teams on bye. The week is the chosen
+ * one, or by default the earliest with a game still to play, so it's null once the season is
+ * over. Ranks are the season so far, whichever week is shown.
  */
 export function upcomingMatchups(
 	teams: TeamFantasyStats[],
-	ranks: RankIndex
-): { week: number | null; games: TeamMatchup[] } {
-	const weeks = teams.flatMap((t) => (t.nextGame ? [t.nextGame.week] : []));
-	if (!weeks.length) return { week: null, games: [] };
-	const week = Math.min(...weeks);
+	ranks: RankIndex,
+	chosenWeek: number | null = null
+): { week: number | null; games: TeamMatchup[]; byes: string[] } {
+	const week = resolveWeek(teams, chosenWeek);
+	if (week === null) return { week: null, games: [], byes: [] };
 
 	const side = (abbr: string, home: boolean): MatchupSide => ({
 		abbr,
@@ -41,10 +43,12 @@ export function upcomingMatchups(
 	});
 
 	const games: TeamMatchup[] = [];
+	const byes: string[] = [];
 	for (const t of teams) {
-		const next = t.nextGame;
+		const next = gameInWeek(t, week);
+		if (!next) byes.push(t.abbr);
 		// Each game once, from the home team's side.
-		if (next?.week !== week || !next.home) continue;
+		if (!next?.home) continue;
 		const home = side(t.abbr, true);
 		const away = side(next.opponent, false);
 		const diff = rankTotal(home) - rankTotal(away);
@@ -53,7 +57,7 @@ export function upcomingMatchups(
 		games.push({ better, worse, score: Math.abs(diff) });
 	}
 	games.sort((a, b) => b.score - a.score || a.better.abbr.localeCompare(b.better.abbr));
-	return { week, games };
+	return { week, games, byes: byes.sort() };
 }
 
 export type GameResult = {
@@ -64,8 +68,9 @@ export type GameResult = {
 	result: { outcome: 'W' | 'L' | 'T'; pointsFor: number; pointsAgainst: number } | null;
 };
 
-/** A team's results game by game, followed by its upcoming game (without a result). */
-export function gameResults(team: TeamFantasyStats): GameResult[] {
+/** A team's results game by game, followed by its game in `week` (its next game by default),
+ *  without a result. */
+export function gameResults(team: TeamFantasyStats, week: number | null = null): GameResult[] {
 	const played: GameResult[] = team.gameLog.map((g) => ({
 		week: g.week,
 		opponent: g.opponent,
@@ -76,6 +81,6 @@ export function gameResults(team: TeamFantasyStats): GameResult[] {
 			pointsAgainst: g.pointsAgainst
 		}
 	}));
-	const next = team.nextGame;
+	const next = gameInWeek(team, week);
 	return next ? [...played, { ...next, result: null }] : played;
 }

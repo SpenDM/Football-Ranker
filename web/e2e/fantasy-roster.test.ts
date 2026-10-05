@@ -207,6 +207,45 @@ test('fantasy roster: Team Matchups lists the upcoming week, better team first; 
 	await expect(page.locator('.data-note')).toContainText(/^Data: \d{4} regular season/);
 });
 
+test('fantasy roster: a week picker previews later weeks in Team Matchups and Player Rankings', async ({
+	page
+}) => {
+	await page.goto('/fantasy-roster');
+	// Team Rankings has no week picker.
+	await expect(page.getByLabel('Week', { exact: true })).toHaveCount(0);
+
+	await page.getByRole('button', { name: 'Team Matchups' }).click();
+	const week = page.getByLabel('Week', { exact: true });
+	const current = Number(await week.inputValue());
+	await expect(week.locator('option:checked')).toHaveText(`Week ${current} (current)`);
+	await expect(page.getByRole('button', { name: 'Previous week' })).toBeDisabled();
+	const firstGame = await page.locator('.game').first().innerText();
+
+	await page.getByRole('button', { name: 'Next week' }).click();
+	await expect(page.getByRole('heading', { name: `Week ${current + 1} Matchups` })).toBeVisible();
+	await expect(page.locator('.game').first()).not.toHaveText(firstGame);
+
+	// The choice carries over to Player Rankings, where matchups follow that week's opponents.
+	await page.getByRole('button', { name: 'Player Rankings' }).click();
+	await expect(week).toHaveValue(String(current + 1));
+	const matchups = page.getByRole('region', { name: 'Best Matchup QB' });
+	await expect(matchups.getByRole('heading')).toHaveText(`Best Matchup · Wk ${current + 1}`);
+	await expect(matchups.locator('.detail').first()).toBeVisible();
+	const later = await matchups.locator('li').first().innerText();
+
+	// Columns: Best Available, Best Matchup, Top Performers.
+	await expect(page.locator('.columns [role="region"]')).toHaveText([/^Best Available/, /^Best Matchup/, /^Top Performers/]);
+
+	await page.getByRole('button', { name: `Back to Week ${current}` }).click();
+	await expect(week).toHaveValue(String(current));
+	await expect(matchups.locator('li').first()).not.toHaveText(later);
+
+	// Every visit starts on the current week.
+	await page.getByRole('button', { name: 'Next week' }).click();
+	await page.reload();
+	await expect(page.getByLabel('Week', { exact: true })).toHaveValue(String(current));
+});
+
 test('fantasy roster: clicking a Team Matchups team shows its results by week', async ({ page }) => {
 	await page.goto('/fantasy-roster');
 	await page.getByRole('button', { name: 'Team Matchups' }).click();

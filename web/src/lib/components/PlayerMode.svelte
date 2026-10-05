@@ -8,8 +8,9 @@
 		SLOTS,
 		topPerformers
 	} from '$lib/fantasy-roster/player-rankings';
+	import { resolveWeek } from '$lib/fantasy-roster/schedule';
 	import { rankIndex } from '$lib/fantasy-roster/team-rankings';
-	import { rosterSlot, unavailable } from '$lib/stores/rosterMode.svelte';
+	import { rosterSlot, rosterWeek, unavailable } from '$lib/stores/rosterMode.svelte';
 	import AvailabilityButton from './AvailabilityButton.svelte';
 	import PlayerLookup from './PlayerLookup.svelte';
 	import PlayerRankList from './PlayerRankList.svelte';
@@ -27,7 +28,10 @@
 	);
 
 	const slot = $derived(SLOTS.find((s) => s.id === rosterSlot.current) ?? SLOTS[0]);
-	const entries = $derived(data ? slotEntries(slot, data.players, fantasyTeams.teams, ranks) : []);
+	const week = $derived(resolveWeek(fantasyTeams.teams, rosterWeek.current));
+	const entries = $derived(
+		data ? slotEntries(slot, data.players, fantasyTeams.teams, ranks, week) : []
+	);
 	const performers = $derived(topPerformers(entries, slot.id === 'FLEX'));
 	const matchups = $derived(bestMatchups(entries));
 	const available = $derived(
@@ -58,24 +62,24 @@
 	{#if data}
 		<div class="columns">
 			<PlayerRankList
-				label="Top Performers {slot.label}"
-				heading="Top Performers"
-				rows={performers.slice(0, LIST_LENGTH)}
-			/>
-			<PlayerRankList
-				label="Best Matchup {slot.label}"
-				heading="Best Matchup"
-				rows={matchups.slice(0, LIST_LENGTH)}
-				empty="No upcoming games."
-			/>
-			<PlayerRankList
 				label="Best Available {slot.label}"
-				heading="Best Available"
+				heading={week ? `Best Available · Wk ${week}` : 'Best Available'}
 				rows={available.slice(0, LIST_LENGTH)}
 				empty="Nobody left. Use Player Lookup to mark players available again."
 			>
 				{#snippet action(entry)}<AvailabilityButton {entry} />{/snippet}
 			</PlayerRankList>
+			<PlayerRankList
+				label="Best Matchup {slot.label}"
+				heading={week ? `Best Matchup · Wk ${week}` : 'Best Matchup'}
+				rows={matchups.slice(0, LIST_LENGTH)}
+				empty="No upcoming games."
+			/>
+			<PlayerRankList
+				label="Top Performers {slot.label}"
+				heading="Top Performers"
+				rows={performers.slice(0, LIST_LENGTH)}
+			/>
 		</div>
 	{:else if failed}
 		<p class="status">Couldn't load player data. Try reloading the page.</p>

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { fantasyTeams, type TeamFantasyStats, type UpcomingGame } from '$lib/data/fantasy';
 import { gameResults, upcomingMatchups } from './team-matchups';
 import { rankIndex } from './team-rankings';
+import { upcomingWeeks } from './schedule';
 
 function team(abbr: string, offense: number, defense: number, nextGame: UpcomingGame | null): TeamFantasyStats {
 	return {
@@ -73,7 +74,23 @@ describe('upcomingMatchups', () => {
 
 	it('has no week once the season is over', () => {
 		const done = teams.map((t) => ({ ...t, nextGame: null }));
-		expect(upcomingMatchups(done, rankIndex(done))).toEqual({ week: null, games: [] });
+		expect(upcomingMatchups(done, rankIndex(done))).toEqual({ week: null, games: [], byes: [] });
+	});
+
+	it('shows a chosen later week from the schedule, with its byes', () => {
+		const scheduled = teams.map((t) => ({ ...t, schedule: t.nextGame ? [t.nextGame] : [] }));
+		// Week 6: BUF hosts MIA; NYJ, KC, DAL and NE are on bye.
+		scheduled[0].schedule!.push({ week: 6, opponent: 'MIA', home: true });
+		scheduled[4] = { ...scheduled[4], schedule: [{ week: 6, opponent: 'BUF', home: false }] };
+		scheduled[5] = { ...scheduled[5], schedule: [] };
+		const { week, games, byes } = upcomingMatchups(scheduled, rankIndex(scheduled), 6);
+		expect(week).toBe(6);
+		expect(games.map((g) => [g.better.abbr, g.worse.abbr])).toEqual([['BUF', 'MIA']]);
+		expect(byes).toEqual(['DAL', 'KC', 'NE', 'NYJ']);
+		// A week with no games left falls back to the current week.
+		expect(upcomingMatchups(scheduled, rankIndex(scheduled), 2).week).toBe(5);
+		// The selected week's game ends a team's results.
+		expect(gameResults(scheduled[0], 6).at(-1)).toEqual({ week: 6, opponent: 'MIA', home: true, result: null });
 	});
 
 	it('covers every team playing in the generated data', () => {
@@ -81,6 +98,15 @@ describe('upcomingMatchups', () => {
 		const playing = fantasyTeams.teams.filter((t) => t.nextGame?.week === week);
 		expect(games).toHaveLength(playing.length / 2);
 		for (const g of games) expect(g.score).toBeGreaterThanOrEqual(0);
+	});
+
+	it('has a full slate for every later week in the generated data', () => {
+		const ranks = rankIndex(fantasyTeams.teams);
+		for (const w of upcomingWeeks(fantasyTeams.teams)) {
+			const { week, games, byes } = upcomingMatchups(fantasyTeams.teams, ranks, w);
+			expect(week).toBe(w);
+			expect(games.length * 2 + byes.length).toBe(32);
+		}
 	});
 });
 

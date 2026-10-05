@@ -167,6 +167,30 @@ describe('bestMatchups', () => {
 		expect(rows[0].detail).toBe('@ NYJ · #1 v #4');
 	});
 
+	it("re-ranks against a chosen week's opponents, leaving out teams on bye", () => {
+		// Week 3: KC hosts DAL and BUF is on bye.
+		const later = teams.map((t) => ({ ...t, schedule: t.nextGame ? [t.nextGame] : [] }));
+		later[0].schedule!.push({ week: 3, opponent: 'DAL', home: true });
+		later[2] = { ...later[2], schedule: [{ week: 3, opponent: 'KC', home: false }] };
+		const rows = bestMatchups(slotEntries(slot('FLEX'), players, later, ranks, 3));
+		// rb3: 30 × KC rush #2; rb1: 12 × DAL rush #3; wr1: 15 × DAL pass #2. rb2 (BUF) is on bye.
+		expect(rows.map((r) => [r.entry.id, r.score.toFixed(2)])).toEqual([
+			['rb3', '26.00'],
+			['rb1', '13.60'],
+			['wr1', '13.00']
+		]);
+		expect(rows.find((r) => r.entry.id === 'rb1')!.entry.breakdown.at(-1)).toEqual({
+			week: 3,
+			opponent: 'DAL',
+			home: true,
+			score: null,
+			opponentRank: 3
+		});
+
+		const dst = bestMatchups(slotEntries(slot('DST'), players, later, ranks, 3));
+		expect(dst.map((r) => r.entry.id)).toEqual(['DST-KC', 'DST-DAL']);
+	});
+
 	it('renumbers once unavailable players are removed', () => {
 		const rows = bestMatchups(slotEntries(slot('RB'), players, teams, ranks));
 		expect(

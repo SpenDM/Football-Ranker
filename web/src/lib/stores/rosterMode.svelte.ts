@@ -10,6 +10,15 @@ export const rosterMode = new Persisted<RosterMode>('roster-mode', 'team');
 /** Player mode's selected roster slot, remembered per browser. */
 export const rosterSlot = new Persisted<SlotId>('roster-slot', 'QB');
 
+/**
+ * The week Team Matchups and Player Rankings show, shared by both. Null is the current week;
+ * it isn't remembered, so every visit starts on the current week.
+ */
+class WeekChoice {
+	current = $state<number | null>(null);
+}
+export const rosterWeek = new WeekChoice();
+
 /** Players (and D/STs, as "DST-<team>") marked not available, remembered per browser. */
 export const unavailable = new Persisted<string[]>('roster-unavailable', []);
 
