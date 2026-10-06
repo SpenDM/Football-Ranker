@@ -52,8 +52,8 @@ export const SLOTS: Slot[] = [
 	{
 		id: 'FLEX',
 		label: 'FLEX',
-		positions: ['RB', 'WR'],
-		formula: playerFormula('rushing (for RBs) or passing (for WRs)')
+		positions: ['RB', 'WR', 'TE'],
+		formula: playerFormula('rushing (for RBs) or passing (for WRs and TEs)')
 	},
 	{
 		id: 'DST',

@@ -88,9 +88,10 @@ const players = [
 ];
 
 describe('slotEntries', () => {
-	it('fills FLEX with RBs and WRs', () => {
-		const ids = slotEntries(slot('FLEX'), players, teams, ranks).map((e) => e.id);
-		expect(ids).toEqual(['rb1', 'rb2', 'rb3', 'wr1']);
+	it('fills FLEX with RBs, WRs and TEs', () => {
+		const flexPlayers = [...players, player('te1', 'TE', 'BUF', 9)];
+		const ids = slotEntries(slot('FLEX'), flexPlayers, teams, ranks).map((e) => e.id);
+		expect(ids).toEqual(['rb1', 'rb2', 'rb3', 'wr1', 'te1']);
 	});
 
 	it("adds missed games and the upcoming game to a player's breakdown", () => {
