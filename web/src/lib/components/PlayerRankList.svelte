@@ -149,7 +149,7 @@
 		.beside {
 			position: absolute;
 			top: 0;
-			width: 300px;
+			width: 320px;
 			margin: 0;
 		}
 		.beside.right {

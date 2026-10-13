@@ -135,6 +135,33 @@ test('fantasy roster: player mode ranks each position in three columns', async (
 	);
 });
 
+test('fantasy roster: clicking a player also shows their Ball Share pie', async ({ page }) => {
+	await page.goto('/fantasy-roster');
+	await page.getByRole('button', { name: 'Player Rankings' }).click();
+	await page.getByRole('group', { name: 'Position' }).getByRole('button', { name: 'WR', exact: true }).click();
+
+	const list = page.getByRole('region', { name: 'Top Performers WR' });
+	await list.locator('li').first().getByRole('button').first().click();
+	await expect(list.getByRole('group', { name: /by game$/ })).toBeVisible();
+	const share = list.getByRole('group', { name: 'Ball Share' });
+	await expect(share.getByRole('heading', { name: 'Ball Share' })).toBeVisible();
+	// One highlighted slice for the clicked player, with a label and the caption naming them.
+	await expect(share.locator('.slice.picked')).toHaveCount(1);
+	await expect(share.locator('.label.picked')).toHaveText(/^[A-Z]\. .+ \d+%$/);
+	await expect(share.locator('.caption')).toContainText(/\d+ rush(es)? \+ \d+ targets? = \d+\.\d%/);
+	// Shares add up to the whole pie.
+	const shares = (await share.getByRole('img').getAttribute('aria-label'))!.match(/\d+(?=%)/g)!.map(Number);
+	expect(Math.abs(shares.reduce((a, b) => a + b) - 100)).toBeLessThanOrEqual(shares.length);
+
+	// Kickers and D/STs have no Ball Share.
+	await page.keyboard.press('Escape');
+	await page.getByRole('group', { name: 'Position' }).getByRole('button', { name: 'K', exact: true }).click();
+	const kickers = page.getByRole('region', { name: 'Top Performers K' });
+	await kickers.locator('li').first().getByRole('button').first().click();
+	await expect(kickers.getByRole('group', { name: /by game$/ })).toBeVisible();
+	await expect(page.getByRole('group', { name: 'Ball Share' })).toHaveCount(0);
+});
+
 test('fantasy roster: players marked not available can be restored from Player Lookup', async ({
 	page
 }) => {
@@ -217,7 +244,7 @@ test('fantasy roster: a week picker previews later weeks in Team Matchups and Pl
 	await page.getByRole('button', { name: 'Team Matchups' }).click();
 	const week = page.getByLabel('Week', { exact: true });
 	const current = Number(await week.inputValue());
-	await expect(week.locator('option:checked')).toHaveText(`Week ${current} (current)`);
+	await expect(week.locator('option:checked')).toHaveText(`Week ${current} (now)`);
 	await expect(page.getByRole('button', { name: 'Previous week' })).toBeDisabled();
 	const firstGame = await page.locator('.game').first().innerText();
 

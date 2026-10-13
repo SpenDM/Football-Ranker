@@ -14,11 +14,11 @@
 		playerName: string;
 	} = $props();
 
-	const WIDTH = 300;
-	const HEIGHT = 196;
+	const WIDTH = 340;
+	const HEIGHT = 200;
 	const CX = WIDTH / 2;
 	const CY = HEIGHT / 2;
-	const R = 68;
+	const R = 66;
 	/** How far the highlighted slice is pulled out from the center. */
 	const PULL = 6;
 	/** Where name labels sit, just outside the pie. */
@@ -162,7 +162,7 @@
 	svg {
 		display: block;
 		width: 100%;
-		max-width: 300px;
+		max-width: 340px;
 		height: auto;
 		margin: 2px auto 0;
 		overflow: visible;
@@ -191,7 +191,7 @@
 	}
 
 	.label {
-		font-size: 10.5px;
+		font-size: 12.5px;
 		font-weight: 600;
 		fill: var(--text);
 	}

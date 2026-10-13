@@ -231,7 +231,7 @@
 			position: absolute;
 			top: 0;
 			right: calc(100% + 8px);
-			width: 300px;
+			width: 320px;
 		}
 	}
 

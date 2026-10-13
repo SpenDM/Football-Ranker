@@ -52,7 +52,7 @@
 					onchange={(e) => choose(Number(e.currentTarget.value))}
 				>
 					{#each weeks as w (w)}
-						<option value={w}>Week {w}{w === currentWeek ? ' (current)' : ''}</option>
+						<option value={w}>Week {w}{w === currentWeek ? ' (now)' : ''}</option>
 					{/each}
 				</select>
 				<button
