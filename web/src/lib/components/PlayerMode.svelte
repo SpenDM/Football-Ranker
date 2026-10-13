@@ -8,6 +8,8 @@
 		SLOTS,
 		topPerformers
 	} from '$lib/fantasy-roster/player-rankings';
+	import { BALL_SHARE_POSITIONS, ballShareSlices } from '$lib/fantasy-roster/ball-share';
+	import type { PlayerEntry } from '$lib/fantasy-roster/player-rankings';
 	import { resolveWeek } from '$lib/fantasy-roster/schedule';
 	import { rankIndex } from '$lib/fantasy-roster/team-rankings';
 	import { rosterSlot, rosterWeek, unavailable } from '$lib/stores/rosterMode.svelte';
@@ -32,6 +34,13 @@
 	const entries = $derived(
 		data ? slotEntries(slot, data.players, fantasyTeams.teams, ranks, week) : []
 	);
+	/** Ball Share for QBs, RBs, WRs and TEs, once the player data has it. */
+	function ballShare(entry: PlayerEntry) {
+		const share = data?.ballShare;
+		if (!share || !BALL_SHARE_POSITIONS.has(entry.position)) return null;
+		return ballShareSlices(share[entry.team] ?? [], entry.id);
+	}
+
 	const performers = $derived(topPerformers(entries, slot.id === 'FLEX'));
 	const matchups = $derived(bestMatchups(entries));
 	const available = $derived(
@@ -52,7 +61,7 @@
 		</div>
 		{#if data}
 			{#key slot.id}
-				<PlayerLookup label={slot.label} ranked={performers} />
+				<PlayerLookup label={slot.label} ranked={performers} {ballShare} />
 			{/key}
 		{/if}
 	</div>
@@ -66,6 +75,7 @@
 				heading={week ? `Best Available · Wk ${week}` : 'Best Available'}
 				rows={available.slice(0, LIST_LENGTH)}
 				empty="Nobody left. Use Player Lookup to mark players available again."
+				{ballShare}
 			>
 				{#snippet action(entry)}<AvailabilityButton {entry} />{/snippet}
 			</PlayerRankList>
@@ -74,11 +84,14 @@
 				heading={week ? `Best Matchup · Wk ${week}` : 'Best Matchup'}
 				rows={matchups.slice(0, LIST_LENGTH)}
 				empty="No upcoming games."
+				{ballShare}
 			/>
 			<PlayerRankList
 				label="Top Performers {slot.label}"
 				heading="Top Performers"
 				rows={performers.slice(0, LIST_LENGTH)}
+				{ballShare}
+				shareSide="left"
 			/>
 		</div>
 	{:else if failed}

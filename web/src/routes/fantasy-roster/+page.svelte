@@ -120,7 +120,8 @@
 	}
 
 	.canvas {
-		container-type: inline-size;
+		/* Named so popups inside the (also container) lists can size to the whole canvas. */
+		container: roster / inline-size;
 		display: grid;
 		/* Wide content (the power rankings) scrolls within the column instead of widening it. */
 		grid-template-columns: minmax(0, 1fr);

@@ -1,6 +1,8 @@
 <script lang="ts">
+	import type { ShareSlice } from '$lib/fantasy-roster/ball-share';
 	import type { PlayerEntry, RankedPlayer } from '$lib/fantasy-roster/player-rankings';
 	import type { Snippet } from 'svelte';
+	import BallSharePanel from './BallSharePanel.svelte';
 	import GameBreakdownPanel from './GameBreakdownPanel.svelte';
 	import ScoreRow from './ScoreRow.svelte';
 
@@ -9,7 +11,9 @@
 		heading,
 		rows,
 		empty = 'No players.',
-		action
+		action,
+		ballShare,
+		shareSide = 'right'
 	}: {
 		/** Accessible name, e.g. "Top Performers RB". */
 		label: string;
@@ -19,6 +23,10 @@
 		empty?: string;
 		/** A button beside each row (e.g. mark not available). */
 		action?: Snippet<[PlayerEntry]>;
+		/** The player's team's Ball Share slices, or null for no Ball Share box. */
+		ballShare?: (entry: PlayerEntry) => ShareSlice[] | null;
+		/** Which side of the game breakdown the Ball Share box opens on, on wide layouts. */
+		shareSide?: 'left' | 'right';
 	} = $props();
 
 	/** The player whose game breakdown is open. */
@@ -57,12 +65,18 @@
 					/>
 					{#if action}{@render action(row.entry)}{/if}
 					{#if open === row.entry.id}
+						{@const slices = ballShare?.(row.entry)}
 						<div class="popup">
 							<GameBreakdownPanel
 								games={row.entry.breakdown}
 								label="{row.entry.name} by game"
 								opponentRankLabel={row.entry.opponentRankLabel}
 							/>
+							{#if slices}
+								<div class="beside {shareSide}">
+									<BallSharePanel {slices} teamAbbr={row.entry.team} playerName={row.entry.name} />
+								</div>
+							{/if}
 						</div>
 					{/if}
 				</li>
@@ -123,6 +137,27 @@
 		left: 0;
 		right: 0;
 		z-index: 1;
+	}
+
+	/* Ball Share stacks under the breakdown, or sits beside it once the three columns leave
+	   room (it then covers part of the neighboring column). */
+	.beside {
+		margin-top: 6px;
+	}
+
+	@container roster (min-width: 960px) {
+		.beside {
+			position: absolute;
+			top: 0;
+			width: 300px;
+			margin: 0;
+		}
+		.beside.right {
+			left: calc(100% + 8px);
+		}
+		.beside.left {
+			right: calc(100% + 8px);
+		}
 	}
 
 	.empty {

@@ -6,6 +6,7 @@ import pytest
 from football_pipeline.fantasy import (
     PLAYERS_JSON,
     TEAMS_JSON,
+    build_ball_share,
     build_defenses,
     build_players,
     build_team_rankings,
@@ -16,10 +17,10 @@ from football_pipeline.fantasy import (
     final_scores,
     kicker_fantasy_points,
     next_games,
-    upcoming_games,
     passing_fantasy_points,
     points_allowed_score,
     rushing_fantasy_points,
+    upcoming_games,
     week_status,
 )
 from football_pipeline.teams import TEAMS_JSON as APP_TEAMS_JSON
@@ -209,6 +210,42 @@ def test_players_keep_fantasy_positions_and_latest_team():
     }]
 
 
+def test_ball_share_counts_rushes_and_targets_by_team():
+    def row(week, team, player_id, position, carries, targets, season_type="REG"):
+        game_id = {"1": "2026_01_LA_KC", "2": "2026_02_KC_BUF", "3": "2026_03_X_Y"}[week]
+        return {"player_id": player_id, "player_display_name": player_id.upper(),
+                "position": position, "season_type": season_type, "week": week,
+                "game_id": game_id, "team": team, "carries": carries, "targets": targets}
+
+    scores = {**final_scores(SCHEDULE, 2026), "2026_02_KC_BUF": SCHEDULE[1]}
+    share = build_ball_share(
+        [
+            row("1", "KC", "rb", "RB", "15", "3"),
+            row("2", "KC", "rb", "RB", "10", "2"),
+            row("1", "KC", "wr", "WR", "", "9"),
+            row("1", "KC", "qb", "QB", "4", "0"),
+            row("1", "KC", "fb", "FB", "1", "1"),
+            row("1", "KC", "qb2", "QB", "0", "0"),  # no touches
+            row("1", "KC", "k", "K", "0", "0"),  # not a ball carrier
+            row("3", "KC", "rb", "RB", "20", "0"),  # no final score
+            # Traded: week 1 counts for LAR, week 2 for KC.
+            row("1", "LA", "te", "TE", "0", "5"),
+            row("2", "KC", "te", "TE", "0", "4"),
+        ],
+        scores,
+    )
+    assert share == {
+        "KC": [
+            {"id": "rb", "name": "RB", "position": "RB", "rushes": 25, "targets": 5},
+            {"id": "wr", "name": "WR", "position": "WR", "rushes": 0, "targets": 9},
+            {"id": "qb", "name": "QB", "position": "QB", "rushes": 4, "targets": 0},
+            {"id": "te", "name": "TE", "position": "TE", "rushes": 0, "targets": 4},
+            {"id": "fb", "name": "FB", "position": "RB", "rushes": 1, "targets": 1},
+        ],
+        "LAR": [{"id": "te", "name": "TE", "position": "TE", "rushes": 0, "targets": 5}],
+    }
+
+
 def test_kicker_fantasy_points():
     row = {"pat_made": "3", "pat_missed": "1", "fg_made_20_29": "1", "fg_made_30_39": "1",
            "fg_made_40_49": "1", "fg_made_50_59": "1", "fg_missed": "2"}
@@ -264,6 +301,12 @@ def test_generated_players_match_season():
     for p in players["players"]:
         assert len(p["gameLog"]) == p["games"], p
         assert p["average"] == pytest.approx(p["total"] / p["games"], abs=0.01), p
+    if "ballShare" in players:
+        assert len(players["ballShare"]) == 32
+        for team in players["ballShare"].values():
+            for p in team:
+                assert p["position"] in {"QB", "RB", "WR", "TE"}, p
+                assert p["rushes"] + p["targets"] > 0, p
     assert len(players["defenses"]) == 32
     for d in players["defenses"]:
         assert len(d["gameLog"]) == d["games"], d

@@ -102,8 +102,20 @@ export type FantasyPlayer = {
 /** A team's D/ST game log with ESPN's default D/ST scoring (used by Leagues). */
 export type FantasyDefense = Omit<FantasyPlayer, 'id' | 'name' | 'position'>;
 
+/** A player's season-to-date rushes (carries) and targets for one team. */
+export type BallShareEntry = {
+	id: string;
+	name: string;
+	position: 'QB' | 'RB' | 'WR' | 'TE';
+	rushes: number;
+	targets: number;
+};
+
 export type FantasyPlayerData = Omit<FantasyTeamData, 'teams' | 'draftOrder'> & {
 	players: FantasyPlayer[];
+	/** Each team's QBs, RBs, WRs and TEs with a rush or target, most first (missing from data
+	 *  generated before it existed). */
+	ballShare?: Record<string, BallShareEntry[]>;
 	defenses: FantasyDefense[];
 };
 

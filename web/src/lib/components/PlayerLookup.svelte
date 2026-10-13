@@ -1,19 +1,24 @@
 <script lang="ts">
 	import { teamsByAbbr } from '$lib/data/teams';
+	import type { ShareSlice } from '$lib/fantasy-roster/ball-share';
 	import { searchEntries, type PlayerEntry, type RankedPlayer } from '$lib/fantasy-roster/player-rankings';
 	import { unavailable } from '$lib/stores/rosterMode.svelte';
 	import AvailabilityButton from './AvailabilityButton.svelte';
+	import BallSharePanel from './BallSharePanel.svelte';
 	import GameBreakdownPanel from './GameBreakdownPanel.svelte';
 	import ScoreRow from './ScoreRow.svelte';
 
 	let {
 		label,
-		ranked
+		ranked,
+		ballShare
 	}: {
 		/** The slot, e.g. "RB". */
 		label: string;
 		/** Everyone in the slot (available or not), ranked by points per game. */
 		ranked: RankedPlayer[];
+		/** The player's team's Ball Share slices, or null for no Ball Share box. */
+		ballShare?: (entry: PlayerEntry) => ShareSlice[] | null;
 	} = $props();
 
 	let searching = $state(false);
@@ -26,6 +31,7 @@
 		selected ? [] : searchEntries(query, ranked.map((r) => r.entry))
 	);
 	const row = $derived(ranked.find((r) => r.entry.id === selected));
+	const slices = $derived(row ? ballShare?.(row.entry) : null);
 	const listId = $derived(`player-lookup-${label.replace(/\W+/g, '-')}`);
 
 	function dismiss() {
@@ -130,6 +136,11 @@
 					label="{row.entry.name} by game"
 					opponentRankLabel={row.entry.opponentRankLabel}
 				/>
+				{#if slices}
+					<div class="beside">
+						<BallSharePanel {slices} teamAbbr={row.entry.team} playerName={row.entry.name} />
+					</div>
+				{/if}
 			</div>
 		{/if}
 	{:else}
@@ -214,6 +225,16 @@
 	}
 
 	/* Drops down under the slot bar, right-aligned with the lookup. */
+	/* Ball Share stacks under the breakdown, or sits to its left on wide layouts. */
+	@container roster (min-width: 960px) {
+		.beside {
+			position: absolute;
+			top: 0;
+			right: calc(100% + 8px);
+			width: 300px;
+		}
+	}
+
 	.result {
 		container-type: inline-size;
 		position: absolute;

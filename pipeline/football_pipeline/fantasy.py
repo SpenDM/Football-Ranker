@@ -3,8 +3,9 @@
 Pulls nflverse's weekly team and player stats plus the schedule (for final scores), then writes:
 - web/src/lib/data/fantasy-teams.json: per-team offense and defense scores and game results, plus
   the natural draft order the season's power rankings start from (Team mode)
-- web/static/data/fantasy-players.json: game logs for every QB/RB/WR/TE/K (Player mode), plus
-  every D/ST's game log with ESPN's default scoring (Leagues)
+- web/static/data/fantasy-players.json: game logs for every QB/RB/WR/TE/K (Player mode), each
+  team's rushes and targets by player (Player mode's Ball Share), plus every D/ST's game log with
+  ESPN's default scoring (Leagues)
 
 Only regular-season games that have both stats and a final score are counted. Scores are per
 game played, so bye weeks don't count against a team.
@@ -37,6 +38,9 @@ PLAYERS_JSON = REPO_ROOT / "web" / "static" / "data" / "fantasy-players.json"
 TEAM_ALIASES = {"LA": "LAR"}
 
 FANTASY_POSITIONS = {"QB", "RB", "WR", "TE", "K"}
+
+# Positions counted in a team's ball share (rushes + targets); fullbacks count as running backs.
+BALL_SHARE_POSITIONS = {"QB", "RB", "FB", "WR", "TE"}
 
 # Offense scores count each point scored as this many yards.
 POINT_WEIGHT = 10
@@ -405,6 +409,43 @@ def build_players(player_rows: list[dict], scores: dict[str, dict]) -> list[dict
     return sorted(players.values(), key=lambda p: (-p["total"], p["name"]))
 
 
+def build_ball_share(player_rows: list[dict], scores: dict[str, dict]) -> dict[str, list[dict]]:
+    """Each team's rushes (carries) and targets by player, season to date, keyed by team.
+
+    Counts only regular-season games with a final score, for the team the player was on in each
+    game. Players without a rush or target are left out; the rest are listed most touches first.
+    """
+    share: dict[str, dict[str, dict]] = defaultdict(dict)
+    for row in player_rows:
+        if (
+            row["season_type"] != "REG"
+            or row["game_id"] not in scores
+            or row["position"] not in BALL_SHARE_POSITIONS
+        ):
+            continue
+        carries, targets = int(num(row, "carries")), int(num(row, "targets"))
+        if not carries and not targets:
+            continue
+        entry = share[team_abbr(row["team"])].setdefault(
+            row["player_id"],
+            {
+                "id": row["player_id"],
+                "name": row["player_display_name"],
+                "position": "RB" if row["position"] == "FB" else row["position"],
+                "rushes": 0,
+                "targets": 0,
+            },
+        )
+        entry["rushes"] += carries
+        entry["targets"] += targets
+    return {
+        team: sorted(
+            players.values(), key=lambda p: (-(p["rushes"] + p["targets"]), p["name"])
+        )
+        for team, players in sorted(share.items())
+    }
+
+
 def build_defenses(team_rows: list[dict], scores: dict[str, dict]) -> list[dict]:
     """Every D/ST's game log with ESPN's default scoring, sorted by team abbreviation.
 
@@ -487,6 +528,7 @@ def main() -> None:
     if len(teams) != 32:
         raise SystemExit(f"Expected 32 teams, got {len(teams)}")
     players = build_players(player_rows, scores)
+    ball_share = build_ball_share(player_rows, scores)
     defenses = build_defenses(team_rows, scores)
 
     order = draft_order(schedule, season)
@@ -495,7 +537,11 @@ def main() -> None:
 
     meta = {"season": season, "throughWeek": through_week, "weekComplete": week_complete}
     write_json({**meta, "draftOrder": order, "teams": teams}, TEAMS_JSON, indent=2)
-    write_json({**meta, "players": players, "defenses": defenses}, PLAYERS_JSON, indent=None)
+    write_json(
+        {**meta, "players": players, "ballShare": ball_share, "defenses": defenses},
+        PLAYERS_JSON,
+        indent=None,
+    )
     print(
         f"{season} through week {through_week}{'' if week_complete else ' (partial)'}: "
         f"wrote {len(teams)} teams to {TEAMS_JSON.relative_to(REPO_ROOT)} and "
