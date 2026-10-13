@@ -19,21 +19,30 @@
 	<ol>
 		{#each games as game (game.week)}
 			{@const opp = teamsByAbbr.get(game.opponent)}
-			<li class:upcoming={game.score === null && !game.didNotPlay} class:dnp={game.didNotPlay}>
-				<span class="week">Wk {game.week}</span>
-				<span class="matchup"
-					>{game.home ? 'vs' : '@'}
-					{#if opp}<img src={opp.logo} alt="" />{/if}<span class="opp-name"
-						>{opp?.nickname ?? game.opponent}</span
-					></span
-				>
-				<span class="opp-rank" title="{opponentRankLabel} {game.opponentRank ?? '–'}"
-					>#{game.opponentRank ?? '–'}</span
-				>
-				<span class="game-score"
-					>{game.didNotPlay ? 'DNP' : game.score === null ? 'UPCOMING' : game.score.toFixed(1)}</span
-				>
-			</li>
+			{#if game.bye}
+				<li class="bye">
+					<span class="week">Wk {game.week}</span>
+					<span class="matchup">Bye week</span>
+					<span></span>
+					<span class="game-score">BYE</span>
+				</li>
+			{:else}
+				<li class:upcoming={game.score === null && !game.didNotPlay} class:dnp={game.didNotPlay}>
+					<span class="week">Wk {game.week}</span>
+					<span class="matchup"
+						>{game.home ? 'vs' : '@'}
+						{#if opp}<img src={opp.logo} alt="" />{/if}<span class="opp-name"
+							>{opp?.nickname ?? game.opponent}</span
+						></span
+					>
+					<span class="opp-rank" title="{opponentRankLabel} {game.opponentRank ?? '–'}"
+						>#{game.opponentRank ?? '–'}</span
+					>
+					<span class="game-score"
+						>{game.didNotPlay ? 'DNP' : game.score === null ? 'UPCOMING' : game.score.toFixed(1)}</span
+					>
+				</li>
+			{/if}
 		{/each}
 	</ol>
 </div>
@@ -104,6 +113,13 @@
 		text-align: right;
 	}
 
+	.bye .matchup {
+		font-weight: 400;
+		font-style: italic;
+		color: var(--muted);
+	}
+
+	.bye .game-score,
 	.dnp .game-score {
 		font-size: 0.7rem;
 		letter-spacing: 0.04em;

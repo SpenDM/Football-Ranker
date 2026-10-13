@@ -1,7 +1,13 @@
 import type { FantasyPlayer, PlayerPosition, TeamFantasyStats } from '$lib/data/fantasy';
 import { teamsByAbbr } from '$lib/data/teams';
-import { gameBreakdown, type GameBreakdown, type RankIndex, type Split } from './team-rankings';
-import { gameInWeek } from './schedule';
+import {
+	byeRows,
+	gameBreakdown,
+	type GameBreakdown,
+	type RankIndex,
+	type Split
+} from './team-rankings';
+import { gameInWeek, isBye } from './schedule';
 
 export type SlotId = 'QB' | 'RB' | 'WR' | 'TE' | 'FLEX' | 'DST' | 'K';
 
@@ -96,7 +102,7 @@ export type PlayerEntry = {
 	breakdown: GameBreakdown[];
 	/** What each breakdown row's opponent rank is in, e.g. "rushing defense rank". */
 	opponentRankLabel: string;
-	/** The selected week's matchup, or null on a bye or once the team has no games left. */
+	/** The selected week's matchup (a 0 for a bye), or null once the team has no games left. */
 	matchup: Matchup | null;
 };
 
@@ -106,7 +112,12 @@ export type Matchup = {
 	home: boolean;
 	score: number;
 	detail: string;
+	/** The team is on bye that week: a score of 0, listed after every team that plays. */
+	bye?: boolean;
 };
+
+/** The matchup of a team on bye in the selected week. */
+const BYE_MATCHUP: Matchup = { opponent: '', home: false, score: 0, detail: 'BYE', bye: true };
 
 /** A row in one of a slot's lists. */
 export type RankedPlayer = {
@@ -186,14 +197,18 @@ export function playerEntry(
 			}))
 	].sort((a, b) => a.week - b.week);
 
+	// Byes aren't missed games, so they don't count here (or anywhere else).
 	const recentDnps = breakdown.filter(
 		(g) => g.didNotPlay && g.week > latestWeek - RECENT_DNP_WEEKS
 	).length;
 	const matchupAverage = player.total / (player.games + recentDnps);
+	if (team) breakdown.push(...byeRows(team, week));
 
 	const next = team ? gameInWeek(team, week) : null;
 	let matchup: Matchup | null = null;
-	if (next && teams.has(next.opponent)) {
+	if (team && isBye(team, week)) {
+		matchup = BYE_MATCHUP;
+	} else if (next && teams.has(next.opponent)) {
 		const rank = opponentRank.get(next.opponent) ?? teams.size;
 		const factor = matchupFactor(rank, teams.size);
 		breakdown.push({ ...next, score: null, opponentRank: rank });
@@ -204,6 +219,7 @@ export function playerEntry(
 			detail: `${vsOrAt(next.home)} ${next.opponent} · #${rank} · ×${factor.toFixed(2)}`
 		};
 	}
+	breakdown.sort((a, b) => a.week - b.week);
 
 	return {
 		id: player.id,
@@ -219,7 +235,7 @@ export function playerEntry(
 }
 
 /** A team's D/ST: its opponent's overall offense rank minus its overall defense rank, for the
- *  game in `week` (its next game by default). */
+ *  game in `week` (its next game by default), or 0 on a bye. */
 export function dstEntry(
 	team: TeamFantasyStats,
 	teams: Map<string, TeamFantasyStats>,
@@ -228,7 +244,9 @@ export function dstEntry(
 ): PlayerEntry {
 	const next = gameInWeek(team, week);
 	let matchup: Matchup | null = null;
-	if (next && teams.has(next.opponent)) {
+	if (isBye(team, week)) {
+		matchup = BYE_MATCHUP;
+	} else if (next && teams.has(next.opponent)) {
 		const defenseRank = ranks.defense.total.get(team.abbr) ?? 0;
 		const offenseRank = ranks.offense.total.get(next.opponent) ?? 0;
 		matchup = {
@@ -283,12 +301,14 @@ export function topPerformers(entries: PlayerEntry[], showPosition = false): Ran
 		}));
 }
 
-/** Players with an upcoming game, best (highest) matchup score first. */
+/** Players with a game (or a bye) in the selected week, best (highest) matchup score first.
+ *  Byes score 0 and come after everyone who plays (D/ST scores can be negative). */
 export function bestMatchups(entries: PlayerEntry[]): RankedPlayer[] {
 	return entries
 		.filter((e): e is PlayerEntry & { matchup: Matchup } => e.matchup !== null)
 		.sort(
 			(a, b) =>
+				Number(!!a.matchup.bye) - Number(!!b.matchup.bye) ||
 				b.matchup.score - a.matchup.score ||
 				b.average - a.average ||
 				a.name.localeCompare(b.name)
@@ -299,7 +319,7 @@ export function bestMatchups(entries: PlayerEntry[]): RankedPlayer[] {
 			score: entry.matchup.score,
 			// D/ST scores are whole rank differences.
 			scoreText:
-				entry.position === 'D/ST'
+				entry.position === 'D/ST' || entry.matchup.bye
 					? String(entry.matchup.score).replace('-', '−')
 					: entry.matchup.score.toFixed(1),
 			detail: entry.matchup.detail

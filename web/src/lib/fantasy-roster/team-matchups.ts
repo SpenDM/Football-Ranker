@@ -1,6 +1,6 @@
 import type { TeamFantasyStats } from '$lib/data/fantasy';
 import type { RankIndex } from './team-rankings';
-import { gameInWeek, resolveWeek } from './schedule';
+import { byeWeeks, gameInWeek, resolveWeek } from './schedule';
 
 export type MatchupSide = {
 	abbr: string;
@@ -64,12 +64,14 @@ export type GameResult = {
 	week: number;
 	opponent: string;
 	home: boolean;
-	/** Null for the upcoming game. */
+	/** Null for the upcoming game or a bye. */
 	result: { outcome: 'W' | 'L' | 'T'; pointsFor: number; pointsAgainst: number } | null;
+	/** A bye week (no opponent). */
+	bye?: boolean;
 };
 
-/** A team's results game by game, followed by its game in `week` (its next game by default),
- *  without a result. */
+/** A team's results game by game with its bye weeks, followed by its game (or bye) in `week`
+ *  (its next game by default), without a result. */
 export function gameResults(team: TeamFantasyStats, week: number | null = null): GameResult[] {
 	const played: GameResult[] = team.gameLog.map((g) => ({
 		week: g.week,
@@ -82,5 +84,13 @@ export function gameResults(team: TeamFantasyStats, week: number | null = null):
 		}
 	}));
 	const next = gameInWeek(team, week);
-	return next ? [...played, { ...next, result: null }] : played;
+	const byes: GameResult[] = byeWeeks(team, week).map((w) => ({
+		week: w,
+		opponent: '',
+		home: false,
+		result: null,
+		bye: true
+	}));
+	const upcoming: GameResult[] = next ? [{ ...next, result: null }] : [];
+	return [...played, ...byes, ...upcoming].sort((a, b) => a.week - b.week);
 }

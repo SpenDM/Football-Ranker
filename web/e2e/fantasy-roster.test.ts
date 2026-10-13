@@ -162,6 +162,32 @@ test('fantasy roster: clicking a player also shows their Ball Share pie', async 
 	await expect(page.getByRole('group', { name: 'Ball Share' })).toHaveCount(0);
 });
 
+test('fantasy roster: bye weeks show in the week-by-week lists without a score', async ({ page }) => {
+	// Detroit's bye is week 6 in the 2026 data.
+	await page.goto('/fantasy-roster');
+	await page.getByRole('button', { name: 'Player Rankings' }).click();
+	await page.getByRole('group', { name: 'Position' }).getByRole('button', { name: 'RB', exact: true }).click();
+	await page.getByRole('button', { name: 'Player Lookup' }).click();
+	const input = page.getByRole('combobox', { name: 'Player lookup, RB' });
+	await input.fill('Jahmyr Gibbs');
+	await input.press('Enter');
+	const games = page.getByRole('group', { name: 'Jahmyr Gibbs by game' });
+	const bye = games.locator('li.bye');
+	await expect(bye).toHaveCount(1);
+	await expect(bye).toContainText('Wk 6');
+	await expect(bye.locator('.game-score')).toHaveText('BYE');
+
+	// Team Rankings lists show the Lions' bye too.
+	await page.getByRole('button', { name: 'Team Rankings' }).click();
+	const head = page.locator('.category-head').filter({ hasText: 'Rushing' }).first();
+	await head.getByRole('button', { name: 'Team Lookup' }).click();
+	await page.getByRole('combobox', { name: 'Team lookup, offense rushing' }).fill('Lions');
+	await page.getByRole('option', { name: 'Detroit Lions' }).click();
+	const lions = page.getByRole('group', { name: 'Detroit Lions by game' });
+	await expect(lions.locator('li.bye')).toContainText('Wk 6');
+	await expect(lions.locator('li.bye .game-score')).toHaveText('BYE');
+});
+
 test('fantasy roster: players marked not available can be restored from Player Lookup', async ({
 	page
 }) => {

@@ -1,5 +1,5 @@
 import type { DefenseStats, OffenseStats, TeamFantasyStats } from '$lib/data/fantasy';
-import { gameInWeek } from './schedule';
+import { byeWeeks, gameInWeek } from './schedule';
 
 export type Unit = 'offense' | 'defense';
 export type Split = 'total' | 'rush' | 'pass';
@@ -121,12 +121,14 @@ export type GameBreakdown = {
 	score: number | null;
 	/** The team played this game without the player (Player mode). */
 	didNotPlay?: boolean;
+	/** A bye week (no opponent or score); never counted in any stat. */
+	bye?: boolean;
 	/** The opponent's rank in the complementary category (e.g. rushing defense for rushing offense). */
 	opponentRank: number | undefined;
 };
 
-/** A team's game-by-game scores in one category, with each opponent's complementary rank,
- *  followed by its game in `week` (its next game by default), without a score. */
+/** A team's game-by-game scores in one category, with each opponent's complementary rank, its
+ *  bye weeks, and its game (or bye) in `week` (its next game by default), without a score. */
 export function gameBreakdown(
 	team: TeamFantasyStats,
 	unit: Unit,
@@ -143,9 +145,20 @@ export function gameBreakdown(
 		opponentRank: opposing.get(g.opponent)
 	}));
 	const next = gameInWeek(team, week);
-	return next
-		? [...played, { ...next, score: null, opponentRank: opposing.get(next.opponent) }]
-		: played;
+	const upcoming = next ? [{ ...next, score: null, opponentRank: opposing.get(next.opponent) }] : [];
+	return [...played, ...byeRows(team, week), ...upcoming].sort((a, b) => a.week - b.week);
+}
+
+/** Week-by-week rows for a team's bye weeks (see byeWeeks). */
+export function byeRows(team: TeamFantasyStats, week: number | null): GameBreakdown[] {
+	return byeWeeks(team, week).map((w) => ({
+		week: w,
+		opponent: '',
+		home: false,
+		score: null,
+		bye: true,
+		opponentRank: undefined
+	}));
 }
 
 /** The best `count` teams (best first) and the worst `count` teams (worst first). */

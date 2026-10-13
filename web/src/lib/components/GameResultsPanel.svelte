@@ -19,27 +19,36 @@
 	<ol>
 		{#each games as game (game.week)}
 			{@const opp = teamsByAbbr.get(game.opponent)}
-			<li class:upcoming={!game.result}>
-				<span class="week">Wk {game.week}</span>
-				<span class="matchup"
-					>{game.home ? 'vs' : '@'}
-					{#if opp}<img src={opp.logo} alt="" />{/if}<span class="opp-name"
-						>{opp?.nickname ?? game.opponent}</span
-					></span
-				>
-				{#if game.result}
-					<span
-						class="outcome"
-						class:win={game.result.outcome === 'W'}
-						class:loss={game.result.outcome === 'L'}
-						title={OUTCOMES[game.result.outcome]}>{game.result.outcome}</span
-					>
-					<span class="game-score">{game.result.pointsFor}–{game.result.pointsAgainst}</span>
-				{:else}
+			{#if game.bye}
+				<li class="bye">
+					<span class="week">Wk {game.week}</span>
+					<span class="matchup">Bye week</span>
 					<span class="outcome"></span>
-					<span class="game-score">UPCOMING</span>
-				{/if}
-			</li>
+					<span class="game-score">BYE</span>
+				</li>
+			{:else}
+				<li class:upcoming={!game.result}>
+					<span class="week">Wk {game.week}</span>
+					<span class="matchup"
+						>{game.home ? 'vs' : '@'}
+						{#if opp}<img src={opp.logo} alt="" />{/if}<span class="opp-name"
+							>{opp?.nickname ?? game.opponent}</span
+						></span
+					>
+					{#if game.result}
+						<span
+							class="outcome"
+							class:win={game.result.outcome === 'W'}
+							class:loss={game.result.outcome === 'L'}
+							title={OUTCOMES[game.result.outcome]}>{game.result.outcome}</span
+						>
+						<span class="game-score">{game.result.pointsFor}–{game.result.pointsAgainst}</span>
+					{:else}
+						<span class="outcome"></span>
+						<span class="game-score">UPCOMING</span>
+					{/if}
+				</li>
+			{/if}
 		{/each}
 	</ol>
 </div>
@@ -123,5 +132,17 @@
 		font-size: 0.7rem;
 		letter-spacing: 0.04em;
 		color: var(--accent);
+	}
+
+	.bye .matchup {
+		font-weight: 400;
+		font-style: italic;
+		color: var(--muted);
+	}
+
+	.bye .game-score {
+		font-size: 0.7rem;
+		letter-spacing: 0.04em;
+		color: var(--muted);
 	}
 </style>

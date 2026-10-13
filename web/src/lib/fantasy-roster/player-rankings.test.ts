@@ -168,18 +168,30 @@ describe('bestMatchups', () => {
 		expect(rows[0].detail).toBe('@ NYJ · #1 v #4');
 	});
 
-	it("re-ranks against a chosen week's opponents, leaving out teams on bye", () => {
+	it("re-ranks against a chosen week's opponents, scoring byes 0 and listing them last", () => {
 		// Week 3: KC hosts DAL and BUF is on bye.
 		const later = teams.map((t) => ({ ...t, schedule: t.nextGame ? [t.nextGame] : [] }));
 		later[0].schedule!.push({ week: 3, opponent: 'DAL', home: true });
 		later[2] = { ...later[2], schedule: [{ week: 3, opponent: 'KC', home: false }] };
 		const rows = bestMatchups(slotEntries(slot('FLEX'), players, later, ranks, 3));
 		// rb3: 30 × KC rush #2; rb1: 12 × DAL rush #3; wr1: 15 × DAL pass #2. rb2 (BUF) is on bye.
-		expect(rows.map((r) => [r.entry.id, r.score.toFixed(2)])).toEqual([
-			['rb3', '26.00'],
-			['rb1', '13.60'],
-			['wr1', '13.00']
+		expect(rows.map((r) => [r.entry.id, r.score.toFixed(2), r.detail.slice(0, 6)])).toEqual([
+			['rb3', '26.00', '@ KC ·'],
+			['rb1', '13.60', 'vs DAL'],
+			['wr1', '13.00', 'vs DAL'],
+			['rb2', '0.00', 'BYE']
 		]);
+		expect(rows.at(-1)!.scoreText).toBe('0');
+		// The bye week ends rb2's week-by-week list, and isn't a missed game.
+		const rb2 = rows.at(-1)!.entry;
+		expect(rb2.breakdown.at(-1)).toEqual({
+			week: 3,
+			opponent: '',
+			home: false,
+			score: null,
+			bye: true,
+			opponentRank: undefined
+		});
 		expect(rows.find((r) => r.entry.id === 'rb1')!.entry.breakdown.at(-1)).toEqual({
 			week: 3,
 			opponent: 'DAL',
@@ -188,8 +200,14 @@ describe('bestMatchups', () => {
 			opponentRank: 3
 		});
 
+		// D/STs: KC (#1) v DAL offense #3, DAL (#2) v KC offense #2. BUF is on bye and comes after
+		// DAL despite the same 0 (D/ST scores can go below 0); NYJ has no games left.
 		const dst = bestMatchups(slotEntries(slot('DST'), players, later, ranks, 3));
-		expect(dst.map((r) => r.entry.id)).toEqual(['DST-KC', 'DST-DAL']);
+		expect(dst.map((r) => [r.entry.id, r.scoreText, r.detail])).toEqual([
+			['DST-KC', '2', 'vs DAL · #1 v #3'],
+			['DST-DAL', '0', '@ KC · #2 v #2'],
+			['DST-BUF', '0', 'BYE']
+		]);
 	});
 
 	it('renumbers once unavailable players are removed', () => {
