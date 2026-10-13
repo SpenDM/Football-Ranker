@@ -102,7 +102,7 @@ Connect this GitHub repo under **Workers & Pages → Create → Import a reposit
 - Deploy command: `npx wrangler deploy`
 - Non-production branch deploy command: `npx wrangler versions upload` (gives PRs preview URLs)
 
-The Worker name, `football-tools`, comes from `wrangler.jsonc` and must match the Worker name in the dashboard. Attach the domain under the Worker's **Settings → Domains & Routes → Add → Custom domain**: `football.ranker.page`. CI (`.github/workflows/ci.yml`) runs lint, unit, rules and e2e tests, with the e2e tests served through `wrangler dev`, and validates the Worker config with a deploy dry run.
+The Worker name, `football-ranker`, comes from `wrangler.jsonc` and must match the Worker name in the dashboard. Attach the domain under the Worker's **Settings → Domains & Routes → Add → Custom domain**: `football.ranker.page`. CI (`.github/workflows/ci.yml`) runs lint, unit, rules and e2e tests, with the e2e tests served through `wrangler dev`, and validates the Worker config with a deploy dry run.
 
 ## Data and trademarks
 Team colors, logo URLs and game stats come from [nflverse](https://github.com/nflverse). NFL team names and logos are trademarks of their owners. Using them is fine for a personal, non-commercial project; revisit before monetizing.
