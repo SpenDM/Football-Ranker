@@ -1,6 +1,6 @@
 {
   "season": 2026,
-  "throughWeek": 5,
+  "throughWeek": 6,
   "weekComplete": true,
   "draftOrder": [
     "LV",
@@ -39,25 +39,25 @@
   "teams": [
     {
       "abbr": "ARI",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 531.0,
-        "rush": 127.6,
-        "pass": 331.4,
-        "yardsPerGame": 315.0,
-        "pointsPerGame": 21.6,
-        "rushYardsPerGame": 91.6,
-        "rushTdsPerGame": 0.6,
-        "passYardsPerGame": 223.4,
-        "passTdsPerGame": 1.8
+        "total": 528.8,
+        "rush": 126.3,
+        "pass": 312.5,
+        "yardsPerGame": 318.8,
+        "pointsPerGame": 21.0,
+        "rushYardsPerGame": 96.3,
+        "rushTdsPerGame": 0.5,
+        "passYardsPerGame": 222.5,
+        "passTdsPerGame": 1.5
       },
       "defense": {
-        "total": 3.0,
-        "rush": 19.1,
-        "pass": 79.7,
+        "total": 3.3,
+        "rush": 17.4,
+        "pass": 78.8,
         "sacksPerGame": 2.2,
-        "takeawaysPerGame": 1.4,
-        "pointsAllowedPerGame": 32.4
+        "takeawaysPerGame": 1.3,
+        "pointsAllowedPerGame": 29.7
       },
       "gameLog": [
         {
@@ -144,19 +144,31 @@
             "rush": 34.3,
             "pass": 86.94
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "LAR",
-        "home": false
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "LAR",
-          "home": false
-        },
+          "home": false,
+          "pointsFor": 18,
+          "pointsAgainst": 16,
+          "offense": {
+            "total": 518.0,
+            "rush": 120.0,
+            "pass": 218.0
+          },
+          "defense": {
+            "total": 5.0,
+            "rush": 9.2,
+            "pass": 74.08
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "DEN",
+        "home": true
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "DEN",
@@ -216,25 +228,25 @@
     },
     {
       "abbr": "ATL",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 613.0,
-        "rush": 262.8,
-        "pass": 260.2,
-        "yardsPerGame": 375.0,
-        "pointsPerGame": 23.8,
-        "rushYardsPerGame": 166.8,
-        "rushTdsPerGame": 1.6,
-        "passYardsPerGame": 208.2,
-        "passTdsPerGame": 0.8
+        "total": 597.2,
+        "rush": 229.5,
+        "pass": 291.0,
+        "yardsPerGame": 360.5,
+        "pointsPerGame": 23.7,
+        "rushYardsPerGame": 149.5,
+        "rushTdsPerGame": 1.3,
+        "passYardsPerGame": 211.0,
+        "passTdsPerGame": 1.2
       },
       "defense": {
-        "total": 5.4,
-        "rush": 11.6,
-        "pass": 79.2,
-        "sacksPerGame": 2.2,
+        "total": 5.3,
+        "rush": 14.0,
+        "pass": 79.8,
+        "sacksPerGame": 2.5,
         "takeawaysPerGame": 0.8,
-        "pointsAllowedPerGame": 24.4
+        "pointsAllowedPerGame": 25.5
       },
       "gameLog": [
         {
@@ -321,19 +333,31 @@
             "rush": 28.8,
             "pass": 70.14
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "CHI",
-        "home": true
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "CHI",
-          "home": true
-        },
+          "home": true,
+          "pointsFor": 23,
+          "pointsAgainst": 31,
+          "offense": {
+            "total": 518.0,
+            "rush": 63.0,
+            "pass": 445.0
+          },
+          "defense": {
+            "total": 5.0,
+            "rush": 25.8,
+            "pass": 82.7
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "SF",
+        "home": true
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "SF",
@@ -393,25 +417,25 @@
     },
     {
       "abbr": "BAL",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 702.6,
-        "rush": 276.4,
-        "pass": 342.2,
-        "yardsPerGame": 410.6,
-        "pointsPerGame": 29.2,
-        "rushYardsPerGame": 164.4,
-        "rushTdsPerGame": 1.8,
-        "passYardsPerGame": 246.2,
-        "passTdsPerGame": 1.6
+        "total": 644.2,
+        "rush": 244.8,
+        "pass": 322.7,
+        "yardsPerGame": 384.2,
+        "pointsPerGame": 26.0,
+        "rushYardsPerGame": 151.5,
+        "rushTdsPerGame": 1.5,
+        "passYardsPerGame": 232.7,
+        "passTdsPerGame": 1.5
       },
       "defense": {
-        "total": 4.8,
-        "rush": 17.8,
-        "pass": 64.9,
-        "sacksPerGame": 2.0,
-        "takeawaysPerGame": 1.2,
-        "pointsAllowedPerGame": 23.8
+        "total": 5.5,
+        "rush": 17.4,
+        "pass": 60.6,
+        "sacksPerGame": 2.5,
+        "takeawaysPerGame": 1.0,
+        "pointsAllowedPerGame": 22.0
       },
       "gameLog": [
         {
@@ -498,19 +522,31 @@
             "pass": 67.36,
             "total": 5.0
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "CLE",
-        "home": false
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "CLE",
-          "home": false
-        },
+          "home": false,
+          "pointsFor": 10,
+          "pointsAgainst": 13,
+          "offense": {
+            "total": 352.0,
+            "rush": 87.0,
+            "pass": 225.0
+          },
+          "defense": {
+            "total": 9.0,
+            "rush": 15.3,
+            "pass": 38.96
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "CIN",
+        "home": true
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "CIN",
@@ -570,25 +606,25 @@
     },
     {
       "abbr": "BUF",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 735.8,
-        "rush": 314.0,
-        "pass": 337.8,
-        "yardsPerGame": 407.8,
+        "total": 727.8,
+        "rush": 288.8,
+        "pass": 344.0,
+        "yardsPerGame": 399.5,
         "pointsPerGame": 32.8,
-        "rushYardsPerGame": 158.0,
-        "rushTdsPerGame": 2.6,
-        "passYardsPerGame": 249.8,
-        "passTdsPerGame": 1.4
+        "rushYardsPerGame": 148.8,
+        "rushTdsPerGame": 2.3,
+        "passYardsPerGame": 250.7,
+        "passTdsPerGame": 1.5
       },
       "defense": {
-        "total": 4.0,
-        "rush": 16.8,
-        "pass": 93.0,
-        "sacksPerGame": 2.2,
+        "total": 3.5,
+        "rush": 16.1,
+        "pass": 91.6,
+        "sacksPerGame": 1.8,
         "takeawaysPerGame": 1.0,
-        "pointsAllowedPerGame": 28.2
+        "pointsAllowedPerGame": 28.5
       },
       "gameLog": [
         {
@@ -675,19 +711,31 @@
             "rush": 19.7,
             "pass": 123.62
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "LV",
-        "home": false
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "LV",
-          "home": false
-        },
+          "home": false,
+          "pointsFor": 33,
+          "pointsAgainst": 30,
+          "offense": {
+            "total": 688.0,
+            "rush": 163.0,
+            "pass": 375.0
+          },
+          "defense": {
+            "total": 1.0,
+            "rush": 12.5,
+            "pass": 84.82
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 8,
+        "opponent": "BAL",
+        "home": true
+      },
+      "schedule": [
         {
           "week": 8,
           "opponent": "BAL",
@@ -747,25 +795,25 @@
     },
     {
       "abbr": "CAR",
-      "games": 4,
+      "games": 5,
       "offense": {
-        "total": 724.0,
-        "rush": 164.5,
-        "pass": 452.0,
-        "yardsPerGame": 421.5,
-        "pointsPerGame": 30.2,
-        "rushYardsPerGame": 104.5,
+        "total": 710.6,
+        "rush": 168.8,
+        "pass": 441.8,
+        "yardsPerGame": 418.6,
+        "pointsPerGame": 29.2,
+        "rushYardsPerGame": 108.8,
         "rushTdsPerGame": 1.0,
-        "passYardsPerGame": 317.0,
+        "passYardsPerGame": 309.8,
         "passTdsPerGame": 2.2
       },
       "defense": {
-        "total": 7.5,
-        "rush": 25.6,
-        "pass": 67.0,
-        "sacksPerGame": 1.8,
-        "takeawaysPerGame": 1.8,
-        "pointsAllowedPerGame": 27.2
+        "total": 6.8,
+        "rush": 22.4,
+        "pass": 66.8,
+        "sacksPerGame": 2.0,
+        "takeawaysPerGame": 1.4,
+        "pointsAllowedPerGame": 24.6
       },
       "gameLog": [
         {
@@ -835,19 +883,31 @@
             "rush": 10.6,
             "pass": 99.68
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "PHI",
-        "home": false
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "PHI",
-          "home": false
-        },
+          "home": false,
+          "pointsFor": 25,
+          "pointsAgainst": 14,
+          "offense": {
+            "total": 657.0,
+            "rush": 186.0,
+            "pass": 401.0
+          },
+          "defense": {
+            "total": 4.0,
+            "rush": 9.5,
+            "pass": 66.1
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "TB",
+        "home": true
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "TB",
@@ -912,25 +972,25 @@
     },
     {
       "abbr": "CHI",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 645.4,
-        "rush": 293.2,
-        "pass": 282.2,
-        "yardsPerGame": 407.4,
-        "pointsPerGame": 23.8,
-        "rushYardsPerGame": 173.2,
-        "rushTdsPerGame": 2.0,
-        "passYardsPerGame": 234.2,
+        "total": 656.7,
+        "rush": 290.7,
+        "pass": 296.0,
+        "yardsPerGame": 406.7,
+        "pointsPerGame": 25.0,
+        "rushYardsPerGame": 160.7,
+        "rushTdsPerGame": 2.2,
+        "passYardsPerGame": 246.0,
         "passTdsPerGame": 0.8
       },
       "defense": {
-        "total": 6.6,
-        "rush": 15.6,
-        "pass": 59.4,
-        "sacksPerGame": 2.4,
-        "takeawaysPerGame": 1.2,
-        "pointsAllowedPerGame": 19.2
+        "total": 7.3,
+        "rush": 14.0,
+        "pass": 63.9,
+        "sacksPerGame": 2.8,
+        "takeawaysPerGame": 1.5,
+        "pointsAllowedPerGame": 19.8
       },
       "gameLog": [
         {
@@ -1017,19 +1077,31 @@
             "rush": 19.0,
             "pass": 100.38
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "ATL",
-        "home": false
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "ATL",
-          "home": false
-        },
+          "home": false,
+          "pointsFor": 31,
+          "pointsAgainst": 23,
+          "offense": {
+            "total": 713.0,
+            "rush": 278.0,
+            "pass": 365.0
+          },
+          "defense": {
+            "rush": 6.3,
+            "pass": 86.5,
+            "total": 11.0
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "NE",
+        "home": true
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "NE",
@@ -1266,25 +1338,25 @@
     },
     {
       "abbr": "CLE",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 482.2,
-        "rush": 118.2,
-        "pass": 290.0,
-        "yardsPerGame": 296.2,
-        "pointsPerGame": 18.6,
-        "rushYardsPerGame": 94.2,
-        "rushTdsPerGame": 0.4,
-        "passYardsPerGame": 202.0,
-        "passTdsPerGame": 1.4
+        "total": 466.3,
+        "rush": 124.0,
+        "pass": 269.0,
+        "yardsPerGame": 289.7,
+        "pointsPerGame": 17.7,
+        "rushYardsPerGame": 94.0,
+        "rushTdsPerGame": 0.5,
+        "passYardsPerGame": 195.7,
+        "passTdsPerGame": 1.2
       },
       "defense": {
-        "total": 6.0,
-        "rush": 13.3,
-        "pass": 72.0,
+        "total": 6.5,
+        "rush": 12.2,
+        "pass": 68.7,
         "sacksPerGame": 3.2,
         "takeawaysPerGame": 1.2,
-        "pointsAllowedPerGame": 22.4
+        "pointsAllowedPerGame": 20.3
       },
       "gameLog": [
         {
@@ -1371,19 +1443,31 @@
             "rush": 19.4,
             "pass": 48.48
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "BAL",
-        "home": true
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "BAL",
-          "home": true
-        },
+          "home": true,
+          "pointsFor": 13,
+          "pointsAgainst": 10,
+          "offense": {
+            "total": 387.0,
+            "rush": 153.0,
+            "pass": 164.0
+          },
+          "defense": {
+            "rush": 6.7,
+            "pass": 52.1,
+            "total": 9.0
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "TEN",
+        "home": false
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "TEN",
@@ -1443,25 +1527,25 @@
     },
     {
       "abbr": "DAL",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 633.8,
-        "rush": 165.6,
-        "pass": 388.2,
-        "yardsPerGame": 357.8,
-        "pointsPerGame": 27.6,
-        "rushYardsPerGame": 81.6,
-        "rushTdsPerGame": 1.4,
-        "passYardsPerGame": 276.2,
-        "passTdsPerGame": 1.8
+        "total": 600.8,
+        "rush": 156.0,
+        "pass": 376.5,
+        "yardsPerGame": 349.2,
+        "pointsPerGame": 25.2,
+        "rushYardsPerGame": 76.0,
+        "rushTdsPerGame": 1.3,
+        "passYardsPerGame": 273.2,
+        "passTdsPerGame": 1.7
       },
       "defense": {
-        "total": 1.4,
-        "rush": 23.6,
-        "pass": 72.3,
-        "sacksPerGame": 1.0,
-        "takeawaysPerGame": 0.4,
-        "pointsAllowedPerGame": 27.2
+        "total": 2.0,
+        "rush": 21.7,
+        "pass": 71.8,
+        "sacksPerGame": 1.3,
+        "takeawaysPerGame": 0.5,
+        "pointsAllowedPerGame": 26.5
       },
       "gameLog": [
         {
@@ -1548,19 +1632,31 @@
             "rush": 36.1,
             "pass": 55.46
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "GB",
-        "home": false
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "GB",
-          "home": false
-        },
+          "home": false,
+          "pointsFor": 13,
+          "pointsAgainst": 23,
+          "offense": {
+            "total": 436.0,
+            "rush": 108.0,
+            "pass": 318.0
+          },
+          "defense": {
+            "total": 5.0,
+            "rush": 11.7,
+            "pass": 69.64
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "PHI",
+        "home": false
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "PHI",
@@ -1620,25 +1716,25 @@
     },
     {
       "abbr": "DEN",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 468.6,
-        "rush": 126.2,
-        "pass": 268.4,
-        "yardsPerGame": 274.6,
-        "pointsPerGame": 19.4,
-        "rushYardsPerGame": 86.2,
-        "rushTdsPerGame": 0.6,
-        "passYardsPerGame": 188.4,
-        "passTdsPerGame": 1.2
+        "total": 449.0,
+        "rush": 137.5,
+        "pass": 241.5,
+        "yardsPerGame": 259.0,
+        "pointsPerGame": 19.0,
+        "rushYardsPerGame": 84.2,
+        "rushTdsPerGame": 0.8,
+        "passYardsPerGame": 174.8,
+        "passTdsPerGame": 1.0
       },
       "defense": {
-        "total": 7.8,
-        "rush": 20.5,
-        "pass": 61.1,
-        "sacksPerGame": 2.6,
-        "takeawaysPerGame": 1.4,
-        "pointsAllowedPerGame": 22.2
+        "total": 8.5,
+        "rush": 19.6,
+        "pass": 61.9,
+        "sacksPerGame": 3.0,
+        "takeawaysPerGame": 1.7,
+        "pointsAllowedPerGame": 20.8
       },
       "gameLog": [
         {
@@ -1725,19 +1821,31 @@
             "rush": 21.5,
             "pass": 34.94
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "SEA",
-        "home": true
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "SEA",
-          "home": true
-        },
+          "home": true,
+          "pointsFor": 17,
+          "pointsAgainst": 14,
+          "offense": {
+            "total": 351.0,
+            "rush": 194.0,
+            "pass": 107.0
+          },
+          "defense": {
+            "total": 12.0,
+            "rush": 15.3,
+            "pass": 65.92
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "ARI",
+        "home": false
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "ARI",
@@ -1974,25 +2082,25 @@
     },
     {
       "abbr": "GB",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 550.0,
-        "rush": 84.4,
-        "pass": 405.6,
-        "yardsPerGame": 342.0,
-        "pointsPerGame": 20.8,
-        "rushYardsPerGame": 60.4,
-        "rushTdsPerGame": 0.4,
-        "passYardsPerGame": 281.6,
-        "passTdsPerGame": 2.0
+        "total": 552.2,
+        "rush": 89.8,
+        "pass": 394.0,
+        "yardsPerGame": 340.5,
+        "pointsPerGame": 21.2,
+        "rushYardsPerGame": 59.8,
+        "rushTdsPerGame": 0.5,
+        "passYardsPerGame": 280.7,
+        "passTdsPerGame": 1.8
       },
       "defense": {
-        "total": 6.0,
-        "rush": 22.4,
-        "pass": 58.3,
-        "sacksPerGame": 2.8,
+        "total": 6.5,
+        "rush": 20.4,
+        "pass": 61.3,
+        "sacksPerGame": 2.5,
         "takeawaysPerGame": 1.8,
-        "pointsAllowedPerGame": 22.4
+        "pointsAllowedPerGame": 20.8
       },
       "gameLog": [
         {
@@ -2079,19 +2187,31 @@
             "pass": 40.3,
             "total": 18.0
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "DAL",
-        "home": true
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "DAL",
-          "home": true
-        },
+          "home": true,
+          "pointsFor": 23,
+          "pointsAgainst": 13,
+          "offense": {
+            "total": 563.0,
+            "rush": 117.0,
+            "pass": 336.0
+          },
+          "defense": {
+            "rush": 10.8,
+            "pass": 76.12,
+            "total": 9.0
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "DET",
+        "home": false
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "DET",
@@ -2151,25 +2271,25 @@
     },
     {
       "abbr": "HOU",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 579.4,
-        "rush": 139.0,
-        "pass": 352.4,
-        "yardsPerGame": 359.4,
-        "pointsPerGame": 22.0,
-        "rushYardsPerGame": 79.0,
+        "total": 610.5,
+        "rush": 144.8,
+        "pass": 375.7,
+        "yardsPerGame": 370.5,
+        "pointsPerGame": 24.0,
+        "rushYardsPerGame": 84.8,
         "rushTdsPerGame": 1.0,
-        "passYardsPerGame": 280.4,
-        "passTdsPerGame": 1.2
+        "passYardsPerGame": 285.7,
+        "passTdsPerGame": 1.5
       },
       "defense": {
-        "total": 6.8,
-        "rush": 13.4,
-        "pass": 70.1,
-        "sacksPerGame": 3.6,
+        "total": 5.8,
+        "rush": 13.0,
+        "pass": 75.9,
+        "sacksPerGame": 3.0,
         "takeawaysPerGame": 1.0,
-        "pointsAllowedPerGame": 22.4
+        "pointsAllowedPerGame": 23.8
       },
       "gameLog": [
         {
@@ -2256,19 +2376,31 @@
             "rush": 3.7,
             "pass": 44.8
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "JAX",
-        "home": false
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "JAX",
-          "home": false
-        },
+          "home": false,
+          "pointsFor": 34,
+          "pointsAgainst": 31,
+          "offense": {
+            "total": 766.0,
+            "rush": 174.0,
+            "pass": 492.0
+          },
+          "defense": {
+            "total": 1.0,
+            "rush": 10.6,
+            "pass": 104.84
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "NYG",
+        "home": true
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "NYG",
@@ -2328,25 +2460,25 @@
     },
     {
       "abbr": "IND",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 553.0,
-        "rush": 196.8,
-        "pass": 240.2,
-        "yardsPerGame": 305.0,
-        "pointsPerGame": 24.8,
-        "rushYardsPerGame": 100.8,
-        "rushTdsPerGame": 1.6,
-        "passYardsPerGame": 204.2,
-        "passTdsPerGame": 0.6
+        "total": 566.5,
+        "rush": 201.5,
+        "pass": 255.0,
+        "yardsPerGame": 326.5,
+        "pointsPerGame": 24.0,
+        "rushYardsPerGame": 111.5,
+        "rushTdsPerGame": 1.5,
+        "passYardsPerGame": 215.0,
+        "passTdsPerGame": 0.7
       },
       "defense": {
-        "total": 2.6,
-        "rush": 20.2,
-        "pass": 75.7,
-        "sacksPerGame": 2.0,
-        "takeawaysPerGame": 0.4,
-        "pointsAllowedPerGame": 27.6
+        "total": 2.5,
+        "rush": 18.3,
+        "pass": 68.6,
+        "sacksPerGame": 1.7,
+        "takeawaysPerGame": 0.5,
+        "pointsAllowedPerGame": 27.3
       },
       "gameLog": [
         {
@@ -2433,19 +2565,31 @@
             "rush": 18.7,
             "pass": 84.9
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "TEN",
-        "home": true
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "TEN",
-          "home": true
-        },
+          "home": true,
+          "pointsFor": 20,
+          "pointsAgainst": 26,
+          "offense": {
+            "total": 634.0,
+            "rush": 225.0,
+            "pass": 329.0
+          },
+          "defense": {
+            "total": 2.0,
+            "rush": 8.4,
+            "pass": 33.28
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "MIN",
+        "home": false
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "MIN",
@@ -2505,25 +2649,25 @@
     },
     {
       "abbr": "JAX",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 595.0,
-        "rush": 162.2,
-        "pass": 354.8,
-        "yardsPerGame": 349.0,
-        "pointsPerGame": 24.6,
-        "rushYardsPerGame": 114.2,
-        "rushTdsPerGame": 0.8,
-        "passYardsPerGame": 234.8,
-        "passTdsPerGame": 2.0
+        "total": 616.2,
+        "rush": 152.8,
+        "pass": 386.7,
+        "yardsPerGame": 359.5,
+        "pointsPerGame": 25.7,
+        "rushYardsPerGame": 112.8,
+        "rushTdsPerGame": 0.7,
+        "passYardsPerGame": 246.7,
+        "passTdsPerGame": 2.3
       },
       "defense": {
-        "total": 8.0,
-        "rush": 10.0,
-        "pass": 66.8,
-        "sacksPerGame": 2.0,
-        "takeawaysPerGame": 1.6,
-        "pointsAllowedPerGame": 14.0
+        "total": 6.8,
+        "rush": 11.2,
+        "pass": 71.6,
+        "sacksPerGame": 1.7,
+        "takeawaysPerGame": 1.5,
+        "pointsAllowedPerGame": 17.3
       },
       "gameLog": [
         {
@@ -2610,19 +2754,31 @@
             "rush": 8.2,
             "pass": 61.8
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "HOU",
-        "home": true
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "HOU",
-          "home": true
-        },
+          "home": true,
+          "pointsFor": 31,
+          "pointsAgainst": 34,
+          "offense": {
+            "total": 722.0,
+            "rush": 106.0,
+            "pass": 546.0
+          },
+          "defense": {
+            "rush": 17.4,
+            "pass": 95.68,
+            "total": 1.0
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 8,
+        "opponent": "IND",
+        "home": true
+      },
+      "schedule": [
         {
           "week": 8,
           "opponent": "IND",
@@ -2682,25 +2838,25 @@
     },
     {
       "abbr": "KC",
-      "games": 4,
+      "games": 5,
       "offense": {
-        "total": 716.5,
-        "rush": 237.2,
-        "pass": 394.2,
-        "yardsPerGame": 421.5,
-        "pointsPerGame": 29.5,
-        "rushYardsPerGame": 162.2,
-        "rushTdsPerGame": 1.2,
-        "passYardsPerGame": 259.2,
-        "passTdsPerGame": 2.2
+        "total": 701.6,
+        "rush": 243.8,
+        "pass": 369.8,
+        "yardsPerGame": 421.6,
+        "pointsPerGame": 28.0,
+        "rushYardsPerGame": 159.8,
+        "rushTdsPerGame": 1.4,
+        "passYardsPerGame": 261.8,
+        "passTdsPerGame": 1.8
       },
       "defense": {
-        "total": 6.0,
-        "rush": 13.3,
-        "pass": 63.1,
-        "sacksPerGame": 0.8,
+        "total": 7.8,
+        "rush": 12.1,
+        "pass": 59.8,
+        "sacksPerGame": 1.4,
         "takeawaysPerGame": 1.8,
-        "pointsAllowedPerGame": 19.2
+        "pointsAllowedPerGame": 16.6
       },
       "gameLog": [
         {
@@ -2770,19 +2926,31 @@
             "rush": 7.2,
             "pass": 104.1
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "LAC",
-        "home": true
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "LAC",
-          "home": true
-        },
+          "home": true,
+          "pointsFor": 22,
+          "pointsAgainst": 6,
+          "offense": {
+            "total": 642.0,
+            "rush": 270.0,
+            "pass": 272.0
+          },
+          "defense": {
+            "total": 15.0,
+            "rush": 7.3,
+            "pass": 46.56
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "SEA",
+        "home": false
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "SEA",
@@ -2847,25 +3015,25 @@
     },
     {
       "abbr": "LAC",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 483.6,
-        "rush": 176.2,
-        "pass": 247.4,
-        "yardsPerGame": 315.6,
-        "pointsPerGame": 16.8,
-        "rushYardsPerGame": 128.2,
-        "rushTdsPerGame": 0.8,
-        "passYardsPerGame": 187.4,
-        "passTdsPerGame": 1.0
+        "total": 459.2,
+        "rush": 159.0,
+        "pass": 240.2,
+        "yardsPerGame": 309.2,
+        "pointsPerGame": 15.0,
+        "rushYardsPerGame": 119.0,
+        "rushTdsPerGame": 0.7,
+        "passYardsPerGame": 190.2,
+        "passTdsPerGame": 0.8
       },
       "defense": {
-        "total": 5.2,
-        "rush": 19.5,
-        "pass": 58.5,
-        "sacksPerGame": 2.2,
-        "takeawaysPerGame": 1.6,
-        "pointsAllowedPerGame": 25.8
+        "total": 5.0,
+        "rush": 20.7,
+        "pass": 58.6,
+        "sacksPerGame": 1.8,
+        "takeawaysPerGame": 1.7,
+        "pointsAllowedPerGame": 25.2
       },
       "gameLog": [
         {
@@ -2952,19 +3120,31 @@
             "pass": 43.22,
             "total": 3.0
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "KC",
-        "home": false
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "KC",
-          "home": false
-        },
+          "home": false,
+          "pointsFor": 6,
+          "pointsAgainst": 22,
+          "offense": {
+            "total": 337.0,
+            "rush": 73.0,
+            "pass": 204.0
+          },
+          "defense": {
+            "rush": 27.0,
+            "pass": 59.08,
+            "total": 4.0
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 8,
+        "opponent": "LAR",
+        "home": false
+      },
+      "schedule": [
         {
           "week": 8,
           "opponent": "LAR",
@@ -3024,25 +3204,25 @@
     },
     {
       "abbr": "LAR",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 671.8,
-        "rush": 188.8,
-        "pass": 425.0,
-        "yardsPerGame": 433.8,
-        "pointsPerGame": 23.8,
-        "rushYardsPerGame": 116.8,
-        "rushTdsPerGame": 1.2,
-        "passYardsPerGame": 317.0,
+        "total": 638.8,
+        "rush": 172.7,
+        "pass": 411.2,
+        "yardsPerGame": 413.8,
+        "pointsPerGame": 22.5,
+        "rushYardsPerGame": 112.7,
+        "rushTdsPerGame": 1.0,
+        "passYardsPerGame": 301.2,
         "passTdsPerGame": 1.8
       },
       "defense": {
-        "total": 4.2,
-        "rush": 17.2,
-        "pass": 55.9,
-        "sacksPerGame": 1.6,
+        "total": 4.0,
+        "rush": 16.4,
+        "pass": 55.3,
+        "sacksPerGame": 1.3,
         "takeawaysPerGame": 1.0,
-        "pointsAllowedPerGame": 24.0
+        "pointsAllowedPerGame": 23.0
       },
       "gameLog": [
         {
@@ -3129,19 +3309,31 @@
             "pass": 53.4,
             "total": 1.0
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "ARI",
-        "home": true
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "ARI",
-          "home": true
-        },
+          "home": true,
+          "pointsFor": 16,
+          "pointsAgainst": 18,
+          "offense": {
+            "total": 474.0,
+            "rush": 92.0,
+            "pass": 342.0
+          },
+          "defense": {
+            "rush": 12.0,
+            "pass": 52.52,
+            "total": 3.0
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "LV",
+        "home": false
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "LV",
@@ -3201,25 +3393,25 @@
     },
     {
       "abbr": "LV",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 609.4,
-        "rush": 106.0,
-        "pass": 411.4,
-        "yardsPerGame": 345.4,
-        "pointsPerGame": 26.4,
-        "rushYardsPerGame": 82.0,
-        "rushTdsPerGame": 0.4,
-        "passYardsPerGame": 263.4,
-        "passTdsPerGame": 2.4
+        "total": 620.8,
+        "rush": 109.2,
+        "pass": 415.0,
+        "yardsPerGame": 350.8,
+        "pointsPerGame": 27.0,
+        "rushYardsPerGame": 79.2,
+        "rushTdsPerGame": 0.5,
+        "passYardsPerGame": 271.7,
+        "passTdsPerGame": 2.3
       },
       "defense": {
-        "total": 7.4,
-        "rush": 20.5,
-        "pass": 74.2,
-        "sacksPerGame": 2.6,
-        "takeawaysPerGame": 2.0,
-        "pointsAllowedPerGame": 25.8
+        "total": 6.3,
+        "rush": 19.8,
+        "pass": 75.0,
+        "sacksPerGame": 2.5,
+        "takeawaysPerGame": 1.7,
+        "pointsAllowedPerGame": 27.0
       },
       "gameLog": [
         {
@@ -3306,19 +3498,31 @@
             "rush": 26.5,
             "pass": 118.36
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "BUF",
-        "home": true
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "BUF",
-          "home": true
-        },
+          "home": true,
+          "pointsFor": 30,
+          "pointsAgainst": 33,
+          "offense": {
+            "total": 678.0,
+            "rush": 125.0,
+            "pass": 433.0
+          },
+          "defense": {
+            "rush": 16.3,
+            "pass": 78.7,
+            "total": 1.0
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "LAR",
+        "home": true
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "LAR",
@@ -3732,23 +3936,23 @@
     },
     {
       "abbr": "NE",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 602.0,
-        "rush": 175.2,
-        "pass": 354.8,
-        "yardsPerGame": 382.0,
-        "pointsPerGame": 22.0,
-        "rushYardsPerGame": 127.2,
-        "rushTdsPerGame": 0.8,
-        "passYardsPerGame": 254.8,
-        "passTdsPerGame": 1.6
+        "total": 608.8,
+        "rush": 170.7,
+        "pass": 364.8,
+        "yardsPerGame": 382.2,
+        "pointsPerGame": 22.7,
+        "rushYardsPerGame": 130.7,
+        "rushTdsPerGame": 0.7,
+        "passYardsPerGame": 251.5,
+        "passTdsPerGame": 1.8
       },
       "defense": {
-        "total": 7.4,
-        "rush": 15.1,
-        "pass": 62.2,
-        "sacksPerGame": 2.2,
+        "total": 7.2,
+        "rush": 14.2,
+        "pass": 62.4,
+        "sacksPerGame": 2.3,
         "takeawaysPerGame": 1.2,
         "pointsAllowedPerGame": 18.8
       },
@@ -3837,19 +4041,31 @@
             "pass": 73.74,
             "total": 6.0
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "NYJ",
-        "home": true
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "NYJ",
-          "home": true
-        },
+          "home": true,
+          "pointsFor": 26,
+          "pointsAgainst": 19,
+          "offense": {
+            "total": 643.0,
+            "rush": 148.0,
+            "pass": 415.0
+          },
+          "defense": {
+            "total": 6.0,
+            "rush": 9.7,
+            "pass": 63.28
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "CHI",
+        "home": false
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "CHI",
@@ -3909,25 +4125,25 @@
     },
     {
       "abbr": "NO",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 577.6,
-        "rush": 145.8,
-        "pass": 367.8,
-        "yardsPerGame": 341.6,
-        "pointsPerGame": 23.6,
-        "rushYardsPerGame": 81.8,
+        "total": 591.2,
+        "rush": 160.7,
+        "pass": 360.5,
+        "yardsPerGame": 337.8,
+        "pointsPerGame": 25.3,
+        "rushYardsPerGame": 97.3,
         "rushTdsPerGame": 1.0,
-        "passYardsPerGame": 259.8,
-        "passTdsPerGame": 1.8
+        "passYardsPerGame": 240.5,
+        "passTdsPerGame": 2.0
       },
       "defense": {
-        "total": 4.0,
-        "rush": 26.5,
-        "pass": 68.3,
-        "sacksPerGame": 2.0,
-        "takeawaysPerGame": 1.0,
-        "pointsAllowedPerGame": 30.2
+        "total": 5.5,
+        "rush": 24.5,
+        "pass": 73.3,
+        "sacksPerGame": 2.5,
+        "takeawaysPerGame": 1.5,
+        "pointsAllowedPerGame": 29.7
       },
       "gameLog": [
         {
@@ -4014,19 +4230,31 @@
             "pass": 64.06,
             "total": 12.0
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "NYG",
-        "home": false
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "NYG",
-          "home": false
-        },
+          "home": false,
+          "pointsFor": 34,
+          "pointsAgainst": 27,
+          "offense": {
+            "total": 659.0,
+            "rush": 235.0,
+            "pass": 324.0
+          },
+          "defense": {
+            "total": 13.0,
+            "rush": 14.4,
+            "pass": 98.3
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "PIT",
+        "home": true
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "PIT",
@@ -4086,25 +4314,25 @@
     },
     {
       "abbr": "NYG",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 538.0,
-        "rush": 125.0,
-        "pass": 319.0,
-        "yardsPerGame": 320.0,
-        "pointsPerGame": 21.8,
-        "rushYardsPerGame": 109.0,
-        "rushTdsPerGame": 0.2,
-        "passYardsPerGame": 211.0,
+        "total": 573.2,
+        "rush": 128.2,
+        "pass": 355.0,
+        "yardsPerGame": 346.5,
+        "pointsPerGame": 22.7,
+        "rushYardsPerGame": 104.8,
+        "rushTdsPerGame": 0.3,
+        "passYardsPerGame": 241.7,
         "passTdsPerGame": 1.8
       },
       "defense": {
-        "total": 6.8,
-        "rush": 18.4,
-        "pass": 66.7,
-        "sacksPerGame": 1.6,
-        "takeawaysPerGame": 1.6,
-        "pointsAllowedPerGame": 21.2
+        "total": 5.8,
+        "rush": 18.9,
+        "pass": 66.6,
+        "sacksPerGame": 1.3,
+        "takeawaysPerGame": 1.5,
+        "pointsAllowedPerGame": 23.3
       },
       "gameLog": [
         {
@@ -4191,19 +4419,31 @@
             "rush": 38.2,
             "pass": 48.86
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "NO",
-        "home": true
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "NO",
-          "home": true
-        },
+          "home": true,
+          "pointsFor": 27,
+          "pointsAgainst": 34,
+          "offense": {
+            "total": 749.0,
+            "rush": 144.0,
+            "pass": 535.0
+          },
+          "defense": {
+            "rush": 21.5,
+            "pass": 66.16,
+            "total": 1.0
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "HOU",
+        "home": false
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "HOU",
@@ -4263,25 +4503,25 @@
     },
     {
       "abbr": "NYJ",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 496.8,
-        "rush": 142.0,
-        "pass": 292.8,
-        "yardsPerGame": 310.8,
-        "pointsPerGame": 18.6,
-        "rushYardsPerGame": 94.0,
-        "rushTdsPerGame": 0.8,
-        "passYardsPerGame": 216.8,
+        "total": 503.8,
+        "rush": 134.5,
+        "pass": 296.0,
+        "yardsPerGame": 317.2,
+        "pointsPerGame": 18.7,
+        "rushYardsPerGame": 94.5,
+        "rushTdsPerGame": 0.7,
+        "passYardsPerGame": 222.7,
         "passTdsPerGame": 1.2
       },
       "defense": {
-        "total": 7.4,
-        "rush": 15.4,
-        "pass": 58.6,
-        "sacksPerGame": 3.4,
-        "takeawaysPerGame": 1.2,
-        "pointsAllowedPerGame": 19.2
+        "total": 6.8,
+        "rush": 15.0,
+        "pass": 61.9,
+        "sacksPerGame": 2.8,
+        "takeawaysPerGame": 1.3,
+        "pointsAllowedPerGame": 20.3
       },
       "gameLog": [
         {
@@ -4368,19 +4608,31 @@
             "pass": 44.7,
             "total": 16.0
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "NE",
-        "home": false
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "NE",
-          "home": false
-        },
+          "home": false,
+          "pointsFor": 19,
+          "pointsAgainst": 26,
+          "offense": {
+            "total": 539.0,
+            "rush": 97.0,
+            "pass": 312.0
+          },
+          "defense": {
+            "rush": 12.8,
+            "pass": 78.9,
+            "total": 4.0
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "MIA",
+        "home": true
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "MIA",
@@ -4440,25 +4692,25 @@
     },
     {
       "abbr": "PHI",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 462.2,
-        "rush": 127.6,
-        "pass": 282.6,
-        "yardsPerGame": 278.2,
-        "pointsPerGame": 18.4,
-        "rushYardsPerGame": 91.6,
-        "rushTdsPerGame": 0.6,
-        "passYardsPerGame": 186.6,
-        "passTdsPerGame": 1.6
+        "total": 450.2,
+        "rush": 122.2,
+        "pass": 281.3,
+        "yardsPerGame": 273.5,
+        "pointsPerGame": 17.7,
+        "rushYardsPerGame": 82.2,
+        "rushTdsPerGame": 0.7,
+        "passYardsPerGame": 191.3,
+        "passTdsPerGame": 1.5
       },
       "defense": {
-        "total": 3.2,
-        "rush": 20.2,
-        "pass": 67.8,
-        "sacksPerGame": 1.2,
-        "takeawaysPerGame": 0.6,
-        "pointsAllowedPerGame": 22.4
+        "total": 3.0,
+        "rush": 19.9,
+        "pass": 69.7,
+        "sacksPerGame": 1.3,
+        "takeawaysPerGame": 0.5,
+        "pointsAllowedPerGame": 22.8
       },
       "gameLog": [
         {
@@ -4545,19 +4797,31 @@
             "pass": 88.34,
             "total": 5.0
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "CAR",
-        "home": true
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "CAR",
-          "home": true
-        },
+          "home": true,
+          "pointsFor": 14,
+          "pointsAgainst": 25,
+          "offense": {
+            "total": 390.0,
+            "rush": 95.0,
+            "pass": 275.0
+          },
+          "defense": {
+            "rush": 18.6,
+            "pass": 79.34,
+            "total": 2.0
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "DAL",
+        "home": true
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "DAL",
@@ -4617,25 +4881,25 @@
     },
     {
       "abbr": "PIT",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 570.0,
-        "rush": 117.2,
-        "pass": 366.8,
-        "yardsPerGame": 348.0,
-        "pointsPerGame": 22.2,
-        "rushYardsPerGame": 101.2,
+        "total": 575.3,
+        "rush": 112.5,
+        "pass": 367.8,
+        "yardsPerGame": 347.0,
+        "pointsPerGame": 22.8,
+        "rushYardsPerGame": 99.2,
         "rushTdsPerGame": 0.2,
-        "passYardsPerGame": 246.8,
+        "passYardsPerGame": 247.8,
         "passTdsPerGame": 2.0
       },
       "defense": {
-        "total": 7.6,
-        "rush": 14.7,
-        "pass": 60.7,
-        "sacksPerGame": 2.2,
-        "takeawaysPerGame": 1.6,
-        "pointsAllowedPerGame": 21.8
+        "total": 8.0,
+        "rush": 14.0,
+        "pass": 59.1,
+        "sacksPerGame": 2.7,
+        "takeawaysPerGame": 1.7,
+        "pointsAllowedPerGame": 21.3
       },
       "gameLog": [
         {
@@ -4722,19 +4986,31 @@
             "pass": 61.38,
             "total": 1.0
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "TB",
-        "home": false
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "TB",
-          "home": false
-        },
+          "home": false,
+          "pointsFor": 26,
+          "pointsAgainst": 19,
+          "offense": {
+            "total": 602.0,
+            "rush": 89.0,
+            "pass": 373.0
+          },
+          "defense": {
+            "total": 10.0,
+            "rush": 10.2,
+            "pass": 50.96
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "NO",
+        "home": false
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "NO",
@@ -4794,25 +5070,25 @@
     },
     {
       "abbr": "SEA",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 612.2,
-        "rush": 154.0,
-        "pass": 370.2,
-        "yardsPerGame": 344.2,
-        "pointsPerGame": 26.8,
-        "rushYardsPerGame": 106.0,
+        "total": 598.7,
+        "rush": 157.2,
+        "pass": 358.2,
+        "yardsPerGame": 352.0,
+        "pointsPerGame": 24.7,
+        "rushYardsPerGame": 107.2,
         "rushTdsPerGame": 0.8,
-        "passYardsPerGame": 238.2,
-        "passTdsPerGame": 2.2
+        "passYardsPerGame": 244.8,
+        "passTdsPerGame": 1.8
       },
       "defense": {
-        "total": 8.4,
-        "rush": 12.0,
-        "pass": 56.4,
-        "sacksPerGame": 2.8,
-        "takeawaysPerGame": 2.2,
-        "pointsAllowedPerGame": 21.0
+        "total": 7.5,
+        "rush": 13.3,
+        "pass": 52.3,
+        "sacksPerGame": 2.7,
+        "takeawaysPerGame": 1.8,
+        "pointsAllowedPerGame": 20.3
       },
       "gameLog": [
         {
@@ -4899,19 +5175,31 @@
             "rush": 13.4,
             "pass": 67.46
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "DEN",
-        "home": false
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "DEN",
-          "home": false
-        },
+          "home": false,
+          "pointsFor": 14,
+          "pointsAgainst": 17,
+          "offense": {
+            "total": 531.0,
+            "rush": 173.0,
+            "pass": 298.0
+          },
+          "defense": {
+            "rush": 19.4,
+            "pass": 31.98,
+            "total": 3.0
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "KC",
+        "home": true
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "KC",
@@ -4971,25 +5259,25 @@
     },
     {
       "abbr": "SF",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 675.8,
-        "rush": 200.6,
-        "pass": 399.2,
-        "yardsPerGame": 367.8,
-        "pointsPerGame": 30.8,
-        "rushYardsPerGame": 128.6,
-        "rushTdsPerGame": 1.2,
-        "passYardsPerGame": 239.2,
-        "passTdsPerGame": 2.6
+        "total": 666.5,
+        "rush": 208.2,
+        "pass": 386.7,
+        "yardsPerGame": 371.5,
+        "pointsPerGame": 29.5,
+        "rushYardsPerGame": 128.2,
+        "rushTdsPerGame": 1.3,
+        "passYardsPerGame": 243.3,
+        "passTdsPerGame": 2.3
       },
       "defense": {
-        "total": 7.6,
-        "rush": 13.0,
-        "pass": 60.3,
-        "sacksPerGame": 2.2,
-        "takeawaysPerGame": 1.4,
-        "pointsAllowedPerGame": 18.6
+        "total": 7.2,
+        "rush": 11.7,
+        "pass": 65.4,
+        "sacksPerGame": 2.5,
+        "takeawaysPerGame": 1.2,
+        "pointsAllowedPerGame": 18.3
       },
       "gameLog": [
         {
@@ -5076,19 +5364,31 @@
             "pass": 51.3,
             "total": 18.0
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "WAS",
-        "home": true
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "WAS",
-          "home": true
-        },
+          "home": true,
+          "pointsFor": 23,
+          "pointsAgainst": 17,
+          "offense": {
+            "total": 620.0,
+            "rush": 246.0,
+            "pass": 324.0
+          },
+          "defense": {
+            "total": 5.0,
+            "rush": 5.3,
+            "pass": 91.0
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "ATL",
+        "home": false
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "ATL",
@@ -5148,25 +5448,25 @@
     },
     {
       "abbr": "TB",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 523.4,
-        "rush": 193.0,
-        "pass": 238.4,
-        "yardsPerGame": 323.4,
-        "pointsPerGame": 20.0,
-        "rushYardsPerGame": 133.0,
-        "rushTdsPerGame": 1.0,
-        "passYardsPerGame": 190.4,
+        "total": 512.2,
+        "rush": 177.8,
+        "pass": 236.0,
+        "yardsPerGame": 313.8,
+        "pointsPerGame": 19.8,
+        "rushYardsPerGame": 127.8,
+        "rushTdsPerGame": 0.8,
+        "passYardsPerGame": 186.0,
         "passTdsPerGame": 0.8
       },
       "defense": {
-        "total": 5.4,
-        "rush": 9.3,
-        "pass": 66.8,
-        "sacksPerGame": 1.2,
-        "takeawaysPerGame": 1.4,
-        "pointsAllowedPerGame": 22.4
+        "total": 5.7,
+        "rush": 9.2,
+        "pass": 70.1,
+        "sacksPerGame": 1.8,
+        "takeawaysPerGame": 1.3,
+        "pointsAllowedPerGame": 23.0
       },
       "gameLog": [
         {
@@ -5253,19 +5553,31 @@
             "pass": 74.24,
             "total": 7.0
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "PIT",
-        "home": true
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "PIT",
-          "home": true
-        },
+          "home": true,
+          "pointsFor": 19,
+          "pointsAgainst": 26,
+          "offense": {
+            "total": 456.0,
+            "rush": 102.0,
+            "pass": 224.0
+          },
+          "defense": {
+            "rush": 8.9,
+            "pass": 86.42,
+            "total": 7.0
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "CAR",
+        "home": false
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "CAR",
@@ -5325,25 +5637,25 @@
     },
     {
       "abbr": "TEN",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 377.8,
-        "rush": 118.6,
-        "pass": 219.2,
-        "yardsPerGame": 261.8,
-        "pointsPerGame": 11.6,
-        "rushYardsPerGame": 82.6,
-        "rushTdsPerGame": 0.6,
-        "passYardsPerGame": 179.2,
-        "passTdsPerGame": 0.6
+        "total": 389.2,
+        "rush": 112.8,
+        "pass": 209.7,
+        "yardsPerGame": 249.2,
+        "pointsPerGame": 14.0,
+        "rushYardsPerGame": 82.8,
+        "rushTdsPerGame": 0.5,
+        "passYardsPerGame": 166.3,
+        "passTdsPerGame": 0.7
       },
       "defense": {
-        "total": 3.6,
-        "rush": 17.4,
-        "pass": 62.8,
-        "sacksPerGame": 2.0,
-        "takeawaysPerGame": 0.4,
-        "pointsAllowedPerGame": 21.8
+        "total": 6.5,
+        "rush": 17.9,
+        "pass": 63.3,
+        "sacksPerGame": 2.7,
+        "takeawaysPerGame": 0.8,
+        "pointsAllowedPerGame": 21.5
       },
       "gameLog": [
         {
@@ -5430,19 +5742,31 @@
             "pass": 72.54,
             "total": 2.0
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "IND",
-        "home": false
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "IND",
-          "home": false
-        },
+          "home": false,
+          "pointsFor": 26,
+          "pointsAgainst": 20,
+          "offense": {
+            "total": 446.0,
+            "rush": 84.0,
+            "pass": 162.0
+          },
+          "defense": {
+            "rush": 20.5,
+            "pass": 65.66,
+            "total": 21.0
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 7,
+        "opponent": "CLE",
+        "home": true
+      },
+      "schedule": [
         {
           "week": 7,
           "opponent": "CLE",
@@ -5502,25 +5826,25 @@
     },
     {
       "abbr": "WAS",
-      "games": 5,
+      "games": 6,
       "offense": {
-        "total": 566.6,
-        "rush": 187.6,
-        "pass": 297.0,
-        "yardsPerGame": 336.6,
-        "pointsPerGame": 23.0,
-        "rushYardsPerGame": 139.6,
-        "rushTdsPerGame": 0.8,
-        "passYardsPerGame": 197.0,
-        "passTdsPerGame": 1.6
+        "total": 559.3,
+        "rush": 165.2,
+        "pass": 317.5,
+        "yardsPerGame": 339.3,
+        "pointsPerGame": 22.0,
+        "rushYardsPerGame": 125.2,
+        "rushTdsPerGame": 0.7,
+        "passYardsPerGame": 214.2,
+        "passTdsPerGame": 1.7
       },
       "defense": {
-        "total": 4.6,
-        "rush": 12.3,
-        "pass": 88.4,
+        "total": 4.5,
+        "rush": 14.4,
+        "pass": 84.7,
         "sacksPerGame": 1.8,
-        "takeawaysPerGame": 1.4,
-        "pointsAllowedPerGame": 29.8
+        "takeawaysPerGame": 1.3,
+        "pointsAllowedPerGame": 28.7
       },
       "gameLog": [
         {
@@ -5607,19 +5931,31 @@
             "pass": 106.64,
             "total": 6.0
           }
-        }
-      ],
-      "nextGame": {
-        "week": 6,
-        "opponent": "SF",
-        "home": false
-      },
-      "schedule": [
+        },
         {
           "week": 6,
           "opponent": "SF",
-          "home": false
-        },
+          "home": false,
+          "pointsFor": 17,
+          "pointsAgainst": 23,
+          "offense": {
+            "total": 523.0,
+            "rush": 53.0,
+            "pass": 420.0
+          },
+          "defense": {
+            "rush": 24.6,
+            "pass": 65.96,
+            "total": 4.0
+          }
+        }
+      ],
+      "nextGame": {
+        "week": 8,
+        "opponent": "PHI",
+        "home": true
+      },
+      "schedule": [
         {
           "week": 8,
           "opponent": "PHI",
